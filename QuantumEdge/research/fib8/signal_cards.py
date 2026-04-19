@@ -295,7 +295,7 @@ def print_card(card: SignalCard) -> None:
     w = 80
     print(f"\n{'#' * w}")
     print(f"  SIGNAL CARD: {card.config_name}")
-    print(f"  Promotion: {card.promotion_status}  |  Score: {card.promotion_score}/14")
+    print(f"  Promotion: {card.promotion_status}  |  Score: {card.promotion_score}/17")
     print(f"{'#' * w}")
 
     print(f"\n  THESIS:")

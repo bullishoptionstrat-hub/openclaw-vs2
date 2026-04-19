@@ -111,12 +111,12 @@ def get_promotion_evidence() -> dict[str, dict]:
         # Friction 5bps: ExpR drops to ~+0.164 (positive, >90% survive)
         # ------------------------------------------------------------------
         "xlk_vq_baseline": {
-            "replication_pct": 0.80,       # 4/5 instruments positive
+            "replication_pct": 0.80,  # 4/5 instruments positive
             "is_exp_r": 0.194,
             "oos1_exp_r": 0.247,
             "oos1_n_trades": 21,
-            "oos2_exp_r": 0.18,            # positive but only 2 trades
-            "oos2_n_trades": 2,            # too thin
+            "oos2_exp_r": 0.18,  # positive but only 2 trades
+            "oos2_n_trades": 2,  # too thin
             "grid_positive_pct": 1.00,
             "friction_5bps_positive_pct": 1.00,
             "exp_r_at_5bps": 0.164,
@@ -127,7 +127,7 @@ def get_promotion_evidence() -> dict[str, dict]:
             "no_hindsight": True,
             "hindsight_note": "discovery_bar vol known at close",
             "regime_bar": "discovery",
-            "n_required_rules": 4,         # disp + sweep + vol_quiet + touch_rej
+            "n_required_rules": 4,  # disp + sweep + vol_quiet + touch_rej
             "gate_defined": True,
             "gate_oos_tested": True,
             "vol_gate": "vol_quiet",
@@ -139,13 +139,13 @@ def get_promotion_evidence() -> dict[str, dict]:
         # Replication: 3/5 positive on OOS universe (XLY drops to +0.018)
         # ------------------------------------------------------------------
         "xlk_vq_tr_786_1618": {
-            "replication_pct": 0.60,       # 3/5 instruments positive (XLY weak)
-            "is_exp_r": 0.404,             # XLK only
-            "oos1_exp_r": 0.28,            # estimated from XLK OOS1
+            "replication_pct": 0.60,  # 3/5 instruments positive (XLY weak)
+            "is_exp_r": 0.404,  # XLK only
+            "oos1_exp_r": 0.28,  # estimated from XLK OOS1
             "oos1_n_trades": 16,
-            "oos2_exp_r": None,            # not separately run
+            "oos2_exp_r": None,  # not separately run
             "oos2_n_trades": 0,
-            "grid_positive_pct": 0.75,     # grid less stable than baseline
+            "grid_positive_pct": 0.75,  # grid less stable than baseline
             "friction_5bps_positive_pct": 1.00,
             "exp_r_at_5bps": 0.35,
             "friction_n_variants": 1,
@@ -167,15 +167,15 @@ def get_promotion_evidence() -> dict[str, dict]:
         # Robustness grid: not run in fib7; mark as None
         # ------------------------------------------------------------------
         "qqq_completion_vol_active": {
-            "replication_pct": 0.60,       # QQQ + 2 other ETFs positive in IS
+            "replication_pct": 0.60,  # QQQ + 2 other ETFs positive in IS
             "is_exp_r": 0.759,
             "oos1_exp_r": 0.884,
             "oos1_n_trades": 12,
             "oos2_exp_r": None,
             "oos2_n_trades": 0,
-            "grid_positive_pct": None,     # robustness grid not run
+            "grid_positive_pct": None,  # robustness grid not run
             "friction_5bps_positive_pct": 1.00,
-            "exp_r_at_5bps": 0.68,         # estimated ~-0.08 from slippage
+            "exp_r_at_5bps": 0.68,  # estimated ~-0.08 from slippage
             "friction_n_variants": 1,
             "primary_n_trades": 29,
             "needs_intraday": False,
@@ -183,7 +183,7 @@ def get_promotion_evidence() -> dict[str, dict]:
             "no_hindsight": True,
             "hindsight_note": "completion_bar vol known at bar close",
             "regime_bar": "completion",
-            "n_required_rules": 5,         # disp + sweep + midzone + vol_active + completion_bar
+            "n_required_rules": 5,  # disp + sweep + midzone + vol_active + completion_bar
             "gate_defined": True,
             "gate_oos_tested": True,
             "vol_gate": "vol_active",
@@ -195,9 +195,9 @@ def get_promotion_evidence() -> dict[str, dict]:
         # ATR gate is cleaner (no bar-timing) but untested OOS
         # ------------------------------------------------------------------
         "qqq_atr_quiet": {
-            "replication_pct": 0.50,       # marginal cross-instrument (50%)
+            "replication_pct": 0.50,  # marginal cross-instrument (50%)
             "is_exp_r": 0.532,
-            "oos1_exp_r": None,            # not split in fib7
+            "oos1_exp_r": None,  # not split in fib7
             "oos1_n_trades": 0,
             "oos2_exp_r": None,
             "oos2_n_trades": 0,
@@ -211,9 +211,9 @@ def get_promotion_evidence() -> dict[str, dict]:
             "no_hindsight": True,
             "hindsight_note": "ATR at discovery_bar known at close",
             "regime_bar": "discovery",
-            "n_required_rules": 3,         # disp + sweep + atr_quiet
+            "n_required_rules": 3,  # disp + sweep + atr_quiet
             "gate_defined": True,
-            "gate_oos_tested": False,      # OOS not split in fib7
+            "gate_oos_tested": False,  # OOS not split in fib7
             "vol_gate": "atr_quiet",
         },
         # ------------------------------------------------------------------
@@ -223,7 +223,7 @@ def get_promotion_evidence() -> dict[str, dict]:
         # No OOS split run; no robustness grid
         # ------------------------------------------------------------------
         "spy_vol_active_1h_disp": {
-            "replication_pct": 0.40,       # SPY-only tested (not replicated on others)
+            "replication_pct": 0.40,  # SPY-only tested (not replicated on others)
             "is_exp_r": 0.382,
             "oos1_exp_r": None,
             "oos1_n_trades": 0,
@@ -239,7 +239,7 @@ def get_promotion_evidence() -> dict[str, dict]:
             "no_hindsight": True,
             "hindsight_note": "vol at discovery_bar known; 1H trigger fires intraday",
             "regime_bar": "discovery",
-            "n_required_rules": 5,         # disp + sweep + vol_active + 1h_trigger + daily_zone
+            "n_required_rules": 5,  # disp + sweep + vol_active + 1h_trigger + daily_zone
             "gate_defined": True,
             "gate_oos_tested": False,
             "vol_gate": "vol_active",

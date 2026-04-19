@@ -84,7 +84,7 @@ CRITERION_MAX = {
     "regime_clarity": 1,
 }
 
-MAX_POSSIBLE = sum(CRITERION_MAX.values())  # 17 -- but scoring caps at 14 in practice
+MAX_POSSIBLE = sum(CRITERION_MAX.values())  # 17 total; 4 criteria max 2, 6 criteria max 1
 
 
 # ---------------------------------------------------------------------------

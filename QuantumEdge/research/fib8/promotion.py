@@ -314,7 +314,7 @@ def print_promotion_table(scores: list[PromotionScore]) -> None:
     w = 100
     print(f"\n{'=' * w}")
     print(f"  FIB8 TRACK A -- PROMOTION SCORING TABLE")
-    print(f"  {len(scores)} config(s) evaluated  |  Max possible: 14 pts")
+    print(f"  {len(scores)} config(s) evaluated  |  Max possible: 17 pts (4 criteria x2, 6 criteria x1)")
     print(f"{'=' * w}")
     print(
         f"  {'Config':<35} {'Score':>5}  {'Tier':<25} "
@@ -348,7 +348,7 @@ def print_promotion_detail(ps: PromotionScore) -> None:
     w = 80
     print(f"\n{'#' * w}")
     print(f"  PROMOTION DETAIL: {ps.config_name}")
-    print(f"  Score: {ps.total_score}/14  |  Tier: {ps.tier}")
+    print(f"  Score: {ps.total_score}/17  |  Tier: {ps.tier}")
     print(f"{'#' * w}")
     print(f"\n  Criterion breakdown:")
     for crit in CRITERION_NAMES:

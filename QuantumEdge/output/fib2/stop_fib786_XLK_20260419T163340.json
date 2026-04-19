@@ -1,0 +1,52 @@
+{
+  "experiment": "stop_fib786",
+  "ticker": "XLK",
+  "stats": {
+    "n_legs": 49,
+    "n_trades": 31,
+    "zone_hit_rate": 0.6327,
+    "win_rate": 0.4839,
+    "expectancy_r": 0.4533,
+    "median_r": -1.0,
+    "profit_factor": 1.878,
+    "sharpe_r": 0.274,
+    "sortino_r": 0.0,
+    "mean_mae_r": -0.8447,
+    "mean_mfe_r": 1.6686,
+    "hit_rate_1272": 0.2581,
+    "hit_rate_1618": 0.1935,
+    "timeout_rate": 0.2903,
+    "cagr": 0.00873,
+    "max_drawdown": -0.05852,
+    "avg_bars_held": 26.8,
+    "exit_reasons": {
+      "stop": 16,
+      "timeout": 9,
+      "1.618": 6
+    },
+    "n_bullish_trades": 30,
+    "n_bearish_trades": 1,
+    "bullish_stats": {
+      "n": 30,
+      "win_rate": 0.5,
+      "expectancy_r": 0.5017
+    },
+    "bearish_stats": {
+      "n": 1,
+      "win_rate": 0.0,
+      "expectancy_r": -1.0
+    },
+    "spy_bull_regime_stats": {
+      "n": 29,
+      "win_rate": 0.5172,
+      "expectancy_r": 0.5535
+    },
+    "spy_bear_regime_stats": {
+      "n": 2,
+      "win_rate": 0.0,
+      "expectancy_r": -1.0
+    },
+    "start_equity": 100000.0,
+    "end_equity": 114584.09
+  }
+}

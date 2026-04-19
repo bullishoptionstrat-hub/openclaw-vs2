@@ -1,0 +1,32 @@
+{
+  "experiment": "baseline_bullish_only",
+  "ticker": "XLV",
+  "stats": {
+    "n_setups": 85,
+    "n_zone_hit": 24,
+    "n_trades": 24,
+    "zone_hit_rate": 0.2824,
+    "win_rate": 0.625,
+    "expectancy_r": 0.3141,
+    "median_r": 0.5521,
+    "profit_factor": 1.838,
+    "sharpe_r": 0.276,
+    "sortino_r": 0.0,
+    "mean_mae_r": -0.772,
+    "mean_mfe_r": 0.9718,
+    "hit_rate_1272": 0.4583,
+    "hit_rate_1618": 0.2917,
+    "cagr": 0.00553,
+    "max_drawdown": -0.03157,
+    "avg_bars_held": 35.5,
+    "exit_reasons": {
+      "1.618": 7,
+      "stop": 9,
+      "timeout": 8
+    },
+    "n_bullish_trades": 24,
+    "n_bearish_trades": 0,
+    "start_equity": 100000.0,
+    "end_equity": 107657.14
+  }
+}

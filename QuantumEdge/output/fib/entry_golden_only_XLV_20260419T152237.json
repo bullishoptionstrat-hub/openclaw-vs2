@@ -1,0 +1,32 @@
+{
+  "experiment": "entry_golden_only",
+  "ticker": "XLV",
+  "stats": {
+    "n_setups": 85,
+    "n_zone_hit": 23,
+    "n_trades": 23,
+    "zone_hit_rate": 0.2706,
+    "win_rate": 0.6522,
+    "expectancy_r": 0.3715,
+    "median_r": 0.5521,
+    "profit_factor": 2.068,
+    "sharpe_r": 0.33,
+    "sortino_r": 0.0,
+    "mean_mae_r": -0.7585,
+    "mean_mfe_r": 0.9929,
+    "hit_rate_1272": 0.4783,
+    "hit_rate_1618": 0.3043,
+    "cagr": 0.00629,
+    "max_drawdown": -0.03157,
+    "avg_bars_held": 36.7,
+    "exit_reasons": {
+      "1.618": 7,
+      "stop": 8,
+      "timeout": 8
+    },
+    "n_bullish_trades": 23,
+    "n_bearish_trades": 0,
+    "start_equity": 100000.0,
+    "end_equity": 108750.48
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "experiment_name": "param_top5_sectors_weekly",
+  "timestamp_utc": "2026-04-19T14:52:51Z",
+  "strategy_version": "0.3.0",
+  "git_commit": "77509024b8c693318fde55ccc74c25d2de311267",
+  "git_dirty": true,
+  "config_overrides_path": "C:\\Users\\alexm\\OneDrive\\Documents\\GitHub\\openclaw-vs2\\QuantumEdge\\experiment_config.json",
+  "enabled_sleeves": {
+    "A": true,
+    "B": false,
+    "C": true,
+    "LETF": true
+  },
+  "raw_allocations": {
+    "A": 0.6,
+    "B": 0.4,
+    "C": 0.4
+  },
+  "effective_allocations": {
+    "A": 0.6,
+    "C": 0.4
+  },
+  "sleeve_b_behavior": "redistribute",
+  "regime_filters": {
+    "filter": true,
+    "spy_sma": true,
+    "vxx": false
+  },
+  "backtest_start": "2013-01-01",
+  "backtest_end": "2023-12-31",
+  "run_dir": "C:\\Users\\alexm\\OneDrive\\Documents\\GitHub\\openclaw-vs2\\QuantumEdge\\output\\runs\\param_top5_sectors_weekly\\20260419T145216",
+  "result_json_path": "C:\\Users\\alexm\\OneDrive\\Documents\\GitHub\\openclaw-vs2\\QuantumEdge\\output\\runs\\param_top5_sectors_weekly\\20260419T145216\\result.json",
+  "lean_log_path": "C:\\Users\\alexm\\OneDrive\\Documents\\GitHub\\openclaw-vs2\\QuantumEdge\\output\\runs\\param_top5_sectors_weekly\\20260419T145216\\lean.log",
+  "lean_results_json_path": "C:\\Users\\alexm\\OneDrive\\Documents\\GitHub\\openclaw-vs2\\QuantumEdge\\output\\runs\\param_top5_sectors_weekly\\20260419T145216\\QuantumEdge.json",
+  "data_monitor_path": "C:\\Users\\alexm\\OneDrive\\Documents\\GitHub\\openclaw-vs2\\QuantumEdge\\output\\runs\\param_top5_sectors_weekly\\20260419T145216\\data-monitor.json",
+  "validity_label": "FULLY_VALID",
+  "validity_reason": "Active-sleeve data present and validated. See warnings for known gaps.",
+  "warnings": [
+    "Known gap: VXX data starts 2018-01-25 (local dataset limit). Pre-date periods fall back gracefully.",
+    "Known gap: XLRE data starts 2015-10-08 (local dataset limit). Pre-date periods fall back gracefully.",
+    "Known gap: XLC data starts 2018-06-19 (local dataset limit). Pre-date periods fall back gracefully.",
+    "Known gap: SPXU data starts 2009-06-25 (local dataset limit). Pre-date periods fall back gracefully."
+  ]
+}

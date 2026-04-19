@@ -1,0 +1,38 @@
+{
+  "experiment": "qqq_tierA_1h_confirm",
+  "ticker": "QQQ",
+  "stats": {
+    "n_legs": 37,
+    "n_trades": 24,
+    "n_skipped": 13,
+    "skip_rate": 0.3514,
+    "zone_hit_rate": 0.6486,
+    "win_rate": 0.5,
+    "expectancy_r": 0.0794,
+    "median_r": 0.0664,
+    "profit_factor": 1.192,
+    "sharpe_r": 0.077,
+    "mean_mae_r": -0.6735,
+    "mean_mfe_r": 0.9371,
+    "hit_rate_1272": 0.375,
+    "hit_rate_1618": 0.1667,
+    "timeout_rate": 0.4583,
+    "cagr": 0.00129,
+    "max_drawdown": -0.03518,
+    "avg_bars_held": 45.3,
+    "exit_reasons": {
+      "stop": 9,
+      "timeout": 11,
+      "1.618": 4
+    },
+    "trigger_stats": {
+      "1h_rejection_daily_fallback": {
+        "n": 24,
+        "win_rate": 0.5,
+        "avg_r": 0.0794
+      }
+    },
+    "start_equity": 100000.0,
+    "end_equity": 101798.8
+  }
+}

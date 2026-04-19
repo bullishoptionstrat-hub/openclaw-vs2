@@ -1,0 +1,32 @@
+{
+  "experiment": "leg_strict",
+  "ticker": "EWJ",
+  "stats": {
+    "n_setups": 108,
+    "n_zone_hit": 37,
+    "n_trades": 37,
+    "zone_hit_rate": 0.3426,
+    "win_rate": 0.6216,
+    "expectancy_r": 0.1941,
+    "median_r": 0.4652,
+    "profit_factor": 1.541,
+    "sharpe_r": 0.198,
+    "sortino_r": 1.009,
+    "mean_mae_r": -0.6847,
+    "mean_mfe_r": 1.0103,
+    "hit_rate_1272": 0.2973,
+    "hit_rate_1618": 0.2162,
+    "cagr": 0.00467,
+    "max_drawdown": -0.05168,
+    "avg_bars_held": 41.0,
+    "exit_reasons": {
+      "timeout": 16,
+      "stop": 13,
+      "1.618": 8
+    },
+    "n_bullish_trades": 37,
+    "n_bearish_trades": 0,
+    "start_equity": 100000.0,
+    "end_equity": 107253.73
+  }
+}

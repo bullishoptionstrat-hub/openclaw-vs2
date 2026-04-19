@@ -1,0 +1,9 @@
+{
+  "experiment": "stop_fib786",
+  "ticker": "QQQ",
+  "stats": {
+    "n_legs": 17,
+    "n_trades": 0,
+    "zone_hit_rate": 0.0
+  }
+}

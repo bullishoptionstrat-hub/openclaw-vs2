@@ -1,0 +1,9 @@
+{
+  "experiment": "stop_fib786",
+  "ticker": "SPY",
+  "stats": {
+    "n_legs": 50,
+    "n_trades": 0,
+    "zone_hit_rate": 0.0
+  }
+}

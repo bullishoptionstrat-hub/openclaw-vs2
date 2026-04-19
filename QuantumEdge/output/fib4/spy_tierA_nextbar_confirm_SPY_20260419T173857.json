@@ -1,0 +1,38 @@
+{
+  "experiment": "spy_tierA_nextbar_confirm",
+  "ticker": "SPY",
+  "stats": {
+    "n_legs": 66,
+    "n_trades": 16,
+    "n_skipped": 50,
+    "skip_rate": 0.7576,
+    "zone_hit_rate": 0.2424,
+    "win_rate": 0.75,
+    "expectancy_r": 0.3361,
+    "median_r": 0.2635,
+    "profit_factor": 2.712,
+    "sharpe_r": 0.393,
+    "mean_mae_r": -0.5082,
+    "mean_mfe_r": 0.8164,
+    "hit_rate_1272": 0.5,
+    "hit_rate_1618": 0.25,
+    "timeout_rate": 0.5625,
+    "cagr": 0.00236,
+    "max_drawdown": -0.0199,
+    "avg_bars_held": 38.5,
+    "exit_reasons": {
+      "stop": 3,
+      "1.618": 4,
+      "timeout": 9
+    },
+    "trigger_stats": {
+      "nextbar_confirm": {
+        "n": 16,
+        "win_rate": 0.75,
+        "avg_r": 0.3361
+      }
+    },
+    "start_equity": 100000.0,
+    "end_equity": 105457.36
+  }
+}

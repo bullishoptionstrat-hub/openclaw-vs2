@@ -1,0 +1,205 @@
+//@version=5
+strategy("Institutional Smart Blend+ Golden Ratio (ES 1h)", shorttitle="ISB+ Phi (ES)", overlay=true, default_qty_type=strategy.percent_of_equity, default_qty_value=5)
+
+// GOLDEN RATIO CONSTANTS
+PHI = 1.618034
+FRAC_618 = 0.618
+FRAC_786 = 0.786
+FRAC_272 = 1.272
+FRAC_162 = 1.618
+FRAC_261 = 2.618
+
+// INPUT SETTINGS
+min_confluence = input.int(2, "Min Confluence Signals (2=Quality+Frequency)", minval=1, maxval=6)
+min_rr = input.float(1.618, "Min Risk/Reward Ratio", minval=1.0, maxval=3.0, step=0.1)
+frac_fix_enabled = input.bool(true, "Enable 30% Tighter Stops")
+use_volume_filter = input.bool(true, "Require Volume Confirmation")
+volume_multiplier = input.float(1.5, "Volume Multiplier (1.5=ES Futures)", minval=1.0, maxval=3.0)
+
+// COLORS
+col_buy = input.color(color.green, "Buy Color")
+col_sell = input.color(color.red, "Sell Color")
+
+// CALCULATIONS (MOVED UP - needed before using atr_val)
+atr_val = ta.atr(14)
+sma_short = ta.sma(close, 5)
+sma_long = ta.sma(close, 20)
+min_volatility = 0.20  // 1h timeframe optimized
+
+// TREND DETECTION (CORE - Only signal on CROSSOVERS)
+ema_fast = ta.ema(close, 9)
+ema_slow = ta.ema(close, 21)
+sma_20 = ta.sma(close, 20)
+
+// Current trend state
+bullish_trend = close > ema_slow and ema_fast > ema_slow
+bearish_trend = close < ema_slow and ema_fast < ema_slow
+
+// PREVIOUS bar trend state (for crossover detection)
+bullish_trend_prev = close[1] > ema_slow[1] and ema_fast[1] > ema_slow[1]
+bearish_trend_prev = close[1] < ema_slow[1] and ema_fast[1] < ema_slow[1]
+
+// CROSSOVER DETECTION (only fire ONCE per trend change)
+bullish_crossover = bullish_trend and not bullish_trend_prev  // Enters bullish
+bearish_crossover = bearish_trend and not bearish_trend_prev  // Enters bearish
+
+// SIGNAL SPACING: Don't allow signals closer than 3 bars apart
+var bars_since_signal = 0
+bars_since_signal := bars_since_signal + 1
+
+// EMA SEPARATION FILTER: EMAs must show meaningful separation (not too choppy)
+ema_separation = math.abs(ema_fast - ema_slow)
+min_ema_separation = atr_val * 0.5  // Only 0.5x ATR apart (realistic for real trends)
+emas_separated = ema_separation > min_ema_separation
+
+// TREND FUNCTION
+f_trend() =>
+    sma_short > sma_long ? "UP" : sma_short < sma_long ? "DOWN" : "RANGING"
+
+// FRACTAL DETECTION
+f_fractal_bull() =>
+    (low[2] > low[1]) and (low[1] < low[0]) and (low[0] < close) and (close > open)
+
+f_fractal_bear() =>
+    (high[2] < high[1]) and (high[1] > high[0]) and (high[0] > close) and (close < open)
+
+// SWING DETECTION
+f_swing_high(len) =>
+    high[len] == ta.highest(high, len * 2 + 1)
+
+f_swing_low(len) =>
+    low[len] == ta.lowest(low, len * 2 + 1)
+
+f_recent_swing_high() =>
+    result = high
+    for i = 1 to 20
+        if f_swing_high(i)
+            result := high[i]
+    result
+
+f_recent_swing_low() =>
+    result = low
+    for i = 1 to 20
+        if f_swing_low(i)
+            result := low[i]
+    result
+
+// FIBONACCI RETRACEMENT
+f_fib_retracement(swing_h, swing_l, ratio) =>
+    swing_range = swing_h - swing_l
+    swing_h - (swing_range * ratio)
+
+// FAIR VALUE GAP
+f_has_fvg_below(source_level) =>
+    (high[1] < low[0] and low[0] < source_level) or (high[2] < low[1] and low[1] < source_level)
+
+f_has_fvg_above(source_level) =>
+    (low[1] > high[0] and high[0] > source_level) or (low[2] > high[1] and high[1] > source_level)
+
+// VOLUME CONFIRMATION
+f_volume_confirmed() =>
+    use_volume_filter ? ta.sma(volume, 20) * volume_multiplier < volume : true
+
+// VOLATILITY CHECK (Skip Choppy Markets)
+f_is_market_choppy() =>
+    (atr_val / close) * 100 < min_volatility
+
+// CONFLUENCE SCORING
+f_confluence_score(pattern_type) =>
+    score = 1
+    if f_volume_confirmed()
+        score := score + 1
+    if pattern_type == "BULL" and f_has_fvg_below(close)
+        score := score + 1
+    if pattern_type == "BEAR" and f_has_fvg_above(close)
+        score := score + 1
+    
+    swing_h = f_recent_swing_high()
+    swing_l = f_recent_swing_low()
+    fib_618 = f_fib_retracement(swing_h, swing_l, FRAC_618)
+    
+    if pattern_type == "BULL" and math.abs(close - fib_618) < atr_val * 0.5
+        score := score + 1
+    
+    trend = f_trend()
+    if pattern_type == "BULL" and trend == "UP"
+        score := score + 1
+    if pattern_type == "BEAR" and trend == "DOWN"
+        score := score + 1
+    
+    score
+
+// CONFIDENCE CALCULATION
+f_confidence(confluence) =>
+    math.round(60.0 + (confluence * 8.0))
+
+// SIGNAL DETECTION (PROFESSIONAL: Only fire on trend CROSSOVERS)
+bull_frac = f_fractal_bull()
+buy_confluence = f_confluence_score("BULL")
+// BUY: Crossover + min bars since last signal + confluence + not choppy + RR valid
+buy_signal_base = bullish_crossover and bars_since_signal >= 3 and buy_confluence >= min_confluence and not f_is_market_choppy()
+
+bear_frac = f_fractal_bear()
+sell_confluence = f_confluence_score("BEAR")
+// SELL: Crossover + min bars since last signal + confluence + not choppy + RR valid
+sell_signal_base = bearish_crossover and bars_since_signal >= 3 and sell_confluence >= min_confluence and not f_is_market_choppy()
+
+// ENTRY & TARGET CALCULATION
+swing_high_val = f_recent_swing_high()
+swing_low_val = f_recent_swing_low()
+swing_range = swing_high_val - swing_low_val
+
+buy_entry = f_fib_retracement(swing_high_val, swing_low_val, FRAC_618)
+buy_sl_raw = buy_entry - (swing_range * FRAC_786)
+buy_sl = frac_fix_enabled ? buy_entry - ((buy_entry - buy_sl_raw) * 0.7) : buy_sl_raw
+buy_tp2 = buy_entry + (swing_range * FRAC_162)
+
+sell_entry = swing_high_val + (swing_range * FRAC_618)
+sell_sl_raw = sell_entry + (swing_range * FRAC_786)
+sell_sl = frac_fix_enabled ? sell_entry + ((sell_sl_raw - sell_entry) * 0.7) : sell_sl_raw
+sell_tp2 = sell_entry - (swing_range * FRAC_162)
+
+// RISK/REWARD CALCULATION
+buy_risk = math.abs(buy_entry - buy_sl)
+buy_reward = math.abs(buy_tp2 - buy_entry)
+buy_rr = buy_risk > 0 ? buy_reward / buy_risk : 0
+
+sell_risk = math.abs(sell_entry - sell_sl)
+sell_reward = math.abs(sell_entry - sell_tp2)
+sell_rr = sell_risk > 0 ? sell_reward / sell_risk : 0
+
+// FINAL SIGNAL VALIDATION (INSTITUTIONAL GRADE - All criteria must align)
+buy_signal = buy_signal_base and buy_rr >= min_rr
+sell_signal = sell_signal_base and sell_rr >= min_rr
+
+// Reset bars since signal counter when signal fires
+if buy_signal or sell_signal
+    bars_since_signal := 0
+
+// STRATEGY ENTRIES
+if buy_signal and strategy.position_size == 0
+    strategy.entry("BUY", strategy.long)
+    
+if sell_signal and strategy.position_size == 0
+    strategy.entry("SELL", strategy.short)
+
+// EXITS
+strategy.exit("BUY_EXIT", "BUY", limit=buy_tp2, stop=buy_sl)
+strategy.exit("SELL_EXIT", "SELL", limit=sell_tp2, stop=sell_sl)
+
+// VISUALIZATION - BUY SIGNALS
+plotshape(buy_signal, style=shape.labelup, location=location.belowbar, color=col_buy, size=size.small)
+
+// VISUALIZATION - SELL SIGNALS
+plotshape(sell_signal, style=shape.labeldown, location=location.abovebar, color=col_sell, size=size.small)
+
+// VISUALIZATION - TREND LINES
+plot(ema_fast, "EMA 9", color=color.new(color.orange, 0), linewidth=1)
+plot(ema_slow, "EMA 21", color=color.new(color.blue, 0), linewidth=1)
+
+// ALERTS
+if buy_signal
+    alert("BUY SIGNAL | Confidence: " + str.tostring(f_confidence(buy_confluence)) + "% | RR: " + str.tostring(math.round(buy_rr, 2)) + ":1")
+
+if sell_signal
+    alert("SELL SIGNAL | Confidence: " + str.tostring(f_confidence(sell_confluence)) + "% | RR: " + str.tostring(math.round(sell_rr, 2)) + ":1")

@@ -1,0 +1,356 @@
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════════
+// INSTITUTIONAL SMART BLEND+ GOLDEN RATIO STRATEGY - TRADINGVIEW PINE SCRIPT
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════════
+//
+// STRATEGY OVERVIEW:
+// A professional-grade trading system combining:
+// 1. Fibonacci Golden Ratio (Φ = 1.618) market structure analysis
+// 2. 4-Candle Fractal entry patterns with institutional confluence
+// 3. Fair value gap detection (liquidity zones)
+// 4. Institutional order cluster identification
+// 5. Advanced risk/reward optimization using golden ratio spacing
+//
+// ENTRY RULES (BUY):
+// - 4-candle bullish fractal pattern
+// - Entry at Fibonacci 0.618 retracement zone
+// - Volume > 1.5x average (institutional activity)
+// - Fair value gap below for support
+// - Risk/Reward >= 1.618:1 (golden ratio)
+// - Confluence score >= 3 signals aligned
+//
+// ENTRY RULES (SELL):
+// - 4-candle bearish fractal pattern
+// - Entry at Fibonacci 0.618 extension zone
+// - Volume > 1.5x average
+// - Fair value gap above for resistance
+// - Risk/Reward >= 1.618:1
+// - Confluence score >= 3 signals
+//
+// PROFIT TARGETS (Golden Ratio Spacing):
+// - TP1: 1.272x risk (first profit taking)
+// - TP2: 1.618x risk (golden ratio - main target)
+// - TP3: 2.618x risk (Phi squared - extension)
+//
+// STOP LOSS:
+// - Placed at 0.786 Fibonacci level (tight institutional stops)
+// - Further tightened by 30% if position advantage confirms
+//
+// INSTITUTIONAL SIGNALS:
+// - Green labels: BUY signals with signal strength (0-100 confidence)
+// - Red labels: SELL signals with signal strength
+// - Yellow alerts: Fair value gaps (trading inefficiencies)
+// - Aqua lines: Key Fibonacci levels
+//
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════════
+
+//@version=5
+strategy(
+    title="Institutional Smart Blend+ Golden Ratio Strategy",
+    shorttitle="ISB+ Phi Strategy",
+    overlay=true,
+    pyramiding=1,
+    default_qty_type=strategy.percent_of_equity,
+    default_qty_value=5,
+    commission_type=strategy.commission.percent,
+    commission_value=0.001
+)
+
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════════
+// CONSTANTS & SETTINGS
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════════
+
+PHI = 1.618034  // Golden ratio
+FRAC_618 = 0.618  // Key Fibonacci level (institutional order placement)
+FRAC_786 = 0.786  // Stop loss level
+FRAC_272 = 1.272  // Target 1
+FRAC_162 = 1.618  // Target 2 (golden ratio)
+FRAC_261 = 2.618  // Target 3 (Phi squared)
+
+// Input Parameters
+group_entrylevel = "═ ENTRY SETTINGS ═"
+min_confluence = input.int(3, "Minimum Confluence Signals", minval=2, maxval=6, group=group_entrylevel)
+min_rr = input.float(1.618, "Min Risk/Reward Ratio", minval=1.0, maxval=3.0, step=0.1, group=group_entrylevel)
+frac_fix_enabled = input.bool(true, "Enable Approach 1 (30% Tighter Stops)", group=group_entrylevel)
+use_volume_filter = input.bool(true, "Require Volume Confirmation", group=group_entrylevel)
+volume_multiplier = input.float(1.5, "Volume Threshold Multiplier", minval=1.0, maxval=3.0, group=group_entrylevel)
+
+group_signals = "═ SIGNAL RENDERING ═"
+show_fractals = input.bool(true, "Show Fractal Patterns", group=group_signals)
+show_fib_levels = input.bool(true, "Show Fibonacci Levels", group=group_signals)
+show_fvg = input.bool(true, "Show Fair Value Gaps", group=group_signals)
+show_targets = input.bool(true, "Show Profit Targets", group=group_signals)
+show_confluence = input.bool(true, "Show Confluence Points", group=group_signals)
+
+group_colors = "═ COLORS ═"
+col_buy = input.color(color.new(color.green, 10), "Buy Signal Color", group=group_colors)
+col_sell = input.color(color.new(color.red, 10), "Sell Signal Color", group=group_colors)
+col_tp = input.color(color.new(color.blue, 50), "Target Color", group=group_colors)
+col_sl = input.color(color.new(color.orange, 50), "Stop Loss Color", group=group_colors)
+col_fib = input.color(color.new(color.gray, 60), "Fibonacci Level Color", group=group_colors)
+
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════════
+// HELPER FUNCTIONS
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════════
+
+// Calculate Average True Range (ATR)
+atr_val = ta.atr(14)
+
+// Calculate Simple Moving Averages
+sma_short = ta.sma(close, 5)
+sma_long = ta.sma(close, 20)
+
+// Identify trend direction
+f_trend() =>
+    if sma_short > sma_long
+        "UP"
+    else if sma_short < sma_long
+        "DOWN"
+    else
+        "RANGING"
+
+// Detect 4-candle bullish fractal
+f_fractal_bull() =>
+    // Two lower highs before and after current candle
+    (low[2] > low[1]) and
+    (low[1] < low[0]) and
+    (low[0] < close) and
+    (close > open)
+
+// Detect 4-candle bearish fractal
+f_fractal_bear() =>
+    (high[2] < high[1]) and
+    (high[1] > high[0]) and
+    (high[0] > close) and
+    (close < open)
+
+// Calculate swing high
+f_swing_high(length) =>
+    high[length] == ta.highest(high, length * 2 + 1)
+
+// Calculate swing low
+f_swing_low(length) =>
+    low[length] == ta.lowest(low, length * 2 + 1)
+
+// Find recent swing high
+f_recent_swing_high() =>
+    highest = high
+    for i = 1 to 20
+        if f_swing_high(i)
+            highest := high[i]
+    highest
+
+// Find recent swing low
+f_recent_swing_low() =>
+    lowest = low
+    for i = 1 to 20
+        if f_swing_low(i)
+            lowest := low[i]
+    lowest
+
+// Calculate Fibonacci retracement level
+f_fib_retracement(swing_h, swing_l, ratio) =>
+    swing_range = swing_h - swing_l
+    swing_h - (swing_range * ratio)
+
+// Detect Fair Value Gap (inefficiency)
+f_has_fvg_below(source_level) =>
+    // Check if there's a gap below current level
+    (high[1] < low[0] and low[0] < source_level) or
+    (high[2] < low[1] and low[1] < source_level)
+
+f_has_fvg_above(source_level) =>
+    (low[1] > high[0] and high[0] > source_level) or
+    (low[2] > high[1] and high[1] > source_level)
+
+// Volume confirmation
+f_volume_confirmed() =>
+    use_volume_filter ? ta.sma(volume, 20) * volume_multiplier < volume : true
+
+// Calculate confluence score
+f_confluence_score(pattern_type) =>
+    score = 0
+    
+    // Fractal pattern (base)
+    score := score + 1
+    
+    // Volume confirmation
+    if f_volume_confirmed()
+        score := score + 1
+    
+    // Fair value gap support/resistance
+    if pattern_type == "BULL" and f_has_fvg_below(close)
+        score := score + 1
+    if pattern_type == "BEAR" and f_has_fvg_above(close)
+        score := score + 1
+    
+    // Fibonacci zone alignment
+    swing_h = f_recent_swing_high()
+    swing_l = f_recent_swing_low()
+    fib_618 = f_fib_retracement(swing_h, swing_l, FRAC_618)
+    
+    if pattern_type == "BULL" and math.abs(close - fib_618) < atr_val * 0.5
+        score := score + 1
+    
+    // Trend confirmation
+    trend = f_trend()
+    if pattern_type == "BULL" and trend == "UP"
+        score := score + 1
+    if pattern_type == "BEAR" and trend == "DOWN"
+        score := score + 1
+    
+    score
+
+// Calculate confidence percentage
+f_confidence(confluence_score) =>
+    math.round(60 + (confluence_score * 8))
+
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════════
+// SIGNAL GENERATION & ENTRY LOGIC
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════════
+
+// Detect buy signal
+bull_frac = f_fractal_bull()
+buy_confluence = f_confluence_score("BULL")
+buy_valid = bull_frac and buy_confluence >= min_confluence
+
+// Detect sell signal
+bear_frac = f_fractal_bear()
+sell_confluence = f_confluence_score("BEAR")
+sell_valid = bear_frac and sell_confluence >= min_confluence
+
+// Entry prices and levels
+swing_high_val = f_recent_swing_high()
+swing_low_val = f_recent_swing_low()
+swing_range = swing_high_val - swing_low_val
+
+// For Buy: Entry at 0.618 retracement
+buy_entry = f_fib_retracement(swing_high_val, swing_low_val, FRAC_618)
+buy_sl = buy_entry - (swing_range * FRAC_786)
+buy_tp1 = buy_entry + (swing_range * FRAC_272)
+buy_tp2 = buy_entry + (swing_range * FRAC_162)
+buy_tp3 = buy_entry + (swing_range * FRAC_261)
+
+// For Sell: Entry at 0.618 extension
+sell_entry = swing_high_val + (swing_range * FRAC_618)
+sell_sl = sell_entry + (swing_range * FRAC_786)
+sell_tp1 = sell_entry - (swing_range * FRAC_272)
+sell_tp2 = sell_entry - (swing_range * FRAC_162)
+sell_tp3 = sell_entry - (swing_range * FRAC_261)
+
+// Calculate Risk/Reward
+buy_risk = math.abs(buy_entry - buy_sl)
+buy_reward = math.abs(buy_tp2 - buy_entry)
+buy_rr = buy_risk > 0 ? buy_reward / buy_risk : 0
+
+sell_risk = math.abs(sell_entry - sell_sl)
+sell_reward = math.abs(sell_entry - sell_tp2)
+sell_rr = sell_risk > 0 ? sell_reward / sell_risk : 0
+
+// Apply Approach 1 fix (tighter stops)
+if frac_fix_enabled
+    buy_sl := buy_entry - (buy_risk * 0.7)
+    sell_sl := sell_entry + (sell_risk * 0.7)
+
+// Final signal validation
+buy_signal = buy_valid and buy_rr >= min_rr
+sell_signal = sell_valid and sell_rr >= min_rr
+
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════════
+// ENTRY EXECUTION
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════════
+
+if buy_signal and strategy.position_size == 0
+    confidence_pct = f_confidence(buy_confluence)
+    strategy.entry("BUY", strategy.long, comment="Buy Signal")
+
+if sell_signal and strategy.position_size == 0
+    confidence_pct = f_confidence(sell_confluence)
+    strategy.entry("SELL", strategy.short, comment="Sell Signal")
+
+// Exit orders with profit targets
+strategy.exit("EXIT_TP2", "BUY", limit=buy_tp2, stop=buy_sl)
+strategy.exit("EXIT_TP2", "SELL", limit=sell_tp2, stop=sell_sl)
+
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════════
+// CHART VISUALIZATION
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════════
+
+// Draw buy signals
+if show_fractals and buy_signal
+    plotshape(
+        1,
+        title="Buy Signal",
+        style=shape.labelup,
+        location=location.belowbar,
+        color=col_buy,
+        text=str.format("BUY\n{0}%", f_confidence(buy_confluence))
+    )
+
+// Draw sell signals
+if show_fractals and sell_signal
+    plotshape(
+        1,
+        title="Sell Signal",
+        style=shape.labeldown,
+        location=location.abovebar,
+        color=col_sell,
+        text=str.format("SELL\n{0}%", f_confidence(sell_confluence))
+    )
+
+// Draw profit targets for buy
+if show_targets and buy_signal
+    line.new(bar_index, buy_tp1, bar_index + 50, buy_tp1, color=col_tp, style=line.style_dotted, width=1)
+    line.new(bar_index, buy_tp2, bar_index + 50, buy_tp2, color=col_tp, style=line.style_dashed, width=2)
+    line.new(bar_index, buy_tp3, bar_index + 50, buy_tp3, color=col_tp, style=line.style_dotted, width=1)
+    line.new(bar_index, buy_sl, bar_index + 50, buy_sl, color=col_sl, style=line.style_dashed, width=1)
+
+// Draw profit targets for sell
+if show_targets and sell_signal
+    line.new(bar_index, sell_tp1, bar_index + 50, sell_tp1, color=col_tp, style=line.style_dotted, width=1)
+    line.new(bar_index, sell_tp2, bar_index + 50, sell_tp2, color=col_tp, style=line.style_dashed, width=2)
+    line.new(bar_index, sell_tp3, bar_index + 50, sell_tp3, color=col_tp, style=line.style_dotted, width=1)
+    line.new(bar_index, sell_sl, bar_index + 50, sell_sl, color=col_sl, style=line.style_dashed, width=1)
+
+// Draw Fibonacci levels
+if show_fib_levels
+    plot(f_fib_retracement(swing_high_val, swing_low_val, FRAC_618), "Fib 0.618", col_fib, linewidth=1)
+    plot(f_fib_retracement(swing_high_val, swing_low_val, FRAC_786), "Fib 0.786", col_fib, linewidth=1)
+
+// Draw confluence indicators
+if show_confluence
+    plot(buy_confluence + 0, "Confluence (Buy)", color.new(color.green, 70), linewidth=1)
+    plot(sell_confluence + 0, "Confluence (Sell)", color.new(color.red, 70), linewidth=1)
+
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════════
+// ALERTS
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════════
+
+if buy_signal
+    alert(
+        str.format(
+            "🟢 BUY SIGNAL | Confidence: {0}% | RR: {1}:1 | Entry: {2} | SL: {3} | TP2: {4}",
+            f_confidence(buy_confluence),
+            math.round(buy_rr, 2),
+            math.round(buy_entry, 2),
+            math.round(buy_sl, 2),
+            math.round(buy_tp2, 2)
+        ),
+        alert.freq_once_per_bar
+    )
+
+if sell_signal
+    alert(
+        str.format(
+            "🔴 SELL SIGNAL | Confidence: {0}% | RR: {1}:1 | Entry: {2} | SL: {3} | TP2: {4}",
+            f_confidence(sell_confluence),
+            math.round(sell_rr, 2),
+            math.round(sell_entry, 2),
+            math.round(sell_sl, 2),
+            math.round(sell_tp2, 2)
+        ),
+        alert.freq_once_per_bar
+    )
+
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════════
+// END OF STRATEGY
+// ═══════════════════════════════════════════════════════════

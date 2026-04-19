@@ -1,0 +1,894 @@
+Launching analysis for QuantumEdge with LEAN Engine v2.5.0.0
+2012-05-25 00:00:00 Algorithm starting warm up...
+1997-12-31 19:00:00 QuantumEdge  experiment=letf_10
+1997-12-31 19:00:00   Sleeves: A=True  B=False  C=True  LETF=True
+1997-12-31 19:00:00   Regime: filter=True  spy_sma=True  vxx=False
+1997-12-31 19:00:00   Allocs: A=60%  B=40%  C=40%  B_fallback=redistribute
+2013-01-01 00:00:00 ============================================================
+2013-01-01 00:00:00 DATA VALIDATION  valid=True
+2013-01-01 00:00:00   fundamental_data=False
+2013-01-01 00:00:00 WARNINGS:
+2013-01-01 00:00:00   WARN: Fundamental data absent — Sleeve B must remain disabled. This is expected in local-only mode.
+2013-01-01 00:00:00 SYMBOL STATUS:
+2013-01-01 00:00:00   OK   SPY       rows= 5849  cov=100.0%  
+2013-01-01 00:00:00   OK   SHY       rows= 4025  cov=100.0%  
+2013-01-01 00:00:00   OK   SPXU      rows= 3905  cov=100.0%  
+2013-01-01 00:00:00   OK   XLK       rows= 4025  cov=100.0%  
+2013-01-01 00:00:00   OK   XLV       rows= 4025  cov=100.0%  
+2013-01-01 00:00:00   OK   XLF       rows= 4025  cov=100.0%  
+2013-01-01 00:00:00   OK   XLI       rows= 4025  cov=100.0%  
+2013-01-01 00:00:00   OK   XLY       rows= 4025  cov=100.0%  
+2013-01-01 00:00:00   OK   XLP       rows= 4025  cov=100.0%  
+2013-01-01 00:00:00   OK   XLE       rows= 4025  cov=100.0%  
+2013-01-01 00:00:00   OK   XLB       rows= 4025  cov=100.0%  
+2013-01-01 00:00:00   OK   XLU       rows= 4025  cov=100.0%  
+2013-01-01 00:00:00   OK   XLC       rows= 1644  cov= 45.0%  
+2013-01-01 00:00:00   OK   XLRE      rows= 2322  cov= 63.6%  
+2013-01-01 00:00:00   OK   VXX       rows= 1744  cov= 47.8%  
+2013-01-01 00:00:00   OK   EWA       rows= 4025  cov=100.0%  
+2013-01-01 00:00:00   OK   EWC       rows= 4025  cov=100.0%  
+2013-01-01 00:00:00   OK   EWG       rows= 4025  cov=100.0%  
+2013-01-01 00:00:00   OK   EWH       rows= 4025  cov=100.0%  
+2013-01-01 00:00:00   OK   EWJ       rows= 4025  cov=100.0%  
+2013-01-01 00:00:00   OK   EWY       rows= 4025  cov=100.0%  
+2013-01-01 00:00:00   OK   EWZ       rows= 4025  cov=100.0%  
+2013-01-01 00:00:00   OK   EWT       rows= 4025  cov=100.0%  
+2013-01-01 00:00:00   OK   EWU       rows= 4025  cov=100.0%  
+2013-01-01 00:00:00   OK   EWI       rows= 4025  cov=100.0%  
+2013-01-01 00:00:00   OK   FXI       rows= 4025  cov=100.0%  
+2013-01-01 00:00:00   OK   THD       rows= 4025  cov=100.0%  
+2013-01-01 00:00:00 ============================================================
+2013-01-01 00:00:00 Effective allocations: SleeveA[ON  60%]  SleeveB[OFF ]  SleeveC[ON  40%] | B fallback=redistribute
+2013-01-02 16:00:00 Algorithm finished warming up.
+2013-01-15 10:00:00 REBAL  2013-01-15  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2013-01-15 10:00:00 SleeveA scores: XLF=0.881, XLB=0.471, XLY=0.443, XLE=0.399, XLK=0.384, XLI=0.316, XLV=0.223
+2013-01-15 10:00:00 SleeveC IBS  long=['EWZ=0.30', 'EWT=0.33']  short=['EWU=0.87', 'EWG=1.00']
+2013-01-30 10:00:00 REBAL  2013-01-30  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2013-01-30 10:00:00 SleeveA scores: XLF=1.391, XLB=0.796, XLK=0.507, XLY=0.457, XLI=0.302, XLE=0.273, XLV=0.231
+2013-01-30 10:00:00 SleeveC IBS  long=['EWI=0.08', 'EWJ=0.33']  short=['EWH=0.90', 'THD=0.93']
+2013-02-13 10:00:00 REBAL  2013-02-13  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2013-02-13 10:00:00 SleeveA scores: XLF=1.692, XLB=1.143, XLY=0.777, XLI=0.402, XLV=0.316, XLE=0.226, XLP=0.224
+2013-02-13 10:00:00 SleeveC IBS  long=['EWA=0.31', 'FXI=0.40']  short=['EWU=0.71', 'EWC=0.79']
+2013-02-28 10:00:00 REBAL  2013-02-28  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2013-02-28 10:00:00 SleeveA scores: XLF=1.635, XLV=0.833, XLY=0.768, XLU=0.634, XLI=0.483, XLE=0.400, XLP=0.353
+2013-02-28 10:00:00 SleeveC IBS  long=['EWT=0.69', 'FXI=0.74']  short=['EWC=0.95', 'EWY=0.97']
+2013-03-14 10:00:00 REBAL  2013-03-14  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2013-03-14 10:00:00 SleeveA scores: XLF=0.909, XLU=0.380, XLI=0.368, XLP=0.366, XLY=0.329, XLB=0.324, XLE=0.312
+2013-03-14 10:00:00 SleeveC IBS  long=['EWC=0.09', 'EWZ=0.19']  short=['EWI=0.79', 'EWY=0.88']
+2013-03-28 10:00:00 REBAL  2013-03-28  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2013-03-28 10:00:00 SleeveA scores: XLF=1.014, XLU=0.767, XLY=0.474, XLI=0.457, XLP=0.357, XLE=0.345, XLV=0.340
+2013-03-28 10:00:00 SleeveC IBS  long=['EWI=0.62', 'THD=0.76']  short=['EWH=1.00', 'FXI=1.00']
+2013-04-12 10:00:00 REBAL  2013-04-12  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2013-04-12 10:00:00 SleeveA scores: XLF=1.698, XLY=0.669, XLI=0.534, XLU=0.472, XLB=0.379, XLE=0.366, XLP=0.292
+2013-04-12 10:00:00 SleeveC IBS  long=['EWU=0.00', 'EWH=0.11']  short=['EWZ=0.40', 'EWY=0.45']
+2013-04-26 10:00:00 REBAL  2013-04-26  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2013-04-26 10:00:00 SleeveA scores: XLF=1.184, XLY=0.694, XLU=0.619, XLP=0.464, XLV=0.346, XLI=0.334, XLB=0.318
+2013-04-26 10:00:00 SleeveC IBS  long=['EWU=0.08', 'EWA=0.23']  short=['EWZ=0.72', 'EWH=0.76']
+2013-05-10 10:00:00 REBAL  2013-05-10  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2013-05-10 10:00:00 SleeveA scores: XLU=0.887, XLP=0.791, XLF=0.774, XLV=0.765, XLY=0.455, XLB=0.306, XLK=0.290
+2013-05-10 10:00:00 SleeveC IBS  long=['EWI=0.15', 'EWY=0.22']  short=['EWU=0.50', 'EWJ=0.57']
+2013-05-24 10:00:00 REBAL  2013-05-24  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2013-05-24 10:00:00 SleeveA scores: XLU=0.844, XLF=0.839, XLP=0.767, XLK=0.546, XLB=0.514, XLY=0.481, XLV=0.391
+2013-05-24 10:00:00 SleeveC IBS  long=['EWH=0.70', 'EWA=0.71']  short=['FXI=0.93', 'EWJ=0.96']
+2013-06-10 10:00:00 REBAL  2013-06-10  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2013-06-10 10:00:00 SleeveA scores: XLF=1.791, XLK=1.233, XLY=0.838, XLB=0.824, XLI=0.567, XLE=0.513, XLV=0.468
+2013-06-10 10:00:00 SleeveC IBS  long=['EWZ=0.47', 'EWT=0.54']  short=['EWU=0.96', 'EWH=0.96']
+2013-06-24 10:00:00 REBAL  2013-06-24  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2013-06-24 10:00:00 SleeveA scores: XLF=1.080, XLY=0.597, XLK=0.408, XLV=0.354, XLI=0.341, XLU=0.325, XLB=0.312
+2013-06-24 10:00:00 SleeveC IBS  long=['EWI=0.33', 'EWG=0.37']  short=['EWZ=0.86', 'EWJ=0.86']
+2013-07-09 10:00:00 REBAL  2013-07-09  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2013-07-09 10:00:00 SleeveA scores: XLF=0.971, XLY=0.500, XLV=0.448, XLU=0.445, XLP=0.392, XLK=0.355, XLE=0.297
+2013-07-09 10:00:00 SleeveC IBS  long=['THD=0.11', 'EWZ=0.11']  short=['EWC=0.71', 'EWI=0.80']
+2013-07-23 10:00:00 REBAL  2013-07-23  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2013-07-23 10:00:00 SleeveA scores: XLF=0.621, XLU=0.395, XLK=0.325, XLY=0.285, XLP=0.262, XLV=0.228, XLE=0.200
+2013-07-23 10:00:00 SleeveC IBS  long=['EWG=0.25', 'EWU=0.45']  short=['EWH=0.88', 'EWJ=0.90']
+2013-08-06 10:00:00 REBAL  2013-08-06  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2013-08-06 10:00:00 SleeveA scores: XLF=1.334, XLY=0.979, XLK=0.919, XLP=0.749, XLU=0.586, XLB=0.373, XLI=0.344
+2013-08-06 10:00:00 SleeveC IBS  long=['EWZ=0.10', 'EWC=0.31']  short=['EWU=0.89', 'EWI=0.92']
+2013-08-20 10:00:00 REBAL  2013-08-20  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2013-08-20 10:00:00 SleeveA scores: XLF=0.639, XLK=0.592, XLY=0.412, XLB=0.325, XLV=0.311, XLI=0.307, XLP=0.202
+2013-08-20 10:00:00 SleeveC IBS  long=['EWC=0.00', 'EWG=0.00']  short=['EWJ=0.17', 'EWU=0.23']
+2013-09-04 10:00:00 REBAL  2013-09-04  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2013-09-04 10:00:00 SleeveA scores: XLF=0.422, XLB=0.409, XLK=0.388, XLY=0.299, XLE=0.239, XLV=0.220, XLI=0.188
+2013-09-04 10:00:00 SleeveC IBS  long=['EWT=0.06', 'FXI=0.08']  short=['EWZ=0.63', 'EWI=0.80']
+2013-09-18 10:00:00 REBAL  2013-09-18  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2013-09-18 10:00:00 SleeveA scores: XLF=0.658, XLK=0.553, XLY=0.413, XLB=0.303, XLV=0.251, XLE=0.207, XLP=0.192
+2013-09-18 10:00:00 SleeveC IBS  long=['EWH=0.07', 'EWT=0.33']  short=['THD=0.84', 'EWJ=0.92']
+2013-10-02 10:00:00 REBAL  2013-10-02  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2013-10-02 10:00:00 SleeveA scores: XLF=0.775, XLK=0.692, XLB=0.475, XLE=0.444, XLY=0.438, XLV=0.250, XLI=0.221
+2013-10-02 10:00:00 SleeveC IBS  long=['EWU=0.44', 'EWJ=0.54']  short=['EWZ=0.98', 'THD=1.00']
+2013-10-16 10:00:00 REBAL  2013-10-16  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2013-10-16 10:00:00 SleeveA scores: XLK=0.850, XLB=0.839, XLF=0.777, XLE=0.610, XLY=0.534, XLI=0.376, XLV=0.210
+2013-10-16 10:00:00 SleeveC IBS  long=['EWY=0.00', 'EWI=0.00']  short=['EWJ=0.60', 'EWC=0.79']
+2013-10-30 10:00:00 REBAL  2013-10-30  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2013-10-30 10:00:00 SleeveA scores: XLF=0.474, XLB=0.417, XLK=0.416, XLY=0.315, XLE=0.272, XLI=0.238, XLV=0.177
+2013-10-30 10:00:00 SleeveC IBS  long=['EWA=0.17', 'EWC=0.25']  short=['EWH=0.87', 'EWU=1.00']
+2013-11-13 10:00:00 REBAL  2013-11-13  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2013-11-13 10:00:00 SleeveA scores: XLB=0.665, XLF=0.555, XLK=0.525, XLE=0.431, XLV=0.359, XLY=0.329, XLI=0.248
+2013-11-13 10:00:00 SleeveC IBS  long=['EWC=0.20', 'EWZ=0.27']  short=['EWT=0.77', 'EWJ=1.00']
+2013-11-27 10:00:00 REBAL  2013-11-27  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2013-11-27 10:00:00 SleeveA scores: XLK=0.841, XLB=0.617, XLY=0.493, XLI=0.364, XLE=0.342, XLF=0.339, XLP=0.321
+2013-11-27 10:00:00 SleeveC IBS  long=['EWC=0.03', 'EWY=0.32']  short=['EWG=0.80', 'EWI=1.00']
+2013-12-12 10:00:00 REBAL  2013-12-12  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2013-12-12 10:00:00 SleeveA scores: XLK=0.859, XLB=0.790, XLY=0.759, XLF=0.578, XLI=0.544, XLP=0.495, XLE=0.305
+2013-12-12 10:00:00 SleeveC IBS  long=['EWC=0.00', 'EWG=0.00']  short=['EWH=0.26', 'FXI=0.30']
+2013-12-27 10:00:00 REBAL  2013-12-27  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2013-12-27 10:00:00 SleeveA scores: XLK=0.946, XLF=0.757, XLB=0.744, XLY=0.646, XLE=0.518, XLP=0.381, XLI=0.345
+2013-12-27 10:00:00 SleeveC IBS  long=['EWH=0.00', 'EWY=0.05']  short=['EWA=1.00', 'EWJ=1.00']
+2014-01-13 10:00:00 REBAL  2014-01-13  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2014-01-13 10:00:00 SleeveA scores: XLK=0.526, XLB=0.489, XLF=0.426, XLY=0.335, XLI=0.263, XLE=0.218, XLV=0.199
+2014-01-13 10:00:00 SleeveC IBS  long=['EWY=0.51', 'THD=0.57']  short=['EWI=0.88', 'EWJ=0.89']
+2014-01-28 10:00:00 REBAL  2014-01-28  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2014-01-28 10:00:00 SleeveA scores: XLK=0.750, XLB=0.349, XLI=0.233, XLY=0.170, XLF=0.137, XLV=0.133, XLE=0.062
+2014-01-28 10:00:00 SleeveC IBS  long=['EWC=0.08', 'FXI=0.16']  short=['EWA=0.59', 'EWZ=0.61']
+2014-02-11 10:00:00 REBAL  2014-02-11  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2014-02-11 10:00:00 SleeveA scores: XLK=0.412, XLB=0.256, XLV=0.191, XLF=0.171, XLU=0.156, XLY=0.131, XLI=0.125
+2014-02-11 10:00:00 SleeveC IBS  long=['THD=0.19', 'EWH=0.27']  short=['EWG=0.75', 'EWU=0.75']
+2014-02-26 10:00:00 REBAL  2014-02-26  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2014-02-26 10:00:00 SleeveA scores: XLK=0.421, XLF=0.384, XLU=0.339, XLB=0.322, XLY=0.239, XLI=0.212, XLV=0.164
+2014-02-26 10:00:00 SleeveC IBS  long=['EWT=0.07', 'EWH=0.12']  short=['EWJ=0.40', 'EWI=0.58']
+2014-03-12 10:00:00 REBAL  2014-03-12  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2014-03-12 10:00:00 SleeveA scores: XLK=1.330, XLU=0.959, XLF=0.558, XLB=0.454, XLV=0.325, XLY=0.310, XLI=0.306
+2014-03-12 10:00:00 SleeveC IBS  long=['EWT=0.05', 'EWY=0.09']  short=['EWU=0.26', 'EWH=0.29']
+2014-03-26 10:00:00 REBAL  2014-03-26  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2014-03-26 10:00:00 SleeveA scores: XLK=1.177, XLB=0.860, XLU=0.642, XLF=0.581, XLE=0.361, XLI=0.339, XLP=0.309
+2014-03-26 10:00:00 SleeveC IBS  long=['EWJ=0.17', 'EWH=0.40']  short=['EWI=0.85', 'EWC=0.85']
+2014-04-09 10:00:00 REBAL  2014-04-09  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2014-04-09 10:00:00 SleeveA scores: XLU=0.928, XLK=0.863, XLF=0.776, XLB=0.773, XLP=0.538, XLI=0.307, XLV=0.233
+2014-04-09 10:00:00 SleeveC IBS  long=['EWY=0.13', 'FXI=0.14']  short=['EWA=0.89', 'EWC=0.91']
+2014-04-24 10:00:00 REBAL  2014-04-24  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2014-04-24 10:00:00 SleeveA scores: XLU=0.631, XLB=0.491, XLK=0.488, XLF=0.324, XLP=0.276, XLI=0.214, XLE=0.161
+2014-04-24 10:00:00 SleeveC IBS  long=['EWC=0.08', 'EWG=0.21']  short=['EWU=0.86', 'EWA=0.88']
+2014-05-08 10:00:00 REBAL  2014-05-08  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2014-05-08 10:00:00 SleeveA scores: XLU=0.713, XLB=0.536, XLK=0.531, XLF=0.511, XLE=0.169, XLI=0.168, XLP=0.164
+2014-05-08 10:00:00 SleeveC IBS  long=['EWI=0.53', 'FXI=0.70']  short=['EWY=0.94', 'EWH=1.00']
+2014-05-22 10:00:00 REBAL  2014-05-22  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2014-05-22 10:00:00 SleeveA scores: XLK=0.701, XLE=0.605, XLB=0.576, XLF=0.494, XLU=0.354, XLV=0.316, XLI=0.234
+2014-05-22 10:00:00 SleeveC IBS  long=['EWZ=0.28', 'EWH=0.44']  short=['EWA=1.00', 'EWC=1.00']
+2014-06-06 10:00:00 REBAL  2014-06-06  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2014-06-06 10:00:00 SleeveA scores: XLU=0.922, XLB=0.652, XLE=0.493, XLF=0.461, XLK=0.453, XLP=0.270, XLI=0.249
+2014-06-06 10:00:00 SleeveC IBS  long=['THD=0.20', 'EWZ=0.32']  short=['EWG=1.00', 'EWT=1.00']
+2014-06-20 10:00:00 REBAL  2014-06-20  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2014-06-20 10:00:00 SleeveA scores: XLU=1.024, XLB=0.783, XLK=0.781, XLF=0.489, XLV=0.416, XLP=0.371, XLE=0.321
+2014-06-20 10:00:00 SleeveC IBS  long=['EWG=0.13', 'EWZ=0.31']  short=['EWJ=1.00', 'EWT=1.00']
+2014-07-07 10:00:00 REBAL  2014-07-07  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2014-07-07 10:00:00 SleeveA scores: XLK=0.869, XLF=0.743, XLB=0.734, XLU=0.638, XLP=0.412, XLE=0.325, XLI=0.228
+2014-07-07 10:00:00 SleeveC IBS  long=['EWT=0.50', 'EWI=0.50']  short=['EWY=0.97', 'EWJ=1.00']
+2014-07-21 10:00:00 REBAL  2014-07-21  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2014-07-21 10:00:00 SleeveA scores: XLB=1.316, XLU=0.760, XLE=0.693, XLF=0.674, XLK=0.556, XLP=0.442, XLI=0.204
+2014-07-21 10:00:00 SleeveC IBS  long=['EWT=0.13', 'FXI=0.23']  short=['EWY=0.87', 'EWI=0.91']
+2014-08-04 10:00:00 REBAL  2014-08-04  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2014-08-04 10:00:00 SleeveA scores: XLB=0.744, XLK=0.710, XLF=0.497, XLU=0.467, XLE=0.444, XLV=0.258, XLY=0.219
+2014-08-04 10:00:00 SleeveC IBS  long=['EWJ=0.14', 'EWI=0.19']  short=['THD=0.70', 'EWZ=0.78']
+2014-08-18 10:00:00 REBAL  2014-08-18  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2014-08-18 10:00:00 SleeveA scores: XLK=0.498, XLB=0.445, XLF=0.279, XLE=0.220, XLU=0.219, XLP=0.186, XLY=0.128
+2014-08-18 10:00:00 SleeveC IBS  long=['EWY=0.29', 'THD=0.35']  short=['EWZ=0.87', 'EWC=0.87']
+2014-09-02 10:00:00 REBAL  2014-09-02  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2014-09-02 10:00:00 SleeveA scores: XLK=0.477, XLE=0.428, XLB=0.351, XLU=0.350, XLF=0.342, XLP=0.199, XLY=0.087
+2014-09-02 10:00:00 SleeveC IBS  long=['FXI=0.05', 'THD=0.24']  short=['EWU=0.90', 'EWZ=0.94']
+2014-09-16 10:00:00 REBAL  2014-09-16  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2014-09-16 10:00:00 SleeveA scores: XLK=1.600, XLB=0.676, XLF=0.559, XLP=0.490, XLI=0.343, XLU=0.327, XLY=0.214
+2014-09-16 10:00:00 SleeveC IBS  long=['EWH=0.19', 'FXI=0.19']  short=['EWZ=0.85', 'EWJ=1.00']
+2014-09-30 10:00:00 REBAL  2014-09-30  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2014-09-30 10:00:00 SleeveA scores: XLK=1.023, XLB=0.582, XLF=0.488, XLP=0.398, XLV=0.278, XLU=0.232, XLY=0.154
+2014-09-30 10:00:00 SleeveC IBS  long=['EWZ=0.18', 'EWA=0.37']  short=['EWI=0.93', 'EWT=1.00']
+2014-10-14 10:00:00 REGIME FLIP → DEFENSIVE  [2014-10-14]
+2014-10-14 10:00:00 REBAL  2014-10-14  regime=defensive  SPY_above_SMA=False  VXX_calm=N/A(not_ready)  → DEFENSIVE
+2014-10-14 10:00:00 SleeveA scores: XLP=0.302, XLU=0.289, XLF=0.233, XLK=0.220, XLV=0.150, XLY=0.025, XLI=-0.022
+2014-10-14 10:00:00 SleeveC IBS  long=['EWH=0.00', 'EWJ=0.00']  short=['EWT=0.08', 'EWZ=0.49']
+2014-10-21 10:00:00 REGIME FLIP → EQUITY  [2014-10-21]
+2014-10-28 10:00:00 REBAL  2014-10-28  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2014-10-28 10:00:00 SleeveA scores: XLF=0.258, XLK=0.251, XLU=0.194, XLP=0.160, XLV=0.108, XLY=0.095, XLI=0.029
+2014-10-28 10:00:00 SleeveC IBS  long=['EWI=0.35', 'EWA=0.37']  short=['THD=0.92', 'EWT=1.00']
+2014-11-11 10:00:00 REBAL  2014-11-11  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2014-11-11 10:00:00 SleeveA scores: XLU=0.307, XLF=0.223, XLK=0.220, XLP=0.109, XLY=0.084, XLV=0.077, XLB=0.044
+2014-11-11 10:00:00 SleeveC IBS  long=['EWY=0.00', 'FXI=0.06']  short=['EWI=0.75', 'EWJ=0.80']
+2014-11-25 10:00:00 REBAL  2014-11-25  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2014-11-25 10:00:00 SleeveA scores: XLF=0.630, XLU=0.494, XLK=0.470, XLV=0.271, XLY=0.197, XLP=0.197, XLB=0.123
+2014-11-25 10:00:00 SleeveC IBS  long=['EWZ=0.05', 'EWH=0.09']  short=['EWT=1.00', 'EWU=1.00']
+2014-12-10 10:00:00 REBAL  2014-12-10  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2014-12-10 10:00:00 SleeveA scores: XLU=0.809, XLK=0.595, XLF=0.581, XLP=0.299, XLV=0.196, XLY=0.152, XLI=0.108
+2014-12-10 10:00:00 SleeveC IBS  long=['EWI=0.42', 'EWU=0.63']  short=['EWT=0.93', 'EWH=1.00']
+2014-12-24 10:00:00 REBAL  2014-12-24  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2014-12-24 10:00:00 SleeveA scores: XLF=0.463, XLU=0.457, XLK=0.361, XLP=0.278, XLY=0.232, XLV=0.150, XLI=0.087
+2014-12-24 10:00:00 SleeveC IBS  long=['EWJ=0.25', 'EWY=0.26']  short=['EWZ=0.82', 'EWC=0.83']
+2015-01-09 10:00:00 REBAL  2015-01-09  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2015-01-09 10:00:00 SleeveA scores: XLU=0.328, XLF=0.307, XLK=0.230, XLV=0.211, XLP=0.198, XLY=0.139, XLI=0.058
+2015-01-09 10:00:00 SleeveC IBS  long=['EWT=0.25', 'EWH=0.40']  short=['EWA=0.78', 'EWJ=0.80']
+2015-01-26 10:00:00 REBAL  2015-01-26  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2015-01-26 10:00:00 SleeveA scores: XLU=0.640, XLP=0.288, XLV=0.194, XLK=0.182, XLY=0.116, XLF=0.110, XLI=0.059
+2015-01-26 10:00:00 SleeveC IBS  long=['EWG=0.00', 'EWU=0.07']  short=['THD=0.31', 'FXI=0.33']
+2015-02-09 10:00:00 REBAL  2015-02-09  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2015-02-09 10:00:00 SleeveA scores: XLU=0.637, XLF=0.478, XLP=0.417, XLK=0.380, XLV=0.342, XLY=0.243, XLI=0.201
+2015-02-09 10:00:00 SleeveC IBS  long=['FXI=0.11', 'EWG=0.19']  short=['EWZ=0.58', 'EWH=0.60']
+2015-02-24 10:00:00 REBAL  2015-02-24  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2015-02-24 10:00:00 SleeveA scores: XLP=0.354, XLV=0.208, XLF=0.208, XLU=0.196, XLK=0.182, XLY=0.135, XLI=0.095
+2015-02-24 10:00:00 SleeveC IBS  long=['EWH=0.17', 'FXI=0.24']  short=['EWI=0.70', 'EWJ=0.80']
+2015-03-10 10:00:00 REBAL  2015-03-10  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2015-03-10 10:00:00 SleeveA scores: XLF=0.567, XLP=0.329, XLK=0.262, XLY=0.215, XLV=0.147, XLI=0.118, XLU=0.045
+2015-03-10 10:00:00 SleeveC IBS  long=['EWC=0.00', 'EWT=0.00']  short=['EWI=0.69', 'EWG=0.76']
+2015-03-24 10:00:00 REBAL  2015-03-24  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2015-03-24 10:00:00 SleeveA scores: XLY=0.415, XLF=0.326, XLU=0.251, XLK=0.243, XLP=0.197, XLV=0.164, XLI=0.096
+2015-03-24 10:00:00 SleeveC IBS  long=['FXI=0.39', 'EWJ=0.50']  short=['EWT=0.75', 'EWZ=0.88']
+2015-04-08 10:00:00 REBAL  2015-04-08  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2015-04-08 10:00:00 SleeveA scores: XLY=0.441, XLK=0.330, XLP=0.291, XLU=0.284, XLF=0.264, XLB=0.168, XLI=0.138
+2015-04-08 10:00:00 SleeveC IBS  long=['EWU=0.00', 'EWG=0.03']  short=['EWH=0.56', 'THD=0.71']
+2015-04-22 10:00:00 REBAL  2015-04-22  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2015-04-22 10:00:00 SleeveA scores: XLF=0.948, XLK=0.888, XLY=0.765, XLP=0.464, XLU=0.429, XLB=0.390, XLV=0.346
+2015-04-22 10:00:00 SleeveC IBS  long=['EWY=0.04', 'THD=0.13']  short=['EWG=0.61', 'EWI=0.62']
+2015-05-06 10:00:00 REBAL  2015-05-06  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2015-05-06 10:00:00 SleeveA scores: XLY=0.530, XLF=0.416, XLB=0.249, XLK=0.232, XLP=0.198, XLV=0.130, XLI=0.068
+2015-05-06 10:00:00 SleeveC IBS  long=['THD=0.00', 'EWY=0.07']  short=['EWA=0.33', 'EWZ=0.51']
+2015-05-20 10:00:00 REBAL  2015-05-20  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2015-05-20 10:00:00 SleeveA scores: XLY=0.474, XLK=0.308, XLF=0.301, XLB=0.231, XLP=0.175, XLV=0.155, XLI=0.062
+2015-05-20 10:00:00 SleeveC IBS  long=['EWZ=0.24', 'EWY=0.32']  short=['EWT=0.89', 'THD=0.95']
+2015-06-04 10:00:00 REBAL  2015-06-04  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2015-06-04 10:00:00 SleeveA scores: XLB=0.449, XLY=0.442, XLF=0.304, XLK=0.227, XLV=0.103, XLI=0.040, XLP=0.024
+2015-06-04 10:00:00 SleeveC IBS  long=['EWU=0.13', 'EWZ=0.20']  short=['EWT=0.80', 'EWH=1.00']
+2015-06-18 10:00:00 REBAL  2015-06-18  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2015-06-18 10:00:00 SleeveA scores: XLY=0.741, XLB=0.562, XLF=0.494, XLK=0.350, XLV=0.313, XLE=0.195, XLP=0.076
+2015-06-18 10:00:00 SleeveC IBS  long=['EWI=0.52', 'FXI=0.55']  short=['EWJ=0.86', 'EWU=0.87']
+2015-07-02 10:00:00 REBAL  2015-07-02  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2015-07-02 10:00:00 SleeveA scores: XLY=0.221, XLV=0.131, XLK=0.026, XLB=0.001, XLF=-0.015, XLP=-0.016, XLI=-0.083
+2015-07-02 10:00:00 SleeveC IBS  long=['EWZ=0.03', 'EWY=0.14']  short=['EWI=0.43', 'EWH=0.73']
+2015-07-17 10:00:00 REBAL  2015-07-17  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2015-07-17 10:00:00 SleeveA scores: XLF=0.411, XLY=0.381, XLK=0.225, XLV=0.147, XLP=0.080, XLB=0.060, XLI=0.024
+2015-07-17 10:00:00 SleeveC IBS  long=['EWG=0.10', 'EWA=0.13']  short=['EWT=0.82', 'FXI=0.94']
+2015-07-31 10:00:00 REBAL  2015-07-31  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2015-07-31 10:00:00 SleeveA scores: XLF=0.342, XLY=0.305, XLK=0.200, XLV=0.103, XLP=0.077, XLI=-0.023, XLB=-0.065
+2015-07-31 10:00:00 SleeveC IBS  long=['EWZ=0.20', 'EWU=0.64']  short=['EWH=0.94', 'THD=0.94']
+2015-08-14 10:00:00 REBAL  2015-08-14  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2015-08-14 10:00:00 SleeveA scores: XLF=0.316, XLY=0.190, XLV=0.113, XLP=0.094, XLK=0.022, XLU=0.010, XLI=-0.091
+2015-08-14 10:00:00 SleeveC IBS  long=['EWZ=0.06', 'FXI=0.15']  short=['EWA=0.78', 'EWJ=0.83']
+2015-08-21 10:00:00 REGIME FLIP → DEFENSIVE  [2015-08-21]
+2015-08-28 10:00:00 REBAL  2015-08-28  regime=defensive  SPY_above_SMA=False  VXX_calm=N/A(not_ready)  → DEFENSIVE
+2015-08-28 10:00:00 SleeveA scores: XLV=0.003, XLY=0.001, XLF=-0.027, XLP=-0.029, XLI=-0.065, XLU=-0.071, XLK=-0.077
+2015-08-28 10:00:00 SleeveC IBS  long=['EWU=0.70', 'EWH=0.73']  short=['THD=0.94', 'EWA=0.95']
+2015-09-14 10:00:00 REBAL  2015-09-14  regime=defensive  SPY_above_SMA=False  VXX_calm=N/A(not_ready)  → DEFENSIVE
+2015-09-14 10:00:00 SleeveA scores: XLY=0.011, XLV=-0.005, XLP=-0.012, XLK=-0.028, XLU=-0.045, XLI=-0.055, XLF=-0.067
+2015-09-14 10:00:00 SleeveC IBS  long=['EWZ=0.29', 'EWC=0.63']  short=['EWU=1.00', 'THD=1.00']
+2015-09-28 10:00:00 REBAL  2015-09-28  regime=defensive  SPY_above_SMA=False  VXX_calm=N/A(not_ready)  → DEFENSIVE
+2015-09-28 10:00:00 SleeveA scores: XLY=0.011, XLU=-0.034, XLP=-0.037, XLV=-0.078, XLK=-0.133, XLI=-0.155, XLF=-0.194
+2015-09-28 10:00:00 SleeveC IBS  long=['FXI=0.08', 'EWZ=0.08']  short=['EWU=0.40', 'EWJ=0.47']
+2015-10-12 10:00:00 REBAL  2015-10-12  regime=defensive  SPY_above_SMA=False  VXX_calm=N/A(not_ready)  → DEFENSIVE
+2015-10-12 10:00:00 SleeveA scores: XLY=0.042, XLU=0.031, XLP=0.024, XLK=-0.008, XLV=-0.037, XLI=-0.041, XLE=-0.132
+2015-10-12 10:00:00 SleeveC IBS  long=['EWT=0.12', 'EWY=0.17']  short=['EWG=0.87', 'EWI=1.00']
+2015-10-26 10:00:00 REGIME FLIP → EQUITY  [2015-10-26]
+2015-10-26 10:00:00 REBAL  2015-10-26  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2015-10-26 10:00:00 SleeveA scores: XLU=0.063, XLP=0.056, XLY=0.047, XLK=0.041, XLF=0.023, XLI=-0.014, XLV=-0.037
+2015-10-26 10:00:00 SleeveC IBS  long=['EWZ=0.15', 'EWC=0.33']  short=['EWG=0.76', 'EWH=0.81']
+2015-11-09 10:00:00 REBAL  2015-11-09  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2015-11-09 10:00:00 SleeveA scores: XLY=0.115, XLK=0.092, XLP=0.040, XLF=0.034, XLV=-0.012, XLI=-0.025, XLU=-0.067
+2015-11-09 10:00:00 SleeveC IBS  long=['EWJ=0.44', 'EWC=0.52']  short=['EWY=0.98', 'THD=1.00']
+2015-11-16 10:00:00 REGIME FLIP → DEFENSIVE  [2015-11-16]
+2015-11-23 10:00:00 REGIME FLIP → EQUITY  [2015-11-23]
+2015-11-23 10:00:00 REBAL  2015-11-23  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2015-11-23 10:00:00 SleeveA scores: XLK=0.171, XLY=0.158, XLF=0.080, XLP=0.029, XLU=-0.009, XLI=-0.016, XLV=-0.038
+2015-11-23 10:00:00 SleeveC IBS  long=['EWA=0.00', 'EWU=0.00']  short=['EWJ=0.50', 'FXI=0.59']
+2015-12-08 10:00:00 REBAL  2015-12-08  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2015-12-08 10:00:00 SleeveA scores: XLK=0.247, XLU=0.195, XLY=0.154, XLP=0.143, XLF=0.021, XLI=-0.025, XLV=-0.044
+2015-12-08 10:00:00 SleeveC IBS  long=['EWZ=0.08', 'EWC=0.13']  short=['EWJ=0.75', 'EWG=0.84']
+2015-12-15 10:00:00 REGIME FLIP → DEFENSIVE  [2015-12-15]
+2015-12-22 10:00:00 REBAL  2015-12-22  regime=defensive  SPY_above_SMA=False  VXX_calm=N/A(not_ready)  → DEFENSIVE
+2015-12-22 10:00:00 SleeveA scores: XLU=0.163, XLP=0.111, XLK=0.008, XLY=0.003, XLI=-0.070, XLV=-0.120, XLF=-0.192
+2015-12-22 10:00:00 SleeveC IBS  long=['EWZ=0.25', 'EWC=0.29']  short=['THD=0.83', 'EWY=0.88']
+2015-12-30 10:00:00 REGIME FLIP → EQUITY  [2015-12-30]
+2016-01-07 10:00:00 REGIME FLIP → DEFENSIVE  [2016-01-07]
+2016-01-07 10:00:00 REBAL  2016-01-07  regime=defensive  SPY_above_SMA=False  VXX_calm=N/A(not_ready)  → DEFENSIVE
+2016-01-07 10:00:00 SleeveA scores: XLK=0.100, XLP=0.097, XLU=0.089, XLY=0.009, XLI=-0.047, XLV=-0.054, XLF=-0.146
+2016-01-07 10:00:00 SleeveC IBS  long=['THD=0.16', 'EWC=0.24']  short=['EWJ=0.70', 'EWG=0.83']
+2016-01-22 10:00:00 REBAL  2016-01-22  regime=defensive  SPY_above_SMA=False  VXX_calm=N/A(not_ready)  → DEFENSIVE
+2016-01-22 10:00:00 SleeveA scores: XLU=0.205, XLP=-0.028, XLI=-0.058, XLV=-0.063, XLY=-0.067, XLK=-0.098, XLB=-0.182
+2016-01-22 10:00:00 SleeveC IBS  long=['EWZ=0.05', 'EWH=0.45']  short=['EWA=0.80', 'EWC=0.86']
+2016-02-05 10:00:00 REBAL  2016-02-05  regime=defensive  SPY_above_SMA=False  VXX_calm=N/A(not_ready)  → DEFENSIVE
+2016-02-05 10:00:00 SleeveA scores: XLU=0.199, XLP=-0.015, XLI=-0.091, XLK=-0.123, XLY=-0.173, XLV=-0.182, XLB=-0.226
+2016-02-05 10:00:00 SleeveC IBS  long=['EWY=0.25', 'EWA=0.28']  short=['EWG=0.69', 'EWI=0.93']
+2016-02-22 10:00:00 REBAL  2016-02-22  regime=defensive  SPY_above_SMA=False  VXX_calm=N/A(not_ready)  → DEFENSIVE
+2016-02-22 10:00:00 SleeveA scores: XLP=0.086, XLU=0.071, XLI=-0.048, XLK=-0.073, XLY=-0.084, XLV=-0.115, XLB=-0.168
+2016-02-22 10:00:00 SleeveC IBS  long=['EWT=0.00', 'EWY=0.13']  short=['EWA=0.94', 'EWU=1.00']
+2016-03-07 10:00:00 REBAL  2016-03-07  regime=defensive  SPY_above_SMA=False  VXX_calm=N/A(not_ready)  → DEFENSIVE
+2016-03-07 10:00:00 SleeveA scores: XLU=0.943, XLP=0.203, XLK=0.136, XLB=0.065, XLI=0.055, XLY=0.029, XLV=-0.025
+2016-03-07 10:00:00 SleeveC IBS  long=['EWG=0.22', 'EWU=0.41']  short=['EWH=0.87', 'EWY=0.94']
+2016-03-14 10:00:00 REGIME FLIP → EQUITY  [2016-03-14]
+2016-03-21 10:00:00 REBAL  2016-03-21  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2016-03-21 10:00:00 SleeveA scores: XLU=0.468, XLP=0.244, XLK=0.204, XLB=0.130, XLI=0.089, XLY=0.042, XLE=-0.005
+2016-03-21 10:00:00 SleeveC IBS  long=['EWH=0.08', 'EWC=0.13']  short=['EWY=0.70', 'EWZ=0.95']
+2016-04-05 10:00:00 REBAL  2016-04-05  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2016-04-05 10:00:00 SleeveA scores: XLU=0.641, XLB=0.395, XLK=0.344, XLP=0.342, XLI=0.141, XLY=0.121, XLV=0.073
+2016-04-05 10:00:00 SleeveC IBS  long=['EWY=0.02', 'EWZ=0.03']  short=['EWA=0.29', 'EWJ=0.50']
+2016-04-19 10:00:00 REBAL  2016-04-19  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2016-04-19 10:00:00 SleeveA scores: XLU=0.814, XLK=0.433, XLRE=0.365, XLP=0.310, XLB=0.264, XLI=0.183, XLY=0.113
+2016-04-19 10:00:00 SleeveC IBS  long=['EWZ=0.16', 'FXI=0.64']  short=['EWC=0.95', 'EWJ=1.00']
+2016-05-03 10:00:00 REBAL  2016-05-03  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2016-05-03 10:00:00 SleeveA scores: XLU=0.627, XLRE=0.196, XLP=0.153, XLB=0.120, XLI=0.080, XLE=0.017, XLY=0.006
+2016-05-03 10:00:00 SleeveC IBS  long=['EWC=0.27', 'FXI=0.43']  short=['EWY=0.88', 'EWA=1.00']
+2016-05-17 10:00:00 REBAL  2016-05-17  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2016-05-17 10:00:00 SleeveA scores: XLU=0.620, XLB=0.312, XLRE=0.302, XLP=0.253, XLI=0.112, XLE=0.039, XLV=0.017
+2016-05-17 10:00:00 SleeveC IBS  long=['EWZ=0.21', 'THD=0.26']  short=['EWA=0.88', 'EWU=0.89']
+2016-06-01 10:00:00 REBAL  2016-06-01  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2016-06-01 10:00:00 SleeveA scores: XLU=0.865, XLB=0.179, XLRE=0.164, XLP=0.155, XLI=0.078, XLK=0.052, XLE=0.011
+2016-06-01 10:00:00 SleeveC IBS  long=['EWY=0.08', 'EWU=0.10']  short=['EWH=0.59', 'FXI=0.87']
+2016-06-15 10:00:00 REBAL  2016-06-15  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2016-06-15 10:00:00 SleeveA scores: XLU=0.655, XLE=0.362, XLRE=0.336, XLB=0.267, XLP=0.203, XLI=0.136, XLK=0.092
+2016-06-15 10:00:00 SleeveC IBS  long=['EWC=0.16', 'EWT=0.27']  short=['EWJ=0.82', 'FXI=0.85']
+2016-06-29 10:00:00 REBAL  2016-06-29  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2016-06-29 10:00:00 SleeveA scores: XLU=0.929, XLRE=0.348, XLE=0.305, XLP=0.243, XLB=0.083, XLI=0.030, XLV=-0.029
+2016-06-29 10:00:00 SleeveC IBS  long=['EWH=0.73', 'EWG=0.78']  short=['EWT=1.00', 'EWU=1.00']
+2016-07-14 10:00:00 REBAL  2016-07-14  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2016-07-14 10:00:00 SleeveA scores: XLE=0.731, XLU=0.622, XLB=0.544, XLK=0.301, XLRE=0.291, XLF=0.185, XLP=0.183
+2016-07-14 10:00:00 SleeveC IBS  long=['EWA=0.00', 'EWG=0.16']  short=['EWJ=0.80', 'EWZ=0.97']
+2016-07-28 10:00:00 REBAL  2016-07-28  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2016-07-28 10:00:00 SleeveA scores: XLU=1.258, XLE=0.795, XLRE=0.673, XLB=0.589, XLF=0.413, XLK=0.393, XLP=0.309
+2016-07-28 10:00:00 SleeveC IBS  long=['EWJ=0.50', 'EWI=0.56']  short=['EWA=0.78', 'EWG=0.79']
+2016-08-11 10:00:00 REBAL  2016-08-11  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2016-08-11 10:00:00 SleeveA scores: XLB=2.853, XLF=1.570, XLRE=1.423, XLY=1.274, XLK=0.751, XLE=0.693, XLI=0.624
+2016-08-11 10:00:00 SleeveC IBS  long=['EWA=0.06', 'EWC=0.09']  short=['EWH=0.44', 'EWY=0.65']
+2016-08-25 10:00:00 REBAL  2016-08-25  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2016-08-25 10:00:00 SleeveA scores: XLB=1.870, XLF=1.072, XLK=0.988, XLRE=0.530, XLY=0.500, XLE=0.471, XLP=0.451
+2016-08-25 10:00:00 SleeveC IBS  long=['EWI=0.00', 'EWU=0.15']  short=['EWT=0.91', 'EWY=0.91']
+2016-09-09 10:00:00 REBAL  2016-09-09  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2016-09-09 10:00:00 SleeveA scores: XLK=1.427, XLB=1.363, XLI=0.894, XLRE=0.776, XLF=0.760, XLE=0.685, XLU=0.297
+2016-09-09 10:00:00 SleeveC IBS  long=['EWA=0.05', 'EWY=0.10']  short=['FXI=0.66', 'EWI=0.87']
+2016-09-23 10:00:00 REBAL  2016-09-23  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2016-09-23 10:00:00 SleeveA scores: XLK=0.563, XLF=0.451, XLE=0.330, XLB=0.214, XLU=0.213, XLV=0.208, XLRE=0.165
+2016-09-23 10:00:00 SleeveC IBS  long=['EWG=0.09', 'EWC=0.09']  short=['EWH=0.63', 'THD=0.64']
+2016-10-07 10:00:00 REBAL  2016-10-07  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2016-10-07 10:00:00 SleeveA scores: XLF=0.790, XLB=0.543, XLK=0.425, XLE=0.326, XLI=0.145, XLY=0.114, XLV=0.093
+2016-10-07 10:00:00 SleeveC IBS  long=['EWI=0.13', 'EWG=0.40']  short=['EWY=0.95', 'EWU=1.00']
+2016-10-21 10:00:00 REBAL  2016-10-21  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2016-10-21 10:00:00 SleeveA scores: XLK=1.119, XLF=0.233, XLE=0.160, XLU=0.082, XLI=0.055, XLP=0.037, XLB=0.036
+2016-10-21 10:00:00 SleeveC IBS  long=['EWT=0.25', 'EWY=0.27']  short=['EWH=0.82', 'EWZ=0.82']
+2016-11-04 10:00:00 REBAL  2016-11-04  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2016-11-04 10:00:00 SleeveA scores: XLK=0.599, XLF=0.424, XLE=0.180, XLI=0.102, XLB=0.090, XLU=0.008, XLV=-0.028
+2016-11-04 10:00:00 SleeveC IBS  long=['EWA=0.00', 'EWU=0.06']  short=['EWI=0.50', 'EWJ=0.57']
+2016-11-18 10:00:00 REBAL  2016-11-18  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2016-11-18 10:00:00 SleeveA scores: XLK=0.490, XLE=0.234, XLF=0.218, XLB=0.161, XLY=0.101, XLI=0.076, XLV=0.014
+2016-11-18 10:00:00 SleeveC IBS  long=['EWY=0.09', 'EWC=0.16']  short=['EWI=0.83', 'EWJ=0.95']
+2016-12-05 10:00:00 REBAL  2016-12-05  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2016-12-05 10:00:00 SleeveA scores: XLK=0.249, XLF=0.245, XLE=0.181, XLB=0.123, XLI=0.085, XLY=0.045, XLV=-0.053
+2016-12-05 10:00:00 SleeveC IBS  long=['THD=0.24', 'FXI=0.30']  short=['EWA=0.83', 'EWJ=0.95']
+2016-12-19 10:00:00 REBAL  2016-12-19  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2016-12-19 10:00:00 SleeveA scores: XLF=0.558, XLK=0.402, XLE=0.211, XLI=0.202, XLB=0.201, XLY=0.142, XLV=-0.009
+2016-12-19 10:00:00 SleeveC IBS  long=['EWZ=0.13', 'FXI=0.24']  short=['THD=0.70', 'EWY=0.71']
+2017-01-04 10:00:00 REBAL  2017-01-04  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2017-01-04 10:00:00 SleeveA scores: XLF=1.707, XLE=0.775, XLB=0.677, XLK=0.512, XLI=0.389, XLY=0.173, XLV=-0.043
+2017-01-04 10:00:00 SleeveC IBS  long=['FXI=0.37', 'THD=0.37']  short=['EWJ=0.92', 'EWY=0.96']
+2017-01-19 10:00:00 REBAL  2017-01-19  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2017-01-19 10:00:00 SleeveA scores: XLF=1.402, XLK=0.676, XLE=0.388, XLB=0.381, XLI=0.357, XLY=0.133, XLV=-0.053
+2017-01-19 10:00:00 SleeveC IBS  long=['EWH=0.00', 'EWZ=0.04']  short=['EWG=0.47', 'EWJ=0.61']
+2017-02-02 10:00:00 REBAL  2017-02-02  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2017-02-02 10:00:00 SleeveA scores: XLF=1.237, XLK=0.436, XLE=0.356, XLB=0.264, XLI=0.240, XLY=0.187, XLV=-0.081
+2017-02-02 10:00:00 SleeveC IBS  long=['EWH=0.07', 'FXI=0.24']  short=['EWC=0.70', 'THD=0.78']
+2017-02-16 10:00:00 REBAL  2017-02-16  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2017-02-16 10:00:00 SleeveA scores: XLF=0.837, XLK=0.403, XLB=0.361, XLE=0.223, XLY=0.205, XLI=0.204, XLU=0.060
+2017-02-16 10:00:00 SleeveC IBS  long=['THD=0.71', 'EWJ=0.86']  short=['EWY=0.96', 'EWT=0.97']
+2017-03-03 10:00:00 REBAL  2017-03-03  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2017-03-03 10:00:00 SleeveA scores: XLF=0.583, XLB=0.527, XLK=0.363, XLU=0.188, XLY=0.186, XLE=0.181, XLI=0.149
+2017-03-03 10:00:00 SleeveC IBS  long=['EWC=0.00', 'EWT=0.00']  short=['EWU=0.25', 'THD=0.32']
+2017-03-17 10:00:00 REBAL  2017-03-17  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2017-03-17 10:00:00 SleeveA scores: XLF=1.841, XLB=0.959, XLK=0.913, XLY=0.822, XLI=0.536, XLU=0.280, XLP=0.269
+2017-03-17 10:00:00 SleeveC IBS  long=['EWJ=0.04', 'EWC=0.10']  short=['THD=0.94', 'EWI=0.97']
+2017-03-31 10:00:00 REBAL  2017-03-31  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2017-03-31 10:00:00 SleeveA scores: XLK=0.966, XLB=0.849, XLF=0.563, XLY=0.480, XLI=0.327, XLP=0.276, XLU=0.203
+2017-03-31 10:00:00 SleeveC IBS  long=['EWA=0.00', 'EWU=0.00']  short=['FXI=0.67', 'EWH=0.83']
+2017-04-17 10:00:00 REBAL  2017-04-17  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2017-04-17 10:00:00 SleeveA scores: XLU=1.132, XLK=0.836, XLB=0.756, XLF=0.671, XLP=0.439, XLY=0.395, XLI=0.377
+2017-04-17 10:00:00 SleeveC IBS  long=['EWA=0.00', 'EWC=0.00']  short=['EWJ=0.20', 'EWI=0.35']
+2017-05-01 10:00:00 REBAL  2017-05-01  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2017-05-01 10:00:00 SleeveA scores: XLU=0.981, XLF=0.844, XLK=0.612, XLB=0.551, XLY=0.311, XLI=0.260, XLV=0.239
+2017-05-01 10:00:00 SleeveC IBS  long=['EWG=0.10', 'EWI=0.17']  short=['EWT=0.90', 'EWZ=0.92']
+2017-05-15 10:00:00 REBAL  2017-05-15  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2017-05-15 10:00:00 SleeveA scores: XLU=1.287, XLF=0.614, XLK=0.438, XLB=0.398, XLP=0.356, XLY=0.306, XLRE=0.261
+2017-05-15 10:00:00 SleeveC IBS  long=['EWJ=0.33', 'EWC=0.50']  short=['FXI=0.96', 'EWI=1.00']
+2017-05-30 10:00:00 REBAL  2017-05-30  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2017-05-30 10:00:00 SleeveA scores: XLK=0.767, XLU=0.681, XLRE=0.542, XLB=0.538, XLY=0.355, XLF=0.342, XLP=0.330
+2017-05-30 10:00:00 SleeveC IBS  long=['EWT=0.27', 'EWH=0.43']  short=['EWI=0.91', 'EWJ=1.00']
+2017-06-13 10:00:00 REBAL  2017-06-13  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2017-06-13 10:00:00 SleeveA scores: XLK=0.455, XLU=0.440, XLRE=0.360, XLB=0.222, XLP=0.190, XLV=0.183, XLY=0.170
+2017-06-13 10:00:00 SleeveC IBS  long=['EWZ=0.07', 'EWA=0.25']  short=['EWY=0.76', 'THD=0.91']
+2017-06-27 10:00:00 REBAL  2017-06-27  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2017-06-27 10:00:00 SleeveA scores: XLU=1.090, XLK=0.569, XLB=0.399, XLRE=0.390, XLY=0.298, XLP=0.260, XLI=0.202
+2017-06-27 10:00:00 SleeveC IBS  long=['EWG=0.05', 'EWJ=0.07']  short=['EWH=0.86', 'EWZ=0.96']
+2017-07-12 10:00:00 REBAL  2017-07-12  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2017-07-12 10:00:00 SleeveA scores: XLB=0.594, XLK=0.521, XLY=0.299, XLI=0.292, XLU=0.223, XLF=0.218, XLV=0.141
+2017-07-12 10:00:00 SleeveC IBS  long=['EWY=0.48', 'EWH=0.63']  short=['EWJ=0.95', 'EWG=1.00']
+2017-07-26 10:00:00 REBAL  2017-07-26  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2017-07-26 10:00:00 SleeveA scores: XLU=0.479, XLF=0.477, XLV=0.301, XLK=0.293, XLB=0.249, XLY=0.224, XLRE=0.215
+2017-07-26 10:00:00 SleeveC IBS  long=['EWY=0.00', 'FXI=0.00']  short=['EWC=0.28', 'EWH=0.33']
+2017-08-09 10:00:00 REBAL  2017-08-09  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2017-08-09 10:00:00 SleeveA scores: XLK=0.723, XLF=0.472, XLU=0.447, XLRE=0.406, XLY=0.366, XLB=0.340, XLI=0.260
+2017-08-09 10:00:00 SleeveC IBS  long=['EWI=0.10', 'EWY=0.12']  short=['EWJ=0.47', 'EWC=0.53']
+2017-08-23 10:00:00 REBAL  2017-08-23  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2017-08-23 10:00:00 SleeveA scores: XLK=0.597, XLU=0.536, XLRE=0.242, XLB=0.191, XLV=0.162, XLP=0.125, XLI=0.091
+2017-08-23 10:00:00 SleeveC IBS  long=['EWZ=0.16', 'EWC=0.38']  short=['EWY=0.87', 'EWG=0.92']
+2017-09-07 10:00:00 REBAL  2017-09-07  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2017-09-07 10:00:00 SleeveA scores: XLU=0.584, XLK=0.427, XLRE=0.351, XLB=0.302, XLY=0.133, XLV=0.102, XLI=0.098
+2017-09-07 10:00:00 SleeveC IBS  long=['EWJ=0.19', 'EWU=0.41']  short=['EWH=0.83', 'EWT=0.91']
+2017-09-21 10:00:00 REBAL  2017-09-21  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2017-09-21 10:00:00 SleeveA scores: XLK=0.528, XLU=0.388, XLRE=0.329, XLF=0.277, XLB=0.273, XLY=0.160, XLI=0.112
+2017-09-21 10:00:00 SleeveC IBS  long=['EWJ=0.35', 'EWU=0.36']  short=['FXI=0.77', 'EWH=0.82']
+2017-10-05 10:00:00 REBAL  2017-10-05  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2017-10-05 10:00:00 SleeveA scores: XLK=0.651, XLB=0.340, XLV=0.235, XLF=0.212, XLY=0.208, XLU=0.183, XLRE=0.149
+2017-10-05 10:00:00 SleeveC IBS  long=['EWI=0.00', 'EWG=0.17']  short=['EWY=0.85', 'EWA=0.88']
+2017-10-19 10:00:00 REBAL  2017-10-19  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2017-10-19 10:00:00 SleeveA scores: XLF=0.458, XLB=0.428, XLU=0.379, XLK=0.358, XLI=0.231, XLV=0.224, XLRE=0.119
+2017-10-19 10:00:00 SleeveC IBS  long=['EWH=0.11', 'EWT=0.17']  short=['EWJ=1.00', 'EWU=1.00']
+2017-11-02 10:00:00 REBAL  2017-11-02  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2017-11-02 10:00:00 SleeveA scores: XLB=0.660, XLF=0.651, XLU=0.405, XLE=0.364, XLK=0.358, XLRE=0.260, XLI=0.259
+2017-11-02 10:00:00 SleeveC IBS  long=['EWA=0.06', 'EWU=0.06']  short=['EWC=0.40', 'EWY=0.41']
+2017-11-16 10:00:00 REBAL  2017-11-16  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2017-11-16 10:00:00 SleeveA scores: XLB=0.614, XLF=0.607, XLU=0.461, XLK=0.289, XLRE=0.172, XLY=0.167, XLI=0.139
+2017-11-16 10:00:00 SleeveC IBS  long=['FXI=0.29', 'EWH=0.38']  short=['EWZ=0.95', 'EWT=0.95']
+2017-12-01 10:00:00 REBAL  2017-12-01  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2017-12-01 10:00:00 SleeveA scores: XLB=0.610, XLK=0.560, XLF=0.519, XLU=0.316, XLRE=0.231, XLE=0.223, XLV=0.153
+2017-12-01 10:00:00 SleeveC IBS  long=['EWJ=0.00', 'FXI=0.03']  short=['EWY=0.39', 'EWT=0.79']
+2017-12-15 10:00:00 REBAL  2017-12-15  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2017-12-15 10:00:00 SleeveA scores: XLK=0.580, XLB=0.503, XLRE=0.229, XLF=0.223, XLU=0.204, XLE=0.175, XLY=0.127
+2017-12-15 10:00:00 SleeveC IBS  long=['EWA=0.00', 'EWT=0.00']  short=['EWJ=0.18', 'EWZ=0.24']
+2018-01-02 10:00:00 REBAL  2018-01-02  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2018-01-02 10:00:00 SleeveA scores: XLF=0.898, XLB=0.523, XLK=0.483, XLE=0.248, XLY=0.226, XLRE=0.191, XLP=0.166
+2018-01-02 10:00:00 SleeveC IBS  long=['EWU=0.00', 'EWT=0.05']  short=['EWC=0.31', 'EWG=0.32']
+2018-01-17 10:00:00 REBAL  2018-01-17  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2018-01-17 10:00:00 SleeveA scores: XLF=0.501, XLP=0.434, XLK=0.411, XLB=0.251, XLE=0.220, XLY=0.172, XLI=0.108
+2018-01-17 10:00:00 SleeveC IBS  long=['EWT=0.03', 'EWI=0.06']  short=['EWA=0.38', 'EWU=0.58']
+2018-01-31 10:00:00 REBAL  2018-01-31  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2018-01-31 10:00:00 SleeveA scores: XLB=0.638, XLK=0.353, XLE=0.329, XLF=0.327, XLI=0.161, XLY=0.145, XLP=0.104
+2018-01-31 10:00:00 SleeveC IBS  long=['EWG=0.08', 'EWI=0.09']  short=['THD=0.54', 'EWZ=0.78']
+2018-02-14 10:00:00 REBAL  2018-02-14  regime=equity  SPY_above_SMA=True  VXX_calm=N/A(not_ready)  → EQUITY
+2018-02-14 10:00:00 SleeveA scores: XLF=0.172, XLK=0.131, XLB=0.127, XLY=0.117, XLE=0.055, XLI=0.050, XLV=0.021
+2018-02-14 10:00:00 SleeveC IBS  long=['THD=0.50', 'EWY=0.64']  short=['EWG=0.86', 'EWC=0.95']
+2018-03-01 10:00:00 REBAL  2018-03-01  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2018-03-01 10:00:00 SleeveA scores: XLF=0.305, XLK=0.209, XLY=0.209, XLB=0.197, XLE=0.098, XLI=0.098, XLV=0.043
+2018-03-01 10:00:00 SleeveC IBS  long=['EWA=0.00', 'EWH=0.00']  short=['EWG=0.07', 'THD=0.15']
+2018-03-15 10:00:00 REBAL  2018-03-15  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2018-03-15 10:00:00 SleeveA scores: XLF=0.619, XLY=0.386, XLK=0.325, XLB=0.282, XLE=0.209, XLI=0.142, XLV=0.043
+2018-03-15 10:00:00 SleeveC IBS  long=['EWU=0.29', 'EWA=0.32']  short=['EWJ=0.53', 'EWT=0.54']
+2018-03-29 10:00:00 REBAL  2018-03-29  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2018-03-29 10:00:00 SleeveA scores: XLY=0.152, XLK=0.129, XLF=0.124, XLI=0.037, XLV=0.001, XLB=-0.001, XLP=-0.033
+2018-03-29 10:00:00 SleeveC IBS  long=['EWC=0.14', 'EWA=0.17']  short=['EWH=0.75', 'EWZ=0.92']
+2018-04-13 10:00:00 REBAL  2018-04-13  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2018-04-13 10:00:00 SleeveA scores: XLY=0.140, XLK=0.139, XLF=0.120, XLE=0.105, XLI=0.037, XLB=0.029, XLV=-0.000
+2018-04-13 10:00:00 SleeveC IBS  long=['EWZ=0.21', 'EWA=0.33']  short=['EWT=0.87', 'EWG=0.88']
+2018-04-27 10:00:00 REBAL  2018-04-27  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2018-04-27 10:00:00 SleeveA scores: XLY=0.215, XLF=0.192, XLK=0.171, XLE=0.125, XLI=0.017, XLV=0.010, XLB=-0.019
+2018-04-27 10:00:00 SleeveC IBS  long=['EWU=0.65', 'EWI=0.72']  short=['EWY=0.93', 'EWZ=0.99']
+2018-05-11 10:00:00 REBAL  2018-05-11  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2018-05-11 10:00:00 SleeveA scores: XLY=0.323, XLF=0.316, XLE=0.267, XLK=0.173, XLI=0.036, XLB=0.035, XLV=0.013
+2018-05-11 10:00:00 SleeveC IBS  long=['EWJ=0.48', 'THD=0.70']  short=['EWI=0.97', 'EWA=1.00']
+2018-05-25 10:00:00 REBAL  2018-05-25  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2018-05-25 10:00:00 SleeveA scores: XLY=0.344, XLE=0.224, XLF=0.189, XLK=0.134, XLI=0.055, XLB=0.043, XLV=0.026
+2018-05-25 10:00:00 SleeveC IBS  long=['EWC=0.33', 'EWU=0.53']  short=['THD=0.94', 'EWZ=0.94']
+2018-06-11 10:00:00 REBAL  2018-06-11  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2018-06-11 10:00:00 SleeveA scores: XLE=0.330, XLK=0.300, XLY=0.188, XLB=0.119, XLI=0.084, XLV=0.073, XLF=0.060
+2018-06-11 10:00:00 SleeveC IBS  long=['THD=0.46', 'EWU=0.70']  short=['FXI=0.81', 'EWC=1.00']
+2018-06-25 10:00:00 REBAL  2018-06-25  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2018-06-25 10:00:00 SleeveA scores: XLE=0.267, XLK=0.248, XLY=0.120, XLRE=0.057, XLV=0.028, XLI=-0.028, XLB=-0.034
+2018-06-25 10:00:00 SleeveC IBS  long=['EWH=0.00', 'EWJ=0.03']  short=['EWC=0.78', 'FXI=0.78']
+2018-07-10 10:00:00 REBAL  2018-07-10  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2018-07-10 10:00:00 SleeveA scores: XLK=0.180, XLY=0.177, XLE=0.128, XLRE=0.081, XLU=0.036, XLV=0.031, XLI=-0.031
+2018-07-10 10:00:00 SleeveC IBS  long=['EWC=0.54', 'EWI=0.75']  short=['FXI=0.95', 'EWY=1.00']
+2018-07-24 10:00:00 REBAL  2018-07-24  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2018-07-24 10:00:00 SleeveA scores: XLU=0.334, XLRE=0.154, XLK=0.107, XLY=0.074, XLV=-0.012, XLI=-0.066, XLE=-0.110
+2018-07-24 10:00:00 SleeveC IBS  long=['EWC=0.09', 'EWU=0.19']  short=['EWJ=0.73', 'EWG=0.80']
+2018-08-07 10:00:00 REBAL  2018-08-07  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2018-08-07 10:00:00 SleeveA scores: XLU=0.748, XLK=0.410, XLRE=0.406, XLY=0.362, XLE=0.358, XLB=0.133, XLV=0.099
+2018-08-07 10:00:00 SleeveC IBS  long=['EWZ=0.00', 'EWA=0.50']  short=['EWC=0.80', 'EWT=0.83']
+2018-08-21 10:00:00 REBAL  2018-08-21  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2018-08-21 10:00:00 SleeveA scores: XLU=0.453, XLRE=0.387, XLY=0.236, XLK=0.231, XLE=0.173, XLV=0.105, XLP=0.050
+2018-08-21 10:00:00 SleeveC IBS  long=['EWU=0.50', 'EWC=0.50']  short=['FXI=0.93', 'THD=0.97']
+2018-09-05 10:00:00 REBAL  2018-09-05  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2018-09-05 10:00:00 SleeveA scores: XLU=0.652, XLRE=0.486, XLE=0.298, XLK=0.226, XLY=0.155, XLV=0.106, XLI=0.021
+2018-09-05 10:00:00 SleeveC IBS  long=['EWZ=0.14', 'EWC=0.23']  short=['EWG=1.00', 'EWU=1.00']
+2018-09-19 10:00:00 REBAL  2018-09-19  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2018-09-19 10:00:00 SleeveA scores: XLRE=0.755, XLU=0.606, XLE=0.492, XLK=0.269, XLY=0.258, XLV=0.197, XLB=0.172
+2018-09-19 10:00:00 SleeveC IBS  long=['EWU=0.38', 'EWT=0.56']  short=['EWA=0.87', 'EWC=1.00']
+2018-10-03 10:00:00 REBAL  2018-10-03  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2018-10-03 10:00:00 SleeveA scores: XLK=0.527, XLY=0.412, XLE=0.289, XLU=0.225, XLV=0.165, XLRE=0.152, XLB=0.150
+2018-10-03 10:00:00 SleeveC IBS  long=['FXI=0.24', 'EWH=0.25']  short=['EWJ=0.76', 'EWU=0.85']
+2018-10-17 10:00:00 REBAL  2018-10-17  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2018-10-17 10:00:00 SleeveA scores: XLU=0.264, XLV=0.087, XLRE=0.074, XLK=0.063, XLP=0.039, XLY=0.039, XLE=0.010
+2018-10-17 10:00:00 SleeveC IBS  long=['THD=0.66', 'EWU=0.70']  short=['EWH=1.00', 'EWI=1.00']
+2018-10-24 10:00:00 REGIME FLIP → DEFENSIVE  [2018-10-24]
+2018-10-31 10:00:00 REBAL  2018-10-31  regime=defensive  SPY_above_SMA=False  VXX_calm=True  → DEFENSIVE
+2018-10-31 10:00:00 SleeveA scores: XLU=0.301, XLP=0.217, XLRE=0.200, XLV=0.045, XLK=0.026, XLY=0.009, XLI=-0.006
+2018-10-31 10:00:00 SleeveC IBS  long=['THD=0.83', 'EWH=0.83']  short=['EWG=1.00', 'EWZ=1.00']
+2018-11-07 10:00:00 REGIME FLIP → EQUITY  [2018-11-07]
+2018-11-14 10:00:00 REGIME FLIP → DEFENSIVE  [2018-11-14]
+2018-11-14 10:00:00 REBAL  2018-11-14  regime=defensive  SPY_above_SMA=False  VXX_calm=True  → DEFENSIVE
+2018-11-14 10:00:00 SleeveA scores: XLU=0.579, XLRE=0.217, XLP=0.183, XLV=0.062, XLY=0.025, XLI=-0.023, XLK=-0.036
+2018-11-14 10:00:00 SleeveC IBS  long=['EWI=0.09', 'EWC=0.15']  short=['EWG=0.57', 'EWZ=0.62']
+2018-11-29 10:00:00 REGIME FLIP → EQUITY  [2018-11-29]
+2018-11-29 10:00:00 REBAL  2018-11-29  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2018-11-29 10:00:00 SleeveA scores: XLU=0.429, XLP=0.266, XLRE=0.234, XLV=0.118, XLY=0.018, XLF=0.014, XLK=-0.021
+2018-11-29 10:00:00 SleeveC IBS  long=['THD=0.83', 'EWH=0.88']  short=['EWC=1.00', 'EWU=1.00']
+2018-12-07 10:00:00 REGIME FLIP → DEFENSIVE  [2018-12-07]
+2018-12-14 10:00:00 REBAL  2018-12-14  regime=defensive  SPY_above_SMA=False  VXX_calm=True  → DEFENSIVE
+2018-12-14 10:00:00 SleeveA scores: XLU=0.441, XLRE=0.237, XLP=0.219, XLV=0.054, XLI=-0.065, XLY=-0.066, XLK=-0.114
+2018-12-14 10:00:00 SleeveC IBS  long=['EWY=0.01', 'EWT=0.08']  short=['THD=0.52', 'EWZ=0.79']
+2018-12-31 10:00:00 REBAL  2018-12-31  regime=defensive  SPY_above_SMA=False  VXX_calm=True  → DEFENSIVE
+2018-12-31 10:00:00 SleeveA scores: XLU=0.062, XLV=0.009, XLP=-0.002, XLRE=-0.032, XLI=-0.033, XLY=-0.044, XLK=-0.080
+2018-12-31 10:00:00 SleeveC IBS  long=['EWA=0.17', 'EWT=0.29']  short=['THD=0.52', 'EWY=0.60']
+2019-01-15 10:00:00 REBAL  2019-01-15  regime=defensive  SPY_above_SMA=False  VXX_calm=True  → DEFENSIVE
+2019-01-15 10:00:00 SleeveA scores: XLU=0.018, XLV=0.001, XLP=-0.011, XLRE=-0.022, XLI=-0.039, XLY=-0.042, XLC=-0.105
+2019-01-15 10:00:00 SleeveC IBS  long=['EWT=0.26', 'EWJ=0.36']  short=['EWG=0.70', 'EWC=0.88']
+2019-01-30 10:00:00 REBAL  2019-01-30  regime=defensive  SPY_above_SMA=False  VXX_calm=True  → DEFENSIVE
+2019-01-30 10:00:00 SleeveA scores: XLU=0.135, XLRE=0.083, XLV=0.009, XLP=-0.018, XLI=-0.035, XLY=-0.039, XLC=-0.102
+2019-01-30 10:00:00 SleeveC IBS  long=['EWG=0.00', 'EWJ=0.00']  short=['EWY=0.48', 'EWC=0.81']
+2019-02-06 10:00:00 REGIME FLIP → EQUITY  [2019-02-06]
+2019-02-13 10:00:00 REBAL  2019-02-13  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2019-02-13 10:00:00 SleeveA scores: XLU=0.177, XLRE=0.102, XLP=0.053, XLV=0.030, XLI=0.003, XLY=-0.042, XLK=-0.064
+2019-02-13 10:00:00 SleeveC IBS  long=['FXI=0.26', 'EWH=0.45']  short=['EWA=1.00', 'EWG=1.00']
+2019-02-28 10:00:00 REBAL  2019-02-28  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2019-02-28 10:00:00 SleeveA scores: XLRE=0.234, XLU=0.209, XLP=0.037, XLV=0.009, XLI=0.006, XLY=-0.045, XLK=-0.052
+2019-02-28 10:00:00 SleeveC IBS  long=['EWH=0.00', 'EWI=0.10']  short=['EWY=0.69', 'EWC=0.86']
+2019-03-14 10:00:00 REBAL  2019-03-14  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2019-03-14 10:00:00 SleeveA scores: XLRE=0.378, XLU=0.293, XLP=0.081, XLV=0.006, XLC=-0.007, XLK=-0.035, XLI=-0.042
+2019-03-14 10:00:00 SleeveC IBS  long=['EWT=0.07', 'EWH=0.21']  short=['EWI=0.85', 'EWG=0.88']
+2019-03-28 10:00:00 REBAL  2019-03-28  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2019-03-28 10:00:00 SleeveA scores: XLU=0.456, XLRE=0.299, XLP=0.073, XLK=-0.028, XLY=-0.035, XLV=-0.040, XLI=-0.072
+2019-03-28 10:00:00 SleeveC IBS  long=['EWZ=0.04', 'THD=0.18']  short=['EWI=0.76', 'EWU=0.97']
+2019-04-11 10:00:00 REBAL  2019-04-11  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2019-04-11 10:00:00 SleeveA scores: XLU=0.517, XLRE=0.475, XLP=0.115, XLK=0.092, XLY=0.046, XLC=0.040, XLB=0.013
+2019-04-11 10:00:00 SleeveC IBS  long=['EWY=0.24', 'EWI=0.33']  short=['EWC=0.89', 'EWT=1.00']
+2019-04-26 10:00:00 REBAL  2019-04-26  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2019-04-26 10:00:00 SleeveA scores: XLU=0.721, XLRE=0.444, XLB=0.241, XLK=0.178, XLY=0.138, XLF=0.132, XLP=0.127
+2019-04-26 10:00:00 SleeveC IBS  long=['EWJ=0.17', 'EWC=0.67']  short=['EWI=1.00', 'FXI=1.00']
+2019-05-10 10:00:00 REBAL  2019-05-10  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2019-05-10 10:00:00 SleeveA scores: XLU=0.398, XLRE=0.364, XLK=0.250, XLY=0.188, XLC=0.126, XLI=0.107, XLF=0.097
+2019-05-10 10:00:00 SleeveC IBS  long=['EWH=0.60', 'EWZ=0.63']  short=['EWJ=0.90', 'EWI=0.97']
+2019-05-24 10:00:00 REBAL  2019-05-24  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2019-05-24 10:00:00 SleeveA scores: XLRE=0.415, XLU=0.374, XLK=0.145, XLP=0.142, XLC=0.126, XLY=0.097, XLI=0.043
+2019-05-24 10:00:00 SleeveC IBS  long=['THD=0.18', 'EWJ=0.28']  short=['FXI=0.78', 'EWG=0.86']
+2019-06-03 10:00:00 REGIME FLIP → DEFENSIVE  [2019-06-03]
+2019-06-10 10:00:00 REGIME FLIP → EQUITY  [2019-06-10]
+2019-06-10 10:00:00 REBAL  2019-06-10  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2019-06-10 10:00:00 SleeveA scores: XLRE=0.423, XLU=0.277, XLK=0.222, XLF=0.186, XLB=0.144, XLP=0.124, XLY=0.112
+2019-06-10 10:00:00 SleeveC IBS  long=['FXI=0.06', 'EWI=0.08']  short=['EWY=0.86', 'EWJ=0.91']
+2019-06-24 10:00:00 REBAL  2019-06-24  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2019-06-24 10:00:00 SleeveA scores: XLF=0.478, XLU=0.356, XLRE=0.352, XLK=0.245, XLE=0.239, XLB=0.206, XLC=0.205
+2019-06-24 10:00:00 SleeveC IBS  long=['THD=0.04', 'FXI=0.09']  short=['EWU=0.55', 'EWZ=0.80']
+2019-07-09 10:00:00 REBAL  2019-07-09  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2019-07-09 10:00:00 SleeveA scores: XLU=0.649, XLRE=0.626, XLB=0.531, XLK=0.488, XLF=0.467, XLP=0.456, XLY=0.293
+2019-07-09 10:00:00 SleeveC IBS  long=['EWA=0.00', 'EWI=0.00']  short=['EWT=0.75', 'EWH=0.91']
+2019-07-23 10:00:00 REBAL  2019-07-23  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2019-07-23 10:00:00 SleeveA scores: XLU=0.663, XLB=0.513, XLK=0.431, XLRE=0.338, XLP=0.263, XLF=0.248, XLI=0.213
+2019-07-23 10:00:00 SleeveC IBS  long=['EWH=0.00', 'FXI=0.00']  short=['EWU=0.70', 'EWI=0.77']
+2019-08-06 10:00:00 REBAL  2019-08-06  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2019-08-06 10:00:00 SleeveA scores: XLU=0.483, XLRE=0.303, XLB=0.193, XLP=0.176, XLK=0.173, XLF=0.081, XLC=0.069
+2019-08-06 10:00:00 SleeveC IBS  long=['EWJ=0.23', 'EWH=0.23']  short=['EWG=0.52', 'EWI=0.52']
+2019-08-20 10:00:00 REBAL  2019-08-20  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2019-08-20 10:00:00 SleeveA scores: XLU=0.478, XLRE=0.257, XLP=0.196, XLK=0.143, XLB=0.098, XLC=0.078, XLY=0.048
+2019-08-20 10:00:00 SleeveC IBS  long=['EWG=0.00', 'EWJ=0.00']  short=['EWA=0.57', 'EWC=0.60']
+2019-09-04 10:00:00 REBAL  2019-09-04  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2019-09-04 10:00:00 SleeveA scores: XLRE=0.385, XLU=0.352, XLK=0.243, XLP=0.215, XLY=0.107, XLC=0.103, XLB=0.091
+2019-09-04 10:00:00 SleeveC IBS  long=['EWZ=0.18', 'EWC=0.57']  short=['EWT=1.00', 'FXI=1.00']
+2019-09-18 10:00:00 REBAL  2019-09-18  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2019-09-18 10:00:00 SleeveA scores: XLU=0.464, XLRE=0.390, XLP=0.287, XLK=0.176, XLB=0.125, XLF=0.099, XLC=0.098
+2019-09-18 10:00:00 SleeveC IBS  long=['EWC=0.79', 'EWU=0.83']  short=['EWH=1.00', 'EWJ=1.00']
+2019-10-02 10:00:00 REBAL  2019-10-02  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2019-10-02 10:00:00 SleeveA scores: XLP=0.413, XLU=0.340, XLRE=0.301, XLK=0.253, XLF=0.145, XLY=0.081, XLB=0.057
+2019-10-02 10:00:00 SleeveC IBS  long=['EWI=0.03', 'EWY=0.10']  short=['FXI=0.30', 'EWZ=0.30']
+2019-10-16 10:00:00 REBAL  2019-10-16  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2019-10-16 10:00:00 SleeveA scores: XLRE=0.952, XLU=0.582, XLP=0.251, XLK=0.167, XLF=0.088, XLC=0.048, XLY=0.046
+2019-10-16 10:00:00 SleeveC IBS  long=['EWZ=0.00', 'EWC=0.26']  short=['EWT=0.87', 'EWY=0.89']
+2019-10-30 10:00:00 REBAL  2019-10-30  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2019-10-30 10:00:00 SleeveA scores: XLU=0.562, XLRE=0.337, XLP=0.272, XLB=0.130, XLK=0.100, XLF=0.084, XLV=0.045
+2019-10-30 10:00:00 SleeveC IBS  long=['EWT=0.08', 'EWZ=0.08']  short=['EWJ=0.82', 'EWI=1.00']
+2019-11-13 10:00:00 REBAL  2019-11-13  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2019-11-13 10:00:00 SleeveA scores: XLP=0.333, XLB=0.272, XLF=0.230, XLY=0.219, XLU=0.184, XLK=0.176, XLC=0.127
+2019-11-13 10:00:00 SleeveC IBS  long=['EWY=0.02', 'EWG=0.18']  short=['EWI=0.67', 'EWZ=0.70']
+2019-11-27 10:00:00 REBAL  2019-11-27  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2019-11-27 10:00:00 SleeveA scores: XLB=0.549, XLF=0.471, XLP=0.371, XLK=0.355, XLU=0.341, XLY=0.299, XLRE=0.203
+2019-11-27 10:00:00 SleeveC IBS  long=['EWA=0.63', 'EWI=0.64']  short=['EWG=1.00', 'EWT=1.00']
+2019-12-12 10:00:00 REBAL  2019-12-12  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2019-12-12 10:00:00 SleeveA scores: XLU=0.702, XLF=0.573, XLK=0.518, XLC=0.297, XLB=0.247, XLP=0.178, XLRE=0.118
+2019-12-12 10:00:00 SleeveC IBS  long=['EWI=0.63', 'FXI=0.77']  short=['EWT=0.90', 'EWG=0.90']
+2019-12-27 10:00:00 REBAL  2019-12-27  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2019-12-27 10:00:00 SleeveA scores: XLF=0.392, XLU=0.308, XLP=0.245, XLK=0.212, XLB=0.209, XLRE=0.200, XLC=0.180
+2019-12-27 10:00:00 SleeveC IBS  long=['THD=0.00', 'EWI=0.40']  short=['EWA=1.00', 'EWZ=1.00']
+2020-01-13 10:00:00 REBAL  2020-01-13  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2020-01-13 10:00:00 SleeveA scores: XLF=0.877, XLU=0.372, XLK=0.223, XLP=0.216, XLV=0.170, XLRE=0.115, XLB=0.111
+2020-01-13 10:00:00 SleeveC IBS  long=['EWI=0.04', 'EWZ=0.06']  short=['EWT=0.73', 'THD=0.79']
+2020-01-28 10:00:00 REBAL  2020-01-28  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2020-01-28 10:00:00 SleeveA scores: XLF=0.248, XLU=0.232, XLRE=0.174, XLK=0.161, XLP=0.124, XLV=0.119, XLI=0.075
+2020-01-28 10:00:00 SleeveC IBS  long=['EWJ=0.00', 'EWZ=0.04']  short=['FXI=0.75', 'EWY=0.80']
+2020-02-11 10:00:00 REBAL  2020-02-11  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2020-02-11 10:00:00 SleeveA scores: XLF=0.477, XLK=0.351, XLP=0.286, XLU=0.270, XLRE=0.234, XLC=0.202, XLI=0.148
+2020-02-11 10:00:00 SleeveC IBS  long=['EWI=0.15', 'EWZ=0.56']  short=['EWG=0.92', 'EWT=1.00']
+2020-02-26 10:00:00 REBAL  2020-02-26  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2020-02-26 10:00:00 SleeveA scores: XLU=0.384, XLF=0.209, XLK=0.158, XLC=0.094, XLP=0.092, XLRE=0.088, XLV=0.063
+2020-02-26 10:00:00 SleeveC IBS  long=['EWH=0.00', 'EWY=0.00']  short=['THD=0.28', 'EWZ=0.31']
+2020-03-04 10:00:00 REGIME FLIP → DEFENSIVE  [2020-03-04]
+2020-03-11 10:00:00 REBAL  2020-03-11  regime=defensive  SPY_above_SMA=False  VXX_calm=True  → DEFENSIVE
+2020-03-11 10:00:00 SleeveA scores: XLU=0.038, XLK=0.031, XLV=0.018, XLP=0.001, XLC=-0.012, XLI=-0.018, XLY=-0.020
+2020-03-11 10:00:00 SleeveC IBS  long=['EWA=0.65', 'EWC=0.73']  short=['EWY=0.98', 'EWZ=0.98']
+2020-03-25 10:00:00 REBAL  2020-03-25  regime=defensive  SPY_above_SMA=False  VXX_calm=True  → DEFENSIVE
+2020-03-25 10:00:00 SleeveA scores: XLK=-0.008, XLV=-0.017, XLI=-0.034, XLY=-0.034, XLC=-0.035, XLP=-0.041, XLU=-0.071
+2020-03-25 10:00:00 SleeveC IBS  long=['THD=0.14', 'EWI=0.41']  short=['EWU=0.95', 'FXI=0.97']
+2020-04-08 10:00:00 REBAL  2020-04-08  regime=defensive  SPY_above_SMA=False  VXX_calm=True  → DEFENSIVE
+2020-04-08 10:00:00 SleeveA scores: XLK=0.022, XLV=0.006, XLP=-0.026, XLC=-0.047, XLY=-0.053, XLI=-0.056, XLU=-0.087
+2020-04-08 10:00:00 SleeveC IBS  long=['EWA=0.00', 'EWG=0.00']  short=['THD=0.08', 'FXI=0.14']
+2020-04-23 10:00:00 REBAL  2020-04-23  regime=defensive  SPY_above_SMA=False  VXX_calm=True  → DEFENSIVE
+2020-04-23 10:00:00 SleeveA scores: XLK=0.040, XLV=0.018, XLP=-0.011, XLC=-0.026, XLY=-0.031, XLU=-0.053, XLRE=-0.097
+2020-04-23 10:00:00 SleeveC IBS  long=['EWT=0.18', 'THD=0.18']  short=['EWJ=0.79', 'EWC=0.87']
+2020-05-07 10:00:00 REBAL  2020-05-07  regime=defensive  SPY_above_SMA=False  VXX_calm=True  → DEFENSIVE
+2020-05-07 10:00:00 SleeveA scores: XLK=0.084, XLV=0.033, XLC=-0.016, XLY=-0.040, XLP=-0.059, XLI=-0.185, XLU=-0.188
+2020-05-07 10:00:00 SleeveC IBS  long=['EWA=0.00', 'EWG=0.00']  short=['EWZ=0.39', 'THD=0.57']
+2020-05-21 10:00:00 REBAL  2020-05-21  regime=defensive  SPY_above_SMA=False  VXX_calm=True  → DEFENSIVE
+2020-05-21 10:00:00 SleeveA scores: XLK=0.093, XLV=0.052, XLC=0.027, XLY=0.001, XLP=-0.081, XLI=-0.140, XLU=-0.156
+2020-05-21 10:00:00 SleeveC IBS  long=['EWJ=0.30', 'EWZ=0.30']  short=['EWG=0.67', 'EWH=0.75']
+2020-05-29 10:00:00 REGIME FLIP → EQUITY  [2020-05-29]
+2020-06-05 10:00:00 REBAL  2020-06-05  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2020-06-05 10:00:00 SleeveA scores: XLK=0.156, XLC=0.039, XLV=0.038, XLY=0.033, XLB=-0.000, XLU=-0.024, XLI=-0.024
+2020-06-05 10:00:00 SleeveC IBS  long=['EWJ=0.15', 'EWA=0.20']  short=['EWZ=0.54', 'EWG=0.60']
+2020-06-19 10:00:00 REBAL  2020-06-19  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2020-06-19 10:00:00 SleeveA scores: XLK=0.130, XLC=0.062, XLY=0.026, XLV=-0.003, XLRE=-0.025, XLP=-0.038, XLI=-0.044
+2020-06-19 10:00:00 SleeveC IBS  long=['EWZ=0.41', 'THD=0.43']  short=['EWH=0.79', 'EWT=0.87']
+2020-07-06 10:00:00 REBAL  2020-07-06  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2020-07-06 10:00:00 SleeveA scores: XLK=0.154, XLY=0.024, XLC=0.023, XLV=0.002, XLB=-0.057, XLP=-0.057, XLRE=-0.062
+2020-07-06 10:00:00 SleeveC IBS  long=['EWC=0.02', 'EWZ=0.03']  short=['FXI=0.49', 'EWT=0.56']
+2020-07-20 10:00:00 REBAL  2020-07-20  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2020-07-20 10:00:00 SleeveA scores: XLK=0.118, XLY=0.039, XLB=0.020, XLC=0.020, XLV=0.011, XLP=-0.020, XLI=-0.099
+2020-07-20 10:00:00 SleeveC IBS  long=['EWH=0.27', 'FXI=0.50']  short=['EWG=0.95', 'EWI=1.00']
+2020-08-03 10:00:00 REBAL  2020-08-03  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2020-08-03 10:00:00 SleeveA scores: XLK=0.264, XLC=0.157, XLY=0.107, XLB=0.085, XLV=0.040, XLP=0.006, XLI=-0.067
+2020-08-03 10:00:00 SleeveC IBS  long=['EWI=0.20', 'EWZ=0.26']  short=['EWC=0.62', 'EWH=0.70']
+2020-08-17 10:00:00 REBAL  2020-08-17  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2020-08-17 10:00:00 SleeveA scores: XLB=0.137, XLK=0.081, XLV=0.074, XLY=0.070, XLC=0.053, XLP=0.005, XLI=-0.035
+2020-08-17 10:00:00 SleeveC IBS  long=['EWZ=0.38', 'EWA=0.40']  short=['EWH=0.83', 'FXI=0.87']
+2020-08-31 10:00:00 REBAL  2020-08-31  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2020-08-31 10:00:00 SleeveA scores: XLB=0.461, XLV=0.224, XLK=0.207, XLY=0.139, XLP=0.138, XLC=0.138, XLI=0.031
+2020-08-31 10:00:00 SleeveC IBS  long=['EWC=0.12', 'EWH=0.75']  short=['EWT=1.00', 'EWU=1.00']
+2020-09-15 10:00:00 REBAL  2020-09-15  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2020-09-15 10:00:00 SleeveA scores: XLB=1.151, XLF=0.959, XLU=0.878, XLRE=0.825, XLY=0.597, XLI=0.502, XLP=0.431
+2020-09-15 10:00:00 SleeveC IBS  long=['EWI=0.00', 'EWU=0.06']  short=['EWH=0.73', 'EWZ=0.88']
+2020-09-29 10:00:00 REBAL  2020-09-29  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2020-09-29 10:00:00 SleeveA scores: XLB=0.626, XLY=0.329, XLI=0.272, XLF=0.246, XLK=0.197, XLP=0.181, XLC=0.181
+2020-09-29 10:00:00 SleeveC IBS  long=['EWZ=0.11', 'EWU=0.32']  short=['EWJ=1.00', 'EWI=1.00']
+2020-10-13 10:00:00 REBAL  2020-10-13  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2020-10-13 10:00:00 SleeveA scores: XLB=0.440, XLC=0.297, XLK=0.270, XLF=0.244, XLY=0.230, XLI=0.199, XLP=0.136
+2020-10-13 10:00:00 SleeveC IBS  long=['EWH=0.20', 'EWC=0.33']  short=['EWZ=0.85', 'FXI=0.87']
+2020-10-27 10:00:00 REBAL  2020-10-27  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2020-10-27 10:00:00 SleeveA scores: XLB=0.467, XLC=0.284, XLK=0.281, XLF=0.250, XLY=0.247, XLI=0.170, XLU=0.155
+2020-10-27 10:00:00 SleeveC IBS  long=['EWU=0.33', 'THD=0.44']  short=['EWH=0.67', 'EWZ=0.73']
+2020-11-10 10:00:00 REBAL  2020-11-10  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2020-11-10 10:00:00 SleeveA scores: XLU=0.638, XLB=0.499, XLF=0.454, XLRE=0.300, XLY=0.204, XLI=0.196, XLC=0.182
+2020-11-10 10:00:00 SleeveC IBS  long=['EWT=0.01', 'EWC=0.01']  short=['THD=0.07', 'EWZ=0.15']
+2020-11-24 10:00:00 REBAL  2020-11-24  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2020-11-24 10:00:00 SleeveA scores: XLB=0.239, XLU=0.233, XLY=0.136, XLK=0.132, XLF=0.122, XLC=0.102, XLP=0.097
+2020-11-24 10:00:00 SleeveC IBS  long=['EWJ=0.11', 'EWH=0.23']  short=['EWC=0.71', 'EWT=0.73']
+2020-12-09 10:00:00 REBAL  2020-12-09  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2020-12-09 10:00:00 SleeveA scores: XLB=0.491, XLP=0.329, XLF=0.239, XLK=0.201, XLY=0.189, XLI=0.174, XLC=0.145
+2020-12-09 10:00:00 SleeveC IBS  long=['EWT=0.24', 'EWY=0.42']  short=['EWH=0.93', 'EWG=1.00']
+2020-12-23 10:00:00 REBAL  2020-12-23  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2020-12-23 10:00:00 SleeveA scores: XLB=1.275, XLF=1.125, XLI=0.635, XLP=0.566, XLY=0.477, XLC=0.313, XLU=0.290
+2020-12-23 10:00:00 SleeveC IBS  long=['EWY=0.04', 'EWT=0.13']  short=['EWI=0.92', 'EWA=0.92']
+2021-01-08 10:00:00 REBAL  2021-01-08  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2021-01-08 10:00:00 SleeveA scores: XLF=0.597, XLI=0.508, XLP=0.506, XLE=0.484, XLB=0.465, XLU=0.458, XLC=0.441
+2021-01-08 10:00:00 SleeveC IBS  long=['THD=0.59', 'EWU=0.61']  short=['EWH=0.95', 'EWY=0.98']
+2021-01-25 10:00:00 REBAL  2021-01-25  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2021-01-25 10:00:00 SleeveA scores: XLK=0.325, XLF=0.304, XLI=0.248, XLB=0.217, XLC=0.205, XLU=0.175, XLRE=0.156
+2021-01-25 10:00:00 SleeveC IBS  long=['EWC=0.32', 'EWI=0.38']  short=['THD=0.81', 'EWT=0.95']
+2021-02-08 10:00:00 REBAL  2021-02-08  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2021-02-08 10:00:00 SleeveA scores: XLF=0.413, XLE=0.309, XLU=0.261, XLB=0.221, XLY=0.198, XLK=0.159, XLI=0.146
+2021-02-08 10:00:00 SleeveC IBS  long=['EWZ=0.35', 'EWH=0.67']  short=['EWY=0.96', 'EWI=1.00']
+2021-02-23 10:00:00 REBAL  2021-02-23  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2021-02-23 10:00:00 SleeveA scores: XLB=0.390, XLE=0.349, XLF=0.348, XLRE=0.232, XLK=0.125, XLI=0.121, XLY=0.113
+2021-02-23 10:00:00 SleeveC IBS  long=['FXI=0.02', 'EWH=0.05']  short=['EWI=0.44', 'EWC=0.67']
+2021-03-09 10:00:00 REBAL  2021-03-09  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2021-03-09 10:00:00 SleeveA scores: XLE=0.487, XLB=0.472, XLF=0.465, XLC=0.242, XLI=0.169, XLRE=0.068, XLU=0.044
+2021-03-09 10:00:00 SleeveC IBS  long=['EWA=0.04', 'EWZ=0.05']  short=['EWY=0.56', 'EWG=0.56']
+2021-03-23 10:00:00 REBAL  2021-03-23  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2021-03-23 10:00:00 SleeveA scores: XLE=0.677, XLF=0.626, XLB=0.257, XLC=0.205, XLK=0.162, XLRE=0.144, XLU=0.125
+2021-03-23 10:00:00 SleeveC IBS  long=['EWH=0.10', 'EWC=0.13']  short=['EWT=0.80', 'THD=0.94']
+2021-04-07 10:00:00 REBAL  2021-04-07  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2021-04-07 10:00:00 SleeveA scores: XLF=1.131, XLE=1.092, XLB=0.529, XLC=0.252, XLI=0.185, XLRE=0.182, XLU=0.171
+2021-04-07 10:00:00 SleeveC IBS  long=['EWC=0.09', 'EWH=0.17']  short=['EWI=0.83', 'EWG=0.92']
+2021-04-21 10:00:00 REBAL  2021-04-21  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2021-04-21 10:00:00 SleeveA scores: XLE=1.738, XLF=0.691, XLB=0.327, XLRE=0.255, XLC=0.165, XLI=0.136, XLU=0.121
+2021-04-21 10:00:00 SleeveC IBS  long=['EWA=0.14', 'EWC=0.18']  short=['EWJ=0.40', 'THD=0.47']
+2021-05-05 10:00:00 REBAL  2021-05-05  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2021-05-05 10:00:00 SleeveA scores: XLE=1.721, XLF=0.990, XLB=0.484, XLC=0.416, XLRE=0.385, XLI=0.371, XLP=0.333
+2021-05-05 10:00:00 SleeveC IBS  long=['EWZ=0.25', 'EWI=0.31']  short=['EWC=0.85', 'EWH=0.89']
+2021-05-19 10:00:00 REBAL  2021-05-19  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2021-05-19 10:00:00 SleeveA scores: XLE=0.638, XLF=0.455, XLRE=0.450, XLB=0.290, XLC=0.199, XLV=0.159, XLI=0.157
+2021-05-19 10:00:00 SleeveC IBS  long=['EWU=0.07', 'EWA=0.10']  short=['EWZ=0.51', 'EWC=0.61']
+2021-06-03 10:00:00 REBAL  2021-06-03  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2021-06-03 10:00:00 SleeveA scores: XLE=1.314, XLF=1.041, XLB=0.713, XLRE=0.359, XLU=0.225, XLP=0.199, XLI=0.192
+2021-06-03 10:00:00 SleeveC IBS  long=['EWH=0.33', 'EWJ=0.38']  short=['EWZ=0.92', 'EWG=0.93']
+2021-06-17 10:00:00 REBAL  2021-06-17  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2021-06-17 10:00:00 SleeveA scores: XLF=0.840, XLE=0.627, XLB=0.433, XLU=0.356, XLRE=0.264, XLI=0.188, XLC=0.185
+2021-06-17 10:00:00 SleeveC IBS  long=['EWH=0.11', 'EWC=0.16']  short=['EWZ=0.36', 'EWJ=0.55']
+2021-07-01 10:00:00 REBAL  2021-07-01  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2021-07-01 10:00:00 SleeveA scores: XLE=1.204, XLRE=0.827, XLF=0.355, XLC=0.245, XLB=0.171, XLI=0.136, XLU=0.121
+2021-07-01 10:00:00 SleeveC IBS  long=['EWH=0.43', 'EWC=0.43']  short=['EWU=0.76', 'THD=0.93']
+2021-07-16 10:00:00 REBAL  2021-07-16  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2021-07-16 10:00:00 SleeveA scores: XLRE=0.573, XLF=0.400, XLE=0.313, XLB=0.300, XLC=0.243, XLU=0.228, XLP=0.166
+2021-07-16 10:00:00 SleeveC IBS  long=['EWZ=0.34', 'THD=0.41']  short=['EWG=0.61', 'EWH=0.78']
+2021-07-30 10:00:00 REBAL  2021-07-30  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2021-07-30 10:00:00 SleeveA scores: XLF=0.622, XLRE=0.541, XLB=0.365, XLE=0.283, XLI=0.248, XLU=0.223, XLC=0.220
+2021-07-30 10:00:00 SleeveC IBS  long=['EWU=0.05', 'EWH=0.08']  short=['THD=0.65', 'EWT=1.00']
+2021-08-13 10:00:00 REBAL  2021-08-13  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2021-08-13 10:00:00 SleeveA scores: XLRE=0.933, XLE=0.475, XLP=0.300, XLF=0.291, XLU=0.229, XLB=0.221, XLI=0.169
+2021-08-13 10:00:00 SleeveC IBS  long=['EWZ=0.02', 'EWH=0.27']  short=['EWJ=1.00', 'EWI=1.00']
+2021-08-27 10:00:00 REBAL  2021-08-27  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2021-08-27 10:00:00 SleeveA scores: XLRE=1.307, XLU=0.434, XLB=0.317, XLF=0.294, XLC=0.278, XLK=0.270, XLP=0.239
+2021-08-27 10:00:00 SleeveC IBS  long=['EWC=0.00', 'FXI=0.03']  short=['EWT=0.59', 'THD=0.64']
+2021-09-13 10:00:00 REBAL  2021-09-13  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2021-09-13 10:00:00 SleeveA scores: XLU=0.526, XLRE=0.324, XLP=0.264, XLF=0.246, XLK=0.201, XLB=0.195, XLV=0.194
+2021-09-13 10:00:00 SleeveC IBS  long=['EWA=0.00', 'EWC=0.00']  short=['EWY=0.12', 'THD=0.35']
+2021-09-27 10:00:00 REBAL  2021-09-27  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2021-09-27 10:00:00 SleeveA scores: XLRE=0.253, XLF=0.238, XLK=0.193, XLY=0.184, XLC=0.097, XLV=0.088, XLE=0.071
+2021-09-27 10:00:00 SleeveC IBS  long=['EWH=0.00', 'EWT=0.00']  short=['EWA=0.69', 'EWC=0.74']
+2021-10-11 10:00:00 REBAL  2021-10-11  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2021-10-11 10:00:00 SleeveA scores: XLF=0.182, XLE=0.173, XLRE=0.149, XLK=0.058, XLC=0.047, XLY=0.037, XLV=0.035
+2021-10-11 10:00:00 SleeveC IBS  long=['EWA=0.08', 'EWJ=0.24']  short=['EWT=0.75', 'FXI=0.79']
+2021-10-25 10:00:00 REBAL  2021-10-25  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2021-10-25 10:00:00 SleeveA scores: XLE=0.289, XLF=0.201, XLRE=0.170, XLP=0.080, XLU=0.069, XLK=0.065, XLC=0.062
+2021-10-25 10:00:00 SleeveC IBS  long=['EWT=0.07', 'FXI=0.23']  short=['EWA=0.71', 'EWZ=0.81']
+2021-11-08 10:00:00 REBAL  2021-11-08  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2021-11-08 10:00:00 SleeveA scores: XLE=0.347, XLRE=0.151, XLK=0.110, XLF=0.105, XLC=0.088, XLP=0.054, XLY=0.052
+2021-11-08 10:00:00 SleeveC IBS  long=['FXI=0.11', 'EWZ=0.48']  short=['EWU=0.93', 'EWG=1.00']
+2021-11-22 10:00:00 REBAL  2021-11-22  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2021-11-22 10:00:00 SleeveA scores: XLRE=0.672, XLU=0.250, XLE=0.153, XLK=0.134, XLF=0.122, XLY=0.119, XLV=0.094
+2021-11-22 10:00:00 SleeveC IBS  long=['EWA=0.00', 'EWC=0.04']  short=['EWJ=0.43', 'EWH=0.79']
+2021-12-07 10:00:00 REBAL  2021-12-07  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2021-12-07 10:00:00 SleeveA scores: XLU=0.241, XLK=0.221, XLRE=0.213, XLY=0.106, XLV=0.063, XLP=0.052, XLE=0.036
+2021-12-07 10:00:00 SleeveC IBS  long=['EWZ=0.64', 'EWU=0.67']  short=['EWY=0.97', 'FXI=0.98']
+2021-12-21 10:00:00 REBAL  2021-12-21  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2021-12-21 10:00:00 SleeveA scores: XLU=0.158, XLRE=0.144, XLK=0.111, XLF=0.091, XLB=0.079, XLP=0.057, XLY=0.043
+2021-12-21 10:00:00 SleeveC IBS  long=['THD=0.30', 'EWZ=0.41']  short=['EWT=0.95', 'EWI=1.00']
+2022-01-05 10:00:00 REBAL  2022-01-05  regime=equity  SPY_above_SMA=True  VXX_calm=True  → EQUITY
+2022-01-05 10:00:00 SleeveA scores: XLE=0.293, XLU=0.251, XLF=0.243, XLB=0.163, XLRE=0.159, XLK=0.108, XLP=0.089
+2022-01-05 10:00:00 SleeveC IBS  long=['EWC=0.00', 'THD=0.02']  short=['EWH=0.63', 'EWJ=0.69']
+2022-01-20 10:00:00 REGIME FLIP → DEFENSIVE  [2022-01-20]
+2022-01-20 10:00:00 REBAL  2022-01-20  regime=defensive  SPY_above_SMA=False  VXX_calm=True  → DEFENSIVE
+2022-01-20 10:00:00 SleeveA scores: XLU=0.231, XLE=0.215, XLB=0.164, XLP=0.132, XLF=0.090, XLRE=0.036, XLK=0.023
+2022-01-20 10:00:00 SleeveC IBS  long=['EWH=0.00', 'EWT=0.10']  short=['FXI=0.39', 'EWZ=0.83']
+2022-02-03 10:00:00 REBAL  2022-02-03  regime=defensive  SPY_above_SMA=False  VXX_calm=True  → DEFENSIVE
+2022-02-03 10:00:00 SleeveA scores: XLE=0.446, XLP=0.131, XLU=0.116, XLF=0.093, XLRE=0.043, XLB=0.037, XLK=0.024
+2022-02-03 10:00:00 SleeveC IBS  long=['FXI=0.37', 'EWH=0.38']  short=['EWY=0.92', 'THD=0.98']
+2022-02-17 10:00:00 REBAL  2022-02-17  regime=defensive  SPY_above_SMA=False  VXX_calm=True  → DEFENSIVE
+2022-02-17 10:00:00 SleeveA scores: XLE=0.515, XLP=0.103, XLF=0.092, XLB=0.050, XLY=0.031, XLK=0.026, XLI=-0.013
+2022-02-17 10:00:00 SleeveC IBS  long=['EWC=0.50', 'EWZ=0.61']  short=['EWU=0.82', 'EWA=0.88']
+2022-03-04 10:00:00 REBAL  2022-03-04  regime=defensive  SPY_above_SMA=False  VXX_calm=True  → DEFENSIVE
+2022-03-04 10:00:00 SleeveA scores: XLE=0.791, XLP=0.089, XLU=0.027, XLF=0.003, XLV=-0.009, XLI=-0.018, XLY=-0.019
+2022-03-04 10:00:00 SleeveC IBS  long=['FXI=0.06', 'EWG=0.14']  short=['EWY=0.48', 'EWZ=0.58']
+2022-03-18 10:00:00 REBAL  2022-03-18  regime=defensive  SPY_above_SMA=False  VXX_calm=True  → DEFENSIVE
+2022-03-18 10:00:00 SleeveA scores: XLE=0.350, XLU=0.079, XLB=0.064, XLF=0.040, XLP=0.035, XLRE=0.016, XLV=0.014
+2022-03-18 10:00:00 SleeveC IBS  long=['EWA=0.78', 'EWI=0.79']  short=['EWC=0.99', 'THD=1.00']
+2022-04-01 10:00:00 REBAL  2022-04-01  regime=defensive  SPY_above_SMA=False  VXX_calm=True  → DEFENSIVE
+2022-04-01 10:00:00 SleeveA scores: XLE=0.567, XLU=0.275, XLRE=0.108, XLP=0.087, XLB=0.082, XLV=0.026, XLI=0.025
+2022-04-01 10:00:00 SleeveC IBS  long=['EWC=0.00', 'EWZ=0.00']  short=['THD=0.11', 'EWH=0.19']
+2022-04-18 10:00:00 REBAL  2022-04-18  regime=defensive  SPY_above_SMA=False  VXX_calm=True  → DEFENSIVE
+2022-04-18 10:00:00 SleeveA scores: XLE=0.658, XLU=0.178, XLB=0.145, XLP=0.079, XLRE=0.071, XLV=0.051, XLI=-0.007
+2022-04-18 10:00:00 SleeveC IBS  long=['EWA=0.00', 'EWY=0.00']  short=['THD=0.52', 'EWZ=0.69']
+2022-05-02 10:00:00 REBAL  2022-05-02  regime=defensive  SPY_above_SMA=False  VXX_calm=True  → DEFENSIVE
+2022-05-02 10:00:00 SleeveA scores: XLE=0.351, XLU=0.108, XLP=0.097, XLB=0.004, XLV=-0.003, XLRE=-0.033, XLK=-0.042
+2022-05-02 10:00:00 SleeveC IBS  long=['EWT=0.01', 'EWC=0.03']  short=['EWG=0.09', 'EWU=0.10']
+2022-05-16 10:00:00 REBAL  2022-05-16  regime=defensive  SPY_above_SMA=False  VXX_calm=True  → DEFENSIVE
+2022-05-16 10:00:00 SleeveA scores: XLE=0.374, XLU=0.102, XLP=0.050, XLV=-0.007, XLRE=-0.037, XLI=-0.041, XLY=-0.044
+2022-05-16 10:00:00 SleeveC IBS  long=['EWZ=0.75', 'EWH=0.83']  short=['EWT=0.99', 'EWA=1.00']
+2022-05-31 10:00:00 REBAL  2022-05-31  regime=defensive  SPY_above_SMA=False  VXX_calm=True  → DEFENSIVE
+2022-05-31 10:00:00 SleeveA scores: XLE=0.420, XLU=0.254, XLP=0.027, XLB=0.022, XLV=0.012, XLI=-0.032, XLRE=-0.039
+2022-05-31 10:00:00 SleeveC IBS  long=['EWU=0.48', 'EWZ=0.67']  short=['EWH=1.00', 'FXI=1.00']
+2022-06-14 10:00:00 REBAL  2022-06-14  regime=defensive  SPY_above_SMA=False  VXX_calm=True  → DEFENSIVE
+2022-06-14 10:00:00 SleeveA scores: XLE=0.347, XLU=-0.002, XLP=-0.025, XLV=-0.036, XLI=-0.069, XLB=-0.093, XLY=-0.109
+2022-06-14 10:00:00 SleeveC IBS  long=['EWH=0.03', 'EWJ=0.14']  short=['EWU=0.36', 'EWZ=0.38']
+2022-06-29 10:00:00 REBAL  2022-06-29  regime=defensive  SPY_above_SMA=False  VXX_calm=True  → DEFENSIVE
+2022-06-29 10:00:00 SleeveA scores: XLE=0.122, XLU=0.003, XLV=-0.023, XLP=-0.028, XLI=-0.043, XLB=-0.066, XLK=-0.086
+2022-06-29 10:00:00 SleeveC IBS  long=['EWA=0.00', 'EWU=0.00']  short=['EWC=0.14', 'EWZ=0.21']
+2022-07-14 10:00:00 REBAL  2022-07-14  regime=defensive  SPY_above_SMA=False  VXX_calm=True  → DEFENSIVE
+2022-07-14 10:00:00 SleeveA scores: XLE=0.087, XLU=0.011, XLV=-0.015, XLP=-0.029, XLK=-0.167, XLY=-0.168, XLRE=-0.173
+2022-07-14 10:00:00 SleeveC IBS  long=['EWZ=0.35', 'FXI=0.60']  short=['EWC=0.80', 'EWT=0.87']
+2022-07-28 10:00:00 REBAL  2022-07-28  regime=defensive  SPY_above_SMA=False  VXX_calm=True  → DEFENSIVE
+2022-07-28 10:00:00 SleeveA scores: XLU=0.198, XLE=0.197, XLV=0.031, XLP=-0.003, XLK=-0.039, XLI=-0.048, XLY=-0.053
+2022-07-28 10:00:00 SleeveC IBS  long=['EWT=0.83', 'EWC=0.84']  short=['EWU=0.93', 'EWZ=0.95']
+2022-08-11 10:00:00 REBAL  2022-08-11  regime=defensive  SPY_above_SMA=False  VXX_calm=True  → DEFENSIVE
+2022-08-11 10:00:00 SleeveA scores: XLE=0.108, XLU=0.107, XLV=0.003, XLP=-0.005, XLI=-0.007, XLRE=-0.012, XLK=-0.026
+2022-08-11 10:00:00 SleeveC IBS  long=['EWI=0.35', 'EWG=0.52']  short=['EWY=0.93', 'EWT=0.96']
+2022-08-25 10:00:00 REBAL  2022-08-25  regime=defensive  SPY_above_SMA=False  VXX_calm=True  → DEFENSIVE
+2022-08-25 10:00:00 SleeveA scores: XLU=0.296, XLE=0.204, XLP=0.034, XLV=0.026, XLI=0.015, XLRE=0.002, XLY=-0.013
+2022-08-25 10:00:00 SleeveC IBS  long=['EWZ=0.30', 'EWH=0.45']  short=['EWY=0.75', 'EWA=0.84']
+2022-09-09 10:00:00 REBAL  2022-09-09  regime=defensive  SPY_above_SMA=False  VXX_calm=True  → DEFENSIVE
+2022-09-09 10:00:00 SleeveA scores: XLU=0.238, XLE=0.070, XLP=0.011, XLV=0.001, XLY=-0.014, XLI=-0.015, XLK=-0.028
+2022-09-09 10:00:00 SleeveC IBS  long=['EWZ=0.65', 'FXI=0.69']  short=['EWC=1.00', 'THD=1.00']
+2022-09-23 10:00:00 REBAL  2022-09-23  regime=defensive  SPY_above_SMA=False  VXX_calm=True  → DEFENSIVE
+2022-09-23 10:00:00 SleeveA scores: XLU=0.063, XLE=0.007, XLP=-0.025, XLV=-0.035, XLI=-0.055, XLK=-0.078, XLY=-0.093
+2022-09-23 10:00:00 SleeveC IBS  long=['FXI=0.03', 'EWC=0.03']  short=['EWG=0.45', 'EWZ=0.90']
+2022-10-07 10:00:00 REBAL  2022-10-07  regime=defensive  SPY_above_SMA=False  VXX_calm=True  → DEFENSIVE
+2022-10-07 10:00:00 SleeveA scores: XLE=0.057, XLI=-0.036, XLV=-0.037, XLY=-0.054, XLP=-0.069, XLK=-0.075, XLU=-0.082
+2022-10-07 10:00:00 SleeveC IBS  long=['EWJ=0.00', 'EWG=0.03']  short=['FXI=0.27', 'EWZ=0.33']
+2022-10-21 10:00:00 REBAL  2022-10-21  regime=defensive  SPY_above_SMA=False  VXX_calm=True  → DEFENSIVE
+2022-10-21 10:00:00 SleeveA scores: XLE=0.047, XLV=-0.059, XLI=-0.090, XLK=-0.118, XLY=-0.125, XLU=-0.126, XLP=-0.183
+2022-10-21 10:00:00 SleeveC IBS  long=['EWH=0.05', 'THD=0.05']  short=['EWU=0.26', 'EWZ=0.67']
+2022-11-04 10:00:00 REBAL  2022-11-04  regime=defensive  SPY_above_SMA=False  VXX_calm=True  → DEFENSIVE
+2022-11-04 10:00:00 SleeveA scores: XLE=0.086, XLV=0.002, XLI=-0.006, XLP=-0.032, XLF=-0.033, XLU=-0.073, XLK=-0.082
+2022-11-04 10:00:00 SleeveC IBS  long=['EWG=0.37', 'EWJ=0.51']  short=['EWZ=0.79', 'FXI=0.83']
+2022-11-18 10:00:00 REBAL  2022-11-18  regime=defensive  SPY_above_SMA=False  VXX_calm=True  → DEFENSIVE
+2022-11-18 10:00:00 SleeveA scores: XLE=0.166, XLF=0.078, XLP=0.053, XLI=0.031, XLV=0.026, XLK=0.007, XLY=-0.005
+2022-11-18 10:00:00 SleeveC IBS  long=['THD=0.75', 'EWT=0.83']  short=['EWA=0.96', 'EWC=0.97']
+2022-12-05 10:00:00 REBAL  2022-12-05  regime=defensive  SPY_above_SMA=False  VXX_calm=True  → DEFENSIVE
+2022-12-05 10:00:00 SleeveA scores: XLF=0.062, XLE=0.050, XLI=0.043, XLP=0.039, XLV=0.036, XLK=-0.013, XLB=-0.020
+2022-12-05 10:00:00 SleeveC IBS  long=['EWZ=0.08', 'EWC=0.46']  short=['EWG=0.91', 'EWH=0.93']
+2022-12-19 10:00:00 REBAL  2022-12-19  regime=defensive  SPY_above_SMA=False  VXX_calm=True  → DEFENSIVE
+2022-12-19 10:00:00 SleeveA scores: XLU=0.226, XLP=0.168, XLI=0.150, XLF=0.149, XLB=0.123, XLE=0.123, XLV=0.083
+2022-12-19 10:00:00 SleeveC IBS  long=['FXI=0.03', 'EWZ=0.19']  short=['THD=0.61', 'EWJ=0.81']
+2023-01-04 10:00:00 REBAL  2023-01-04  regime=defensive  SPY_above_SMA=False  VXX_calm=True  → DEFENSIVE
+2023-01-04 10:00:00 SleeveA scores: XLE=0.342, XLF=0.230, XLI=0.147, XLB=0.110, XLU=0.097, XLP=0.061, XLV=0.039
+2023-01-04 10:00:00 SleeveC IBS  long=['THD=0.02', 'EWZ=0.07']  short=['FXI=0.56', 'EWH=0.84']
+2023-01-19 10:00:00 REBAL  2023-01-19  regime=defensive  SPY_above_SMA=False  VXX_calm=True  → DEFENSIVE
+2023-01-19 10:00:00 SleeveA scores: XLE=0.292, XLF=0.115, XLB=0.110, XLI=0.077, XLU=0.058, XLV=0.040, XLP=0.018
+2023-01-19 10:00:00 SleeveC IBS  long=['EWC=0.00', 'EWH=0.00']  short=['EWJ=0.02', 'THD=0.21']
+2023-02-02 10:00:00 REBAL  2023-02-02  regime=defensive  SPY_above_SMA=False  VXX_calm=True  → DEFENSIVE
+2023-02-02 10:00:00 SleeveA scores: XLF=0.228, XLE=0.205, XLB=0.148, XLI=0.072, XLV=0.032, XLP=0.008, XLC=-0.002
+2023-02-02 10:00:00 SleeveC IBS  long=['EWH=0.73', 'FXI=0.74']  short=['EWI=0.87', 'THD=0.88']
+2023-02-16 10:00:00 REBAL  2023-02-16  regime=defensive  SPY_above_SMA=False  VXX_calm=True  → DEFENSIVE
+2023-02-16 10:00:00 SleeveA scores: XLE=0.209, XLF=0.075, XLB=0.067, XLI=0.026, XLV=-0.007, XLK=-0.019, XLC=-0.031
+2023-02-16 10:00:00 SleeveC IBS  long=['EWZ=0.62', 'EWT=0.89']  short=['FXI=1.00', 'THD=1.00']
+2023-03-03 10:00:00 REBAL  2023-03-03  regime=defensive  SPY_above_SMA=False  VXX_calm=True  → DEFENSIVE
+2023-03-03 10:00:00 SleeveA scores: XLB=0.194, XLF=0.153, XLI=0.110, XLE=0.088, XLV=0.013, XLK=0.007, XLP=-0.002
+2023-03-03 10:00:00 SleeveC IBS  long=['EWZ=0.09', 'THD=0.73']  short=['EWY=0.94', 'FXI=0.95']
+2023-03-17 10:00:00 REBAL  2023-03-17  regime=defensive  SPY_above_SMA=False  VXX_calm=True  → DEFENSIVE
+2023-03-17 10:00:00 SleeveA scores: XLK=0.084, XLC=0.061, XLI=0.046, XLP=0.042, XLB=0.032, XLV=0.006, XLF=-0.017
+2023-03-17 10:00:00 SleeveC IBS  long=['THD=0.77', 'EWC=0.90']  short=['EWU=1.00', 'EWI=1.00']
+2023-03-31 10:00:00 REBAL  2023-03-31  regime=defensive  SPY_above_SMA=False  VXX_calm=True  → DEFENSIVE
+2023-03-31 10:00:00 SleeveA scores: XLB=0.140, XLK=0.116, XLE=0.114, XLC=0.108, XLP=0.105, XLI=0.089, XLV=0.034
+2023-03-31 10:00:00 SleeveC IBS  long=['EWJ=0.37', 'THD=0.56']  short=['EWC=0.80', 'EWU=1.00']
+2023-04-17 10:00:00 REBAL  2023-04-17  regime=defensive  SPY_above_SMA=False  VXX_calm=True  → DEFENSIVE
+2023-04-17 10:00:00 SleeveA scores: XLK=0.231, XLB=0.217, XLC=0.189, XLF=0.188, XLU=0.164, XLI=0.137, XLRE=0.123
+2023-04-17 10:00:00 SleeveC IBS  long=['EWA=0.21', 'FXI=0.27']  short=['EWH=0.62', 'EWZ=0.92']
+2023-05-01 10:00:00 REBAL  2023-05-01  regime=defensive  SPY_above_SMA=False  VXX_calm=True  → DEFENSIVE
+2023-05-01 10:00:00 SleeveA scores: XLK=0.253, XLB=0.249, XLRE=0.242, XLC=0.234, XLU=0.212, XLP=0.140, XLI=0.089
+2023-05-01 10:00:00 SleeveC IBS  long=['THD=0.30', 'EWU=0.79']  short=['EWY=1.00', 'EWT=1.00']
+2023-05-15 10:00:00 REBAL  2023-05-15  regime=defensive  SPY_above_SMA=False  VXX_calm=True  → DEFENSIVE
+2023-05-15 10:00:00 SleeveA scores: XLC=0.314, XLU=0.288, XLK=0.266, XLY=0.178, XLP=0.177, XLRE=0.163, XLB=0.066
+2023-05-15 10:00:00 SleeveC IBS  long=['FXI=0.15', 'EWY=0.23']  short=['EWH=0.60', 'EWZ=0.74']
+2023-05-30 10:00:00 REBAL  2023-05-30  regime=defensive  SPY_above_SMA=False  VXX_calm=True  → DEFENSIVE
+2023-05-30 10:00:00 SleeveA scores: XLC=0.190, XLK=0.113, XLY=0.068, XLP=-0.020, XLI=-0.021, XLV=-0.033, XLRE=-0.096
+2023-05-30 10:00:00 SleeveC IBS  long=['EWZ=0.62', 'EWJ=0.64']  short=['EWY=0.93', 'EWA=0.94']
+2023-06-13 10:00:00 REBAL  2023-06-13  regime=defensive  SPY_above_SMA=False  VXX_calm=True  → DEFENSIVE
+2023-06-13 10:00:00 SleeveA scores: XLC=0.267, XLK=0.111, XLY=0.077, XLI=0.023, XLP=-0.026, XLRE=-0.027, XLB=-0.028
+2023-06-13 10:00:00 SleeveC IBS  long=['FXI=0.07', 'EWU=0.52']  short=['EWT=0.97', 'EWG=1.00']
+2023-06-28 10:00:00 REBAL  2023-06-28  regime=defensive  SPY_above_SMA=False  VXX_calm=True  → DEFENSIVE
+2023-06-28 10:00:00 SleeveA scores: XLC=0.481, XLK=0.245, XLY=0.121, XLB=0.062, XLRE=0.050, XLI=0.034, XLP=0.004
+2023-06-28 10:00:00 SleeveC IBS  long=['THD=0.38', 'EWZ=0.43']  short=['EWT=0.92', 'FXI=0.95']
+2023-07-13 10:00:00 REBAL  2023-07-13  regime=defensive  SPY_above_SMA=False  VXX_calm=True  → DEFENSIVE
+2023-07-13 10:00:00 SleeveA scores: XLK=0.450, XLC=0.426, XLY=0.242, XLB=0.082, XLI=0.058, XLRE=0.056, XLP=-0.014
+2023-07-13 10:00:00 SleeveC IBS  long=['EWZ=0.02', 'EWJ=0.47']  short=['EWA=0.94', 'EWT=1.00']
+2023-07-27 10:00:00 REBAL  2023-07-27  regime=defensive  SPY_above_SMA=False  VXX_calm=True  → DEFENSIVE
+2023-07-27 10:00:00 SleeveA scores: XLC=0.258, XLK=0.223, XLY=0.174, XLI=0.073, XLP=0.065, XLB=0.055, XLV=0.012
+2023-07-27 10:00:00 SleeveC IBS  long=['EWJ=0.50', 'EWA=0.64']  short=['EWZ=0.86', 'FXI=0.89']
+2023-08-10 10:00:00 REBAL  2023-08-10  regime=defensive  SPY_above_SMA=False  VXX_calm=True  → DEFENSIVE
+2023-08-10 10:00:00 SleeveA scores: XLC=0.170, XLY=0.114, XLK=0.112, XLI=0.112, XLP=0.056, XLE=0.023, XLV=0.014
+2023-08-10 10:00:00 SleeveC IBS  long=['THD=0.04', 'EWJ=0.20']  short=['EWH=0.67', 'EWC=0.69']
+2023-08-24 10:00:00 REBAL  2023-08-24  regime=defensive  SPY_above_SMA=False  VXX_calm=True  → DEFENSIVE
+2023-08-24 10:00:00 SleeveA scores: XLC=0.221, XLE=0.130, XLK=0.125, XLY=0.088, XLI=0.051, XLV=0.040, XLB=0.017
+2023-08-24 10:00:00 SleeveC IBS  long=['EWJ=0.61', 'EWH=0.67']  short=['EWI=0.88', 'EWY=0.93']
+2023-09-08 10:00:00 REBAL  2023-09-08  regime=defensive  SPY_above_SMA=False  VXX_calm=True  → DEFENSIVE
+2023-09-08 10:00:00 SleeveA scores: XLC=0.275, XLE=0.148, XLY=0.138, XLK=0.127, XLV=0.046, XLI=0.042, XLB=0.013
+2023-09-08 10:00:00 SleeveC IBS  long=['EWC=0.04', 'EWZ=0.15']  short=['THD=0.71', 'EWT=0.83']
+2023-09-22 10:00:00 REBAL  2023-09-22  regime=defensive  SPY_above_SMA=False  VXX_calm=True  → DEFENSIVE
+2023-09-22 10:00:00 SleeveA scores: XLF=0.318, XLC=0.241, XLE=0.178, XLY=0.095, XLK=0.093, XLB=0.077, XLV=0.048
+2023-09-22 10:00:00 SleeveC IBS  long=['EWA=0.00', 'EWG=0.00']  short=['EWT=0.14', 'THD=0.30']
+2023-10-06 10:00:00 REBAL  2023-10-06  regime=defensive  SPY_above_SMA=False  VXX_calm=True  → DEFENSIVE
+2023-10-06 10:00:00 SleeveA scores: XLC=0.145, XLK=0.069, XLF=0.050, XLY=0.038, XLI=0.013, XLE=0.004, XLV=-0.017
+2023-10-06 10:00:00 SleeveC IBS  long=['EWZ=0.51', 'EWA=0.74']  short=['EWC=0.89', 'FXI=0.95']
+2023-10-20 10:00:00 REBAL  2023-10-20  regime=defensive  SPY_above_SMA=False  VXX_calm=True  → DEFENSIVE
+2023-10-20 10:00:00 SleeveA scores: XLC=0.153, XLE=0.095, XLK=0.091, XLY=0.061, XLI=-0.003, XLV=-0.028, XLF=-0.030
+2023-10-20 10:00:00 SleeveC IBS  long=['FXI=0.11', 'EWG=0.12']  short=['THD=0.36', 'EWT=0.41']
+2023-11-03 10:00:00 REBAL  2023-11-03  regime=defensive  SPY_above_SMA=False  VXX_calm=True  → DEFENSIVE
+2023-11-03 10:00:00 SleeveA scores: XLE=0.135, XLF=0.110, XLC=0.102, XLK=0.098, XLY=0.042, XLI=0.017, XLB=-0.000
+2023-11-03 10:00:00 SleeveC IBS  long=['THD=0.62', 'FXI=0.65']  short=['EWY=0.96', 'EWA=1.00']
+2023-11-17 10:00:00 REBAL  2023-11-17  regime=defensive  SPY_above_SMA=False  VXX_calm=True  → DEFENSIVE
+2023-11-17 10:00:00 SleeveA scores: XLF=0.076, XLC=0.074, XLE=0.071, XLK=0.046, XLB=0.038, XLY=0.030, XLI=0.023
+2023-11-17 10:00:00 SleeveC IBS  long=['FXI=0.27', 'EWI=0.28']  short=['THD=0.68', 'EWZ=0.85']
+2023-12-04 10:00:00 REBAL  2023-12-04  regime=defensive  SPY_above_SMA=False  VXX_calm=True  → DEFENSIVE
+2023-12-04 10:00:00 SleeveA scores: XLE=0.185, XLF=0.145, XLC=0.087, XLB=0.079, XLK=0.053, XLY=0.052, XLRE=0.051
+2023-12-04 10:00:00 SleeveC IBS  long=['EWZ=0.88', 'THD=0.89']  short=['EWC=0.97', 'EWJ=0.99']
+2023-12-18 10:00:00 REBAL  2023-12-18  regime=defensive  SPY_above_SMA=False  VXX_calm=True  → DEFENSIVE
+2023-12-18 10:00:00 SleeveA scores: XLF=0.171, XLC=0.148, XLE=0.100, XLK=0.084, XLB=0.076, XLRE=0.069, XLY=0.047
+2023-12-18 10:00:00 SleeveC IBS  long=['EWC=0.00', 'EWI=0.00']  short=['EWH=0.17', 'THD=0.51']
+Algorithm Id:(QuantumEdge) completed in 26.83 seconds at 3k data points per second. Processing total of 75,026 data points.
+Due to numerical precision issues in the factor file, data for the following symbols was adjust to a later starting date: [VXX, 1/24/2018], [XLRE, 10/7/2015], [XLC, 6/18/2018]
+The starting dates for the following symbols have been adjusted to match their map files first date: [VXX, 2018-01-25], [XLRE, 2015-10-08], [XLC, 2018-06-19]

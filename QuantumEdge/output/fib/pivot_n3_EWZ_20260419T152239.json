@@ -1,0 +1,32 @@
+{
+  "experiment": "pivot_n3",
+  "ticker": "EWZ",
+  "stats": {
+    "n_setups": 108,
+    "n_zone_hit": 19,
+    "n_trades": 19,
+    "zone_hit_rate": 0.1759,
+    "win_rate": 0.1579,
+    "expectancy_r": -0.5091,
+    "median_r": -1.0,
+    "profit_factor": 0.253,
+    "sharpe_r": -0.609,
+    "sortino_r": -1.303,
+    "mean_mae_r": -0.8989,
+    "mean_mfe_r": 0.5494,
+    "hit_rate_1272": 0.1579,
+    "hit_rate_1618": 0.1053,
+    "cagr": -0.01407,
+    "max_drawdown": -0.1112,
+    "avg_bars_held": 29.0,
+    "exit_reasons": {
+      "stop": 12,
+      "1.618": 2,
+      "timeout": 5
+    },
+    "n_bullish_trades": 14,
+    "n_bearish_trades": 5,
+    "start_equity": 100000.0,
+    "end_equity": 90700.98
+  }
+}

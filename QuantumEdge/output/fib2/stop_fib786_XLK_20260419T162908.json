@@ -1,0 +1,9 @@
+{
+  "experiment": "stop_fib786",
+  "ticker": "XLK",
+  "stats": {
+    "n_legs": 49,
+    "n_trades": 0,
+    "zone_hit_rate": 0.0
+  }
+}

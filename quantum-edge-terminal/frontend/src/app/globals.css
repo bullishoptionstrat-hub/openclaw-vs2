@@ -1,0 +1,74 @@
+import React from 'react';
+
+export default function globals() {
+    return ` @tailwind base;
+    @tailwind components;
+    @tailwind utilities;
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        background: linear-gradient(135deg, #050814 0%, #0a0e27 100%);
+        color: #ffffff;
+        font-family: 'Monaco', 'Courier New', monospace;
+        letter-spacing: 0.5px;
+    }
+
+    /* Scrollbar styling */
+    ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: #050814;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: #00d9ff;
+        border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: #00b8cc;
+    }
+
+    /* Terminal text effect */
+    .terminal-text {
+        text-shadow: 0 0 10px rgba(0, 217, 255, 0.5);
+    }
+
+    /* Glow effects */
+    .glow-accent {
+        box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
+    }
+
+    .glow-buy {
+        box-shadow: 0 0 20px rgba(0, 255, 65, 0.3);
+    }
+
+    .glow-sell {
+        box-shadow: 0 0 20px rgba(255, 55, 95, 0.3);
+    }
+
+    /* Panel borders */
+    .panel-border {
+        border: 1px solid rgba(0, 217, 255, 0.2);
+    }
+
+    /* Hover effects */
+    .interactive-hover {
+        transition: all 0.2s ease;
+    }
+
+    .interactive-hover:hover {
+        border-color: rgba(0, 217, 255, 0.5);
+        box-shadow: 0 0 10px rgba(0, 217, 255, 0.2);
+    }
+
+    `;
+}

@@ -1,0 +1,52 @@
+{
+  "experiment": "stop_atr2x",
+  "ticker": "QQQ",
+  "stats": {
+    "n_legs": 17,
+    "n_trades": 7,
+    "zone_hit_rate": 0.4118,
+    "win_rate": 0.7143,
+    "expectancy_r": 1.5753,
+    "median_r": 1.8476,
+    "profit_factor": 6.513,
+    "sharpe_r": 0.781,
+    "sortino_r": 0.0,
+    "mean_mae_r": -0.6578,
+    "mean_mfe_r": 2.4001,
+    "hit_rate_1272": 0.7143,
+    "hit_rate_1618": 0.4286,
+    "timeout_rate": 0.2857,
+    "cagr": 0.00721,
+    "max_drawdown": -0.0199,
+    "avg_bars_held": 33.6,
+    "exit_reasons": {
+      "timeout": 2,
+      "1.618": 3,
+      "stop": 2
+    },
+    "n_bullish_trades": 4,
+    "n_bearish_trades": 3,
+    "bullish_stats": {
+      "n": 4,
+      "win_rate": 1.0,
+      "expectancy_r": 2.2481
+    },
+    "bearish_stats": {
+      "n": 3,
+      "win_rate": 0.3333,
+      "expectancy_r": 0.6781
+    },
+    "spy_bull_regime_stats": {
+      "n": 4,
+      "win_rate": 1.0,
+      "expectancy_r": 2.2481
+    },
+    "spy_bear_regime_stats": {
+      "n": 3,
+      "win_rate": 0.3333,
+      "expectancy_r": 0.6781
+    },
+    "start_equity": 100000.0,
+    "end_equity": 111429.61
+  }
+}

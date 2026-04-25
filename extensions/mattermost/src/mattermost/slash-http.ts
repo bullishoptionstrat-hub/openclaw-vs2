@@ -6,13 +6,13 @@
  */
 
 import type { IncomingMessage, ServerResponse } from "node:http";
-import { safeEqualSecret } from "openclaw/plugin-sdk/browser-support";
+import { safeEqualSecret } from "openclaw/plugin-sdk/browser-security-runtime";
+import { isPrivateNetworkOptInEnabled } from "openclaw/plugin-sdk/ssrf-runtime";
 import type { ResolvedMattermostAccount } from "../mattermost/accounts.js";
 import { getMattermostRuntime } from "../runtime.js";
 import {
   createMattermostClient,
   fetchMattermostChannel,
-  normalizeMattermostBaseUrl,
   sendMattermostTyping,
   type MattermostChannel,
 } from "./client.js";
@@ -54,6 +54,7 @@ type SlashHttpHandlerParams = {
   /** Map from trigger to original command name (for skill commands that start with oc_). */
   triggerMap?: ReadonlyMap<string, string>;
   log?: (msg: string) => void;
+  bodyTimeoutMs?: number;
 };
 
 const MAX_BODY_BYTES = 64 * 1024;
@@ -62,10 +63,14 @@ const BODY_READ_TIMEOUT_MS = 5_000;
 /**
  * Read the full request body as a string.
  */
-function readBody(req: IncomingMessage, maxBytes: number): Promise<string> {
+function readBody(
+  req: IncomingMessage,
+  maxBytes: number,
+  timeoutMs = BODY_READ_TIMEOUT_MS,
+): Promise<string> {
   return readRequestBodyWithLimit(req, {
     maxBytes,
-    timeoutMs: BODY_READ_TIMEOUT_MS,
+    timeoutMs,
   });
 }
 
@@ -219,7 +224,7 @@ async function authorizeSlashInvocation(params: {
  * from the Mattermost server when a user invokes a registered slash command.
  */
 export function createSlashCommandHttpHandler(params: SlashHttpHandlerParams) {
-  const { account, cfg, runtime, commandTokens, triggerMap, log } = params;
+  const { account, cfg, runtime, commandTokens, triggerMap, log, bodyTimeoutMs } = params;
 
   return async (req: IncomingMessage, res: ServerResponse): Promise<void> => {
     if (req.method !== "POST") {
@@ -231,7 +236,7 @@ export function createSlashCommandHttpHandler(params: SlashHttpHandlerParams) {
 
     let body: string;
     try {
-      body = await readBody(req, MAX_BODY_BYTES);
+      body = await readBody(req, MAX_BODY_BYTES, bodyTimeoutMs);
     } catch (error) {
       if (isRequestBodyLimitError(error, "REQUEST_BODY_TIMEOUT")) {
         res.statusCode = 408;
@@ -273,7 +278,7 @@ export function createSlashCommandHttpHandler(params: SlashHttpHandlerParams) {
     const client = createMattermostClient({
       baseUrl: account.baseUrl ?? "",
       botToken: account.botToken ?? "",
-      allowPrivateNetwork: account.config?.allowPrivateNetwork === true,
+      allowPrivateNetwork: isPrivateNetworkOptInEnabled(account.config),
     });
 
     const auth = await authorizeSlashInvocation({
@@ -371,7 +376,7 @@ async function handleSlashCommandAsync(params: {
     teamId,
     kind,
     chatType,
-    channelName,
+    channelName: _channelName,
     channelDisplay,
     roomLabel,
     commandAuthorized,

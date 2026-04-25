@@ -137,13 +137,38 @@ In practice, pair `defineSetupPluginEntry(...)` with the narrow setup helper
 families:
 
 - `openclaw/plugin-sdk/setup-runtime` for runtime-safe setup helpers such as
-  lookup-note output, `promptResolvedAllowFrom`, `splitSetupEntries`, and
-  delegated setup proxies
+  import-safe setup patch adapters, lookup-note output,
+  `promptResolvedAllowFrom`, `splitSetupEntries`, and delegated setup proxies
 - `openclaw/plugin-sdk/channel-setup` for optional-install setup surfaces
 - `openclaw/plugin-sdk/setup-tools` for setup/install CLI/archive/docs helpers
 
 Keep heavy SDKs, CLI registration, and long-lived runtime services in the full
 entry.
+
+Bundled workspace channels that split setup and runtime surfaces can use
+`defineBundledChannelSetupEntry(...)` from
+`openclaw/plugin-sdk/channel-entry-contract` instead. That contract lets the
+setup entry keep setup-safe plugin/secrets exports while still exposing a
+runtime setter:
+
+```typescript
+import { defineBundledChannelSetupEntry } from "openclaw/plugin-sdk/channel-entry-contract";
+
+export default defineBundledChannelSetupEntry({
+  importMetaUrl: import.meta.url,
+  plugin: {
+    specifier: "./channel-plugin-api.js",
+    exportName: "myChannelPlugin",
+  },
+  runtime: {
+    specifier: "./runtime-api.js",
+    exportName: "setMyChannelRuntime",
+  },
+});
+```
+
+Use that bundled contract only when setup flows truly need a lightweight runtime
+setter before the full channel entry loads.
 
 ## Registration mode
 

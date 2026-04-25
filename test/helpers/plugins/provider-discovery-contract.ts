@@ -1,49 +1,67 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import type { AuthProfileStore } from "../../../src/agents/auth-profiles/types.js";
 import type { OpenClawConfig } from "../../../src/config/config.js";
-import type { ModelDefinitionConfig } from "../../../src/config/types.models.js";
-import { registerProviders, requireProvider } from "../../../src/plugins/contracts/testkit.js";
+import {
+  resolveBundledPluginPublicModulePath,
+  resolveRelativeBundledPluginPublicModuleId,
+} from "../../../src/test-utils/bundled-plugin-public-surface.js";
+import { registerProviders, requireProvider } from "./contracts-testkit.js";
 
 const resolveCopilotApiTokenMock = vi.hoisted(() => vi.fn());
-const buildOllamaProviderMock = vi.hoisted(() => vi.fn());
 const buildVllmProviderMock = vi.hoisted(() => vi.fn());
 const buildSglangProviderMock = vi.hoisted(() => vi.fn());
 const ensureAuthProfileStoreMock = vi.hoisted(() => vi.fn());
 const listProfilesForProviderMock = vi.hoisted(() => vi.fn());
-const bundledProviderModules = vi.hoisted(() => ({
-  cloudflareAiGatewayIndexModuleUrl: new URL(
-    "../../../extensions/cloudflare-ai-gateway/index.ts",
-    import.meta.url,
-  ).href,
-  cloudflareAiGatewayIndexModuleId: new URL(
-    "../../../extensions/cloudflare-ai-gateway/index.js",
-    import.meta.url,
-  ).pathname,
-  githubCopilotIndexModuleUrl: new URL(
-    "../../../extensions/github-copilot/index.ts",
-    import.meta.url,
-  ).href,
-  githubCopilotTokenModuleId: new URL(
-    "../../../extensions/github-copilot/token.js",
-    import.meta.url,
-  ).pathname,
-  minimaxIndexModuleUrl: new URL("../../../extensions/minimax/index.ts", import.meta.url).href,
-  modelStudioIndexModuleUrl: new URL("../../../extensions/modelstudio/index.ts", import.meta.url)
-    .href,
-  ollamaApiModuleId: new URL("../../../extensions/ollama/api.js", import.meta.url).pathname,
-  ollamaIndexModuleUrl: new URL("../../../extensions/ollama/index.ts", import.meta.url).href,
-  sglangApiModuleId: new URL("../../../extensions/sglang/api.js", import.meta.url).pathname,
-  sglangIndexModuleUrl: new URL("../../../extensions/sglang/index.ts", import.meta.url).href,
-  vllmApiModuleId: new URL("../../../extensions/vllm/api.js", import.meta.url).pathname,
-  vllmIndexModuleUrl: new URL("../../../extensions/vllm/index.ts", import.meta.url).href,
-}));
+const bundledProviderModules = {
+  cloudflareAiGatewayIndexModuleUrl: resolveRelativeBundledPluginPublicModuleId({
+    fromModuleUrl: import.meta.url,
+    pluginId: "cloudflare-ai-gateway",
+    artifactBasename: "index.js",
+  }),
+  githubCopilotIndexModuleUrl: resolveRelativeBundledPluginPublicModuleId({
+    fromModuleUrl: import.meta.url,
+    pluginId: "github-copilot",
+    artifactBasename: "index.js",
+  }),
+  githubCopilotRegisterRuntimeModuleId: resolveBundledPluginPublicModulePath({
+    pluginId: "github-copilot",
+    artifactBasename: "register.runtime.js",
+  }),
+  minimaxIndexModuleUrl: resolveRelativeBundledPluginPublicModuleId({
+    fromModuleUrl: import.meta.url,
+    pluginId: "minimax",
+    artifactBasename: "index.js",
+  }),
+  qwenIndexModuleUrl: resolveRelativeBundledPluginPublicModuleId({
+    fromModuleUrl: import.meta.url,
+    pluginId: "qwen",
+    artifactBasename: "index.js",
+  }),
+  sglangApiModuleId: resolveBundledPluginPublicModulePath({
+    pluginId: "sglang",
+    artifactBasename: "api.js",
+  }),
+  sglangIndexModuleUrl: resolveRelativeBundledPluginPublicModuleId({
+    fromModuleUrl: import.meta.url,
+    pluginId: "sglang",
+    artifactBasename: "index.js",
+  }),
+  vllmApiModuleId: resolveBundledPluginPublicModulePath({
+    pluginId: "vllm",
+    artifactBasename: "api.js",
+  }),
+  vllmIndexModuleUrl: resolveRelativeBundledPluginPublicModuleId({
+    fromModuleUrl: import.meta.url,
+    pluginId: "vllm",
+    artifactBasename: "index.js",
+  }),
+};
 
 type ProviderHandle = Awaited<ReturnType<typeof requireProvider>>;
 
 type DiscoveryState = {
   runProviderCatalog: typeof import("../../../src/plugins/provider-discovery.js").runProviderCatalog;
   githubCopilotProvider?: ProviderHandle;
-  ollamaProvider?: ProviderHandle;
   vllmProvider?: ProviderHandle;
   sglangProvider?: ProviderHandle;
   minimaxProvider?: ProviderHandle;
@@ -52,22 +70,13 @@ type DiscoveryState = {
   cloudflareAiGatewayProvider?: ProviderHandle;
 };
 
-function createModelConfig(id: string, name = id): ModelDefinitionConfig {
-  return {
-    id,
-    name,
-    reasoning: false,
-    input: ["text"],
-    cost: {
-      input: 0,
-      output: 0,
-      cacheRead: 0,
-      cacheWrite: 0,
-    },
-    contextWindow: 128_000,
-    maxTokens: 8_192,
-  };
-}
+type BundledProviderUnderTest =
+  | "github-copilot"
+  | "vllm"
+  | "sglang"
+  | "minimax"
+  | "modelstudio"
+  | "cloudflare-ai-gateway";
 
 function setRuntimeAuthStore(store?: AuthProfileStore) {
   const resolvedStore = store ?? {
@@ -132,120 +141,145 @@ function runCatalog(
 }
 
 async function importBundledProviderPlugin<T>(moduleUrl: string): Promise<T> {
-  return (await import(`${moduleUrl}?t=${Date.now()}`)) as T;
+  return (await import(moduleUrl)) as T;
 }
 
-function installDiscoveryHooks(state: DiscoveryState) {
-  beforeEach(async () => {
+function installDiscoveryHooks(
+  state: DiscoveryState,
+  providerIds: readonly BundledProviderUnderTest[],
+) {
+  beforeAll(async () => {
     vi.resetModules();
-    vi.doMock("openclaw/plugin-sdk/agent-runtime", async () => {
-      const actual = await import("../../../src/plugin-sdk/agent-runtime.ts");
+    vi.doMock("openclaw/plugin-sdk/agent-runtime", () => {
       return {
-        ...actual,
         ensureAuthProfileStore: ensureAuthProfileStoreMock,
         listProfilesForProvider: listProfilesForProviderMock,
       };
     });
-    vi.doMock("openclaw/plugin-sdk/provider-auth", async () => {
-      const actual = await vi.importActual<object>("openclaw/plugin-sdk/provider-auth");
+    vi.doMock("openclaw/plugin-sdk/provider-auth", () => {
       return {
-        ...actual,
+        MINIMAX_OAUTH_MARKER: "minimax-oauth",
+        applyAuthProfileConfig: (config: OpenClawConfig) => config,
+        buildApiKeyCredential: (
+          provider: string,
+          key: unknown,
+          metadata?: Record<string, unknown>,
+        ) => ({
+          type: "api_key",
+          provider,
+          ...(typeof key === "string" ? { key } : {}),
+          ...(metadata ? { metadata } : {}),
+        }),
+        buildOauthProviderAuthResult: vi.fn(),
+        coerceSecretRef: (value: unknown) =>
+          value && typeof value === "object" && !Array.isArray(value)
+            ? (value as Record<string, unknown>)
+            : null,
+        ensureApiKeyFromOptionEnvOrPrompt: vi.fn(),
         ensureAuthProfileStore: ensureAuthProfileStoreMock,
         listProfilesForProvider: listProfilesForProviderMock,
+        normalizeApiKeyInput: (value: unknown) => (typeof value === "string" ? value.trim() : ""),
+        normalizeOptionalSecretInput: (value: unknown) =>
+          typeof value === "string" && value.trim() ? value.trim() : undefined,
+        resolveNonEnvSecretRefApiKeyMarker: (source: unknown) =>
+          typeof source === "string" ? source : "",
+        upsertAuthProfile: vi.fn(),
+        validateApiKeyInput: () => undefined,
       };
     });
-    vi.doMock(bundledProviderModules.githubCopilotTokenModuleId, async () => {
+    vi.doMock(bundledProviderModules.githubCopilotRegisterRuntimeModuleId, async () => {
       const actual = await vi.importActual<object>(
-        bundledProviderModules.githubCopilotTokenModuleId,
+        bundledProviderModules.githubCopilotRegisterRuntimeModuleId,
       );
       return {
         ...actual,
         resolveCopilotApiToken: resolveCopilotApiTokenMock,
       };
     });
-    vi.doMock(bundledProviderModules.ollamaApiModuleId, async () => {
-      const actual = await vi.importActual<object>(bundledProviderModules.ollamaApiModuleId);
-      return {
-        ...actual,
-        buildOllamaProvider: (...args: unknown[]) => buildOllamaProviderMock(...args),
-      };
-    });
     vi.doMock(bundledProviderModules.vllmApiModuleId, async () => {
-      const actual = await vi.importActual<object>(bundledProviderModules.vllmApiModuleId);
       return {
-        ...actual,
+        VLLM_DEFAULT_API_KEY_ENV_VAR: "VLLM_API_KEY",
+        VLLM_DEFAULT_BASE_URL: "http://127.0.0.1:8000/v1",
+        VLLM_MODEL_PLACEHOLDER: "meta-llama/Meta-Llama-3-8B-Instruct",
+        VLLM_PROVIDER_LABEL: "vLLM",
         buildVllmProvider: (...args: unknown[]) => buildVllmProviderMock(...args),
       };
     });
     vi.doMock(bundledProviderModules.sglangApiModuleId, async () => {
-      const actual = await vi.importActual<object>(bundledProviderModules.sglangApiModuleId);
       return {
-        ...actual,
+        SGLANG_DEFAULT_API_KEY_ENV_VAR: "SGLANG_API_KEY",
+        SGLANG_DEFAULT_BASE_URL: "http://127.0.0.1:30000/v1",
+        SGLANG_MODEL_PLACEHOLDER: "Qwen/Qwen3-8B",
+        SGLANG_PROVIDER_LABEL: "SGLang",
         buildSglangProvider: (...args: unknown[]) => buildSglangProviderMock(...args),
       };
     });
     ({ runProviderCatalog: state.runProviderCatalog } =
       await import("../../../src/plugins/provider-discovery.js"));
-    const [
-      { default: githubCopilotPlugin },
-      { default: ollamaPlugin },
-      { default: vllmPlugin },
-      { default: sglangPlugin },
-      { default: minimaxPlugin },
-      { default: modelStudioPlugin },
-      { default: cloudflareAiGatewayPlugin },
-    ] = await Promise.all([
-      importBundledProviderPlugin<{
+
+    if (providerIds.includes("github-copilot")) {
+      const { default: githubCopilotPlugin } = await importBundledProviderPlugin<{
         default: Parameters<typeof registerProviders>[0];
-      }>(bundledProviderModules.githubCopilotIndexModuleUrl),
-      importBundledProviderPlugin<{
+      }>(bundledProviderModules.githubCopilotIndexModuleUrl);
+      state.githubCopilotProvider = requireProvider(
+        await registerProviders(githubCopilotPlugin),
+        "github-copilot",
+      );
+    }
+
+    if (providerIds.includes("vllm")) {
+      const { default: vllmPlugin } = await importBundledProviderPlugin<{
         default: Parameters<typeof registerProviders>[0];
-      }>(bundledProviderModules.ollamaIndexModuleUrl),
-      importBundledProviderPlugin<{
+      }>(bundledProviderModules.vllmIndexModuleUrl);
+      state.vllmProvider = requireProvider(await registerProviders(vllmPlugin), "vllm");
+    }
+
+    if (providerIds.includes("sglang")) {
+      const { default: sglangPlugin } = await importBundledProviderPlugin<{
         default: Parameters<typeof registerProviders>[0];
-      }>(bundledProviderModules.vllmIndexModuleUrl),
-      importBundledProviderPlugin<{
+      }>(bundledProviderModules.sglangIndexModuleUrl);
+      state.sglangProvider = requireProvider(await registerProviders(sglangPlugin), "sglang");
+    }
+
+    if (providerIds.includes("minimax")) {
+      const { default: minimaxPlugin } = await importBundledProviderPlugin<{
         default: Parameters<typeof registerProviders>[0];
-      }>(bundledProviderModules.sglangIndexModuleUrl),
-      importBundledProviderPlugin<{
+      }>(bundledProviderModules.minimaxIndexModuleUrl);
+      const registeredProviders = await registerProviders(minimaxPlugin);
+      state.minimaxProvider = requireProvider(registeredProviders, "minimax");
+      state.minimaxPortalProvider = requireProvider(registeredProviders, "minimax-portal");
+    }
+
+    if (providerIds.includes("modelstudio")) {
+      const { default: qwenPlugin } = await importBundledProviderPlugin<{
         default: Parameters<typeof registerProviders>[0];
-      }>(bundledProviderModules.minimaxIndexModuleUrl),
-      importBundledProviderPlugin<{
+      }>(bundledProviderModules.qwenIndexModuleUrl);
+      state.modelStudioProvider = requireProvider(await registerProviders(qwenPlugin), "qwen");
+    }
+
+    if (providerIds.includes("cloudflare-ai-gateway")) {
+      const { default: cloudflareAiGatewayPlugin } = await importBundledProviderPlugin<{
         default: Parameters<typeof registerProviders>[0];
-      }>(bundledProviderModules.modelStudioIndexModuleUrl),
-      importBundledProviderPlugin<{
-        default: Parameters<typeof registerProviders>[0];
-      }>(bundledProviderModules.cloudflareAiGatewayIndexModuleUrl),
-    ]);
-    const githubCopilotProviders = await registerProviders(githubCopilotPlugin);
-    const ollamaProviders = await registerProviders(ollamaPlugin);
-    const vllmProviders = await registerProviders(vllmPlugin);
-    const sglangProviders = await registerProviders(sglangPlugin);
-    const minimaxProviders = await registerProviders(minimaxPlugin);
-    const modelStudioProviders = await registerProviders(modelStudioPlugin);
-    const cloudflareAiGatewayProviders = await registerProviders(cloudflareAiGatewayPlugin);
-    state.githubCopilotProvider = requireProvider(githubCopilotProviders, "github-copilot");
-    state.ollamaProvider = requireProvider(ollamaProviders, "ollama");
-    state.vllmProvider = requireProvider(vllmProviders, "vllm");
-    state.sglangProvider = requireProvider(sglangProviders, "sglang");
-    state.minimaxProvider = requireProvider(minimaxProviders, "minimax");
-    state.minimaxPortalProvider = requireProvider(minimaxProviders, "minimax-portal");
-    state.modelStudioProvider = requireProvider(modelStudioProviders, "modelstudio");
-    state.cloudflareAiGatewayProvider = requireProvider(
-      cloudflareAiGatewayProviders,
-      "cloudflare-ai-gateway",
-    );
+      }>(bundledProviderModules.cloudflareAiGatewayIndexModuleUrl);
+      state.cloudflareAiGatewayProvider = requireProvider(
+        await registerProviders(cloudflareAiGatewayPlugin),
+        "cloudflare-ai-gateway",
+      );
+    }
+  });
+
+  beforeEach(() => {
     setRuntimeAuthStore();
   });
 
   afterEach(() => {
     vi.restoreAllMocks();
     resolveCopilotApiTokenMock.mockReset();
-    buildOllamaProviderMock.mockReset();
     buildVllmProviderMock.mockReset();
     buildSglangProviderMock.mockReset();
     ensureAuthProfileStoreMock.mockReset();
     listProfilesForProviderMock.mockReset();
+    setRuntimeAuthStore();
   });
 }
 
@@ -253,7 +287,7 @@ export function describeGithubCopilotProviderDiscoveryContract() {
   const state = {} as DiscoveryState;
 
   describe("github-copilot provider discovery contract", () => {
-    installDiscoveryHooks(state);
+    installDiscoveryHooks(state, ["github-copilot"]);
 
     it("keeps catalog disabled without env tokens or profiles", async () => {
       await expect(
@@ -307,77 +341,11 @@ export function describeGithubCopilotProviderDiscoveryContract() {
   });
 }
 
-export function describeOllamaProviderDiscoveryContract() {
-  const state = {} as DiscoveryState;
-
-  describe("ollama provider discovery contract", () => {
-    installDiscoveryHooks(state);
-
-    it("keeps explicit catalog normalization provider-owned", async () => {
-      await expect(
-        state.runProviderCatalog({
-          provider: state.ollamaProvider!,
-          config: {
-            models: {
-              providers: {
-                ollama: {
-                  baseUrl: "http://ollama-host:11434/v1/",
-                  models: [createModelConfig("llama3.2")],
-                },
-              },
-            },
-          },
-          env: {} as NodeJS.ProcessEnv,
-          resolveProviderApiKey: () => ({ apiKey: undefined }),
-          resolveProviderAuth: () => ({
-            apiKey: undefined,
-            discoveryApiKey: undefined,
-            mode: "none",
-            source: "none",
-          }),
-        }),
-      ).resolves.toMatchObject({
-        provider: {
-          baseUrl: "http://ollama-host:11434",
-          api: "ollama",
-          apiKey: "ollama-local",
-          models: [createModelConfig("llama3.2")],
-        },
-      });
-      expect(buildOllamaProviderMock).not.toHaveBeenCalled();
-    });
-
-    it("keeps empty autodiscovery disabled without keys or explicit config", async () => {
-      buildOllamaProviderMock.mockResolvedValueOnce({
-        baseUrl: "http://127.0.0.1:11434",
-        api: "ollama",
-        models: [],
-      });
-
-      await expect(
-        runCatalog(state, {
-          provider: state.ollamaProvider!,
-          config: {},
-          env: {} as NodeJS.ProcessEnv,
-          resolveProviderApiKey: () => ({ apiKey: undefined }),
-          resolveProviderAuth: () => ({
-            apiKey: undefined,
-            discoveryApiKey: undefined,
-            mode: "none",
-            source: "none",
-          }),
-        }),
-      ).resolves.toBeNull();
-      expect(buildOllamaProviderMock).toHaveBeenCalledWith(undefined, { quiet: true });
-    });
-  });
-}
-
 export function describeVllmProviderDiscoveryContract() {
   const state = {} as DiscoveryState;
 
   describe("vllm provider discovery contract", () => {
-    installDiscoveryHooks(state);
+    installDiscoveryHooks(state, ["vllm"]);
 
     it("keeps self-hosted discovery provider-owned", async () => {
       buildVllmProviderMock.mockResolvedValueOnce({
@@ -423,7 +391,7 @@ export function describeSglangProviderDiscoveryContract() {
   const state = {} as DiscoveryState;
 
   describe("sglang provider discovery contract", () => {
-    installDiscoveryHooks(state);
+    installDiscoveryHooks(state, ["sglang"]);
 
     it("keeps self-hosted discovery provider-owned", async () => {
       buildSglangProviderMock.mockResolvedValueOnce({
@@ -469,7 +437,7 @@ export function describeMinimaxProviderDiscoveryContract() {
   const state = {} as DiscoveryState;
 
   describe("minimax provider discovery contract", () => {
-    installDiscoveryHooks(state);
+    installDiscoveryHooks(state, ["minimax"]);
 
     it("keeps API catalog provider-owned", async () => {
       await expect(
@@ -578,7 +546,7 @@ export function describeModelStudioProviderDiscoveryContract() {
   const state = {} as DiscoveryState;
 
   describe("modelstudio provider discovery contract", () => {
-    installDiscoveryHooks(state);
+    installDiscoveryHooks(state, ["modelstudio"]);
 
     it("keeps catalog provider-owned", async () => {
       await expect(
@@ -612,7 +580,7 @@ export function describeModelStudioProviderDiscoveryContract() {
           apiKey: "modelstudio-key",
           models: expect.arrayContaining([
             expect.objectContaining({ id: "qwen3.5-plus" }),
-            expect.objectContaining({ id: "qwen3.6-plus" }),
+            expect.objectContaining({ id: "qwen3-max-2026-01-23" }),
             expect.objectContaining({ id: "MiniMax-M2.5" }),
           ]),
         },
@@ -625,7 +593,7 @@ export function describeCloudflareAiGatewayProviderDiscoveryContract() {
   const state = {} as DiscoveryState;
 
   describe("cloudflare-ai-gateway provider discovery contract", () => {
-    installDiscoveryHooks(state);
+    installDiscoveryHooks(state, ["cloudflare-ai-gateway"]);
 
     it("keeps catalog disabled without stored metadata", async () => {
       await expect(

@@ -1,13 +1,27 @@
-import type { StreamFn } from "@mariozechner/pi-agent-core";
 import {
   definePluginEntry,
   type ProviderResolveDynamicModelContext,
   type ProviderRuntimeModel,
-  type ProviderWrapStreamFnContext,
 } from "openclaw/plugin-sdk/plugin-entry";
+import { createProviderApiKeyAuthMethod } from "openclaw/plugin-sdk/provider-auth-api-key";
+import {
+  DEFAULT_CONTEXT_TOKENS,
+  PASSTHROUGH_GEMINI_REPLAY_HOOKS,
+} from "openclaw/plugin-sdk/provider-model-shared";
+import {
+  getOpenRouterModelCapabilities,
+  loadOpenRouterModelCapabilities,
+} from "openclaw/plugin-sdk/provider-stream-family";
+import { openrouterMediaUnderstandingProvider } from "./media-understanding-provider.js";
+import { applyOpenrouterConfig, OPENROUTER_DEFAULT_MODEL_REF } from "./onboard.js";
+import {
+  buildOpenrouterProvider,
+  normalizeOpenRouterBaseUrl,
+  OPENROUTER_BASE_URL,
+} from "./provider-catalog.js";
+import { wrapOpenRouterProviderStream } from "./stream.js";
 
 const PROVIDER_ID = "openrouter";
-const OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1";
 const OPENROUTER_DEFAULT_MAX_TOKENS = 8192;
 const OPENROUTER_CACHE_TTL_MODEL_PREFIXES = [
   "anthropic/",
@@ -16,28 +30,22 @@ const OPENROUTER_CACHE_TTL_MODEL_PREFIXES = [
   "zai/",
 ] as const;
 
+function normalizeOpenRouterResolvedModel<T extends ProviderRuntimeModel>(model: T): T | undefined {
+  const normalizedBaseUrl = normalizeOpenRouterBaseUrl(model.baseUrl);
+  if (!normalizedBaseUrl || normalizedBaseUrl === model.baseUrl) {
+    return undefined;
+  }
+  return {
+    ...model,
+    baseUrl: normalizedBaseUrl,
+  };
+}
+
 export default definePluginEntry({
   id: "openrouter",
   name: "OpenRouter Provider",
   description: "Bundled OpenRouter provider plugin",
-  async register(api) {
-    const {
-      buildProviderReplayFamilyHooks,
-      buildProviderStreamFamilyHooks,
-      createProviderApiKeyAuthMethod,
-      DEFAULT_CONTEXT_TOKENS,
-      getOpenRouterModelCapabilities,
-      loadOpenRouterModelCapabilities,
-      OPENROUTER_DEFAULT_MODEL_REF,
-      openrouterMediaUnderstandingProvider,
-      applyOpenrouterConfig,
-      buildOpenrouterProvider,
-    } = await import("./register.runtime.js");
-    const PASSTHROUGH_GEMINI_REPLAY_HOOKS = buildProviderReplayFamilyHooks({
-      family: "passthrough-gemini",
-    });
-    const OPENROUTER_THINKING_STREAM_HOOKS = buildProviderStreamFamilyHooks("openrouter-thinking");
-
+  register(api) {
     function buildDynamicOpenRouterModel(
       ctx: ProviderResolveDynamicModelContext,
     ): ProviderRuntimeModel {
@@ -54,53 +62,6 @@ export default definePluginEntry({
         contextWindow: capabilities?.contextWindow ?? DEFAULT_CONTEXT_TOKENS,
         maxTokens: capabilities?.maxTokens ?? OPENROUTER_DEFAULT_MAX_TOKENS,
       };
-    }
-
-    function injectOpenRouterRouting(
-      baseStreamFn: StreamFn | undefined,
-      providerRouting?: Record<string, unknown>,
-    ): StreamFn | undefined {
-      if (!providerRouting) {
-        return baseStreamFn;
-      }
-      return (model, context, options) =>
-        (
-          baseStreamFn ??
-          ((nextModel, nextContext, nextOptions) => {
-            throw new Error(
-              `OpenRouter routing wrapper requires an underlying streamFn for ${String(nextModel.id)}.`,
-            );
-          })
-        )(
-          {
-            ...model,
-            compat: { ...model.compat, openRouterRouting: providerRouting },
-          } as typeof model,
-          context,
-          options,
-        );
-    }
-
-    function wrapOpenRouterProviderStream(
-      ctx: ProviderWrapStreamFnContext,
-    ): StreamFn | null | undefined {
-      const providerRouting =
-        ctx.extraParams?.provider != null && typeof ctx.extraParams.provider === "object"
-          ? (ctx.extraParams.provider as Record<string, unknown>)
-          : undefined;
-      const routedStreamFn = providerRouting
-        ? injectOpenRouterRouting(ctx.streamFn, providerRouting)
-        : ctx.streamFn;
-      const wrapStreamFn = OPENROUTER_THINKING_STREAM_HOOKS.wrapStreamFn ?? undefined;
-      if (!wrapStreamFn) {
-        return routedStreamFn;
-      }
-      return (
-        wrapStreamFn({
-          ...ctx,
-          streamFn: routedStreamFn,
-        }) ?? undefined
-      );
     }
 
     function isOpenRouterCacheTtlModel(modelId: string): boolean {
@@ -152,6 +113,22 @@ export default definePluginEntry({
       resolveDynamicModel: (ctx) => buildDynamicOpenRouterModel(ctx),
       prepareDynamicModel: async (ctx) => {
         await loadOpenRouterModelCapabilities(ctx.modelId);
+      },
+      normalizeConfig: ({ providerConfig }) => {
+        const normalizedBaseUrl = normalizeOpenRouterBaseUrl(providerConfig.baseUrl);
+        return normalizedBaseUrl && normalizedBaseUrl !== providerConfig.baseUrl
+          ? { ...providerConfig, baseUrl: normalizedBaseUrl }
+          : undefined;
+      },
+      normalizeResolvedModel: ({ model }) => normalizeOpenRouterResolvedModel(model),
+      normalizeTransport: ({ api, baseUrl }) => {
+        const normalizedBaseUrl = normalizeOpenRouterBaseUrl(baseUrl);
+        return normalizedBaseUrl && normalizedBaseUrl !== baseUrl
+          ? {
+              api,
+              baseUrl: normalizedBaseUrl,
+            }
+          : undefined;
       },
       ...PASSTHROUGH_GEMINI_REPLAY_HOOKS,
       resolveReasoningOutputMode: () => "native",

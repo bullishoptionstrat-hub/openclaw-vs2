@@ -25,6 +25,11 @@ export type BlueBubblesActionConfig = {
   sendAttachment?: boolean;
 };
 
+export type BlueBubblesNetworkConfig = {
+  /** Dangerous opt-in for same-host or trusted private/internal BlueBubbles deployments. */
+  dangerouslyAllowPrivateNetwork?: boolean;
+};
+
 export type BlueBubblesAccountConfig = {
   /** Optional display name for this account (used in CLI/UI lists). */
   name?: string;
@@ -71,8 +76,8 @@ export type BlueBubblesAccountConfig = {
   mediaLocalRoots?: string[];
   /** Send read receipts for incoming messages (default: true). */
   sendReadReceipts?: boolean;
-  /** Allow fetching from private/internal IP addresses (e.g. localhost). Required for same-host BlueBubbles setups. */
-  allowPrivateNetwork?: boolean;
+  /** Network policy overrides for same-host or trusted private/internal BlueBubbles deployments. */
+  network?: BlueBubblesNetworkConfig;
   /** Per-group configuration keyed by chat GUID or identifier. */
   groups?: Record<string, BlueBubblesGroupConfig>;
   /** Per-action tool gating (default: true for all). */
@@ -170,10 +175,18 @@ export async function blueBubblesFetchWithTimeout(
       await release();
     }
   }
+  // Strip `dispatcher` from init — the SSRF guard may have attached a bundled-undici
+  // dispatcher that is incompatible with Node 22+'s built-in undici backing globalThis.fetch().
+  // Passing it through causes a silent TypeError (invalid onRequestStart method).
+  // The SSRF validation already completed upstream in fetchWithSsrFGuard before calling
+  // this function as fetchImpl, so stripping the dispatcher does not weaken security. (#64105)
+  const { dispatcher: _dispatcher, ...safeInit } = (init ?? {}) as RequestInit & {
+    dispatcher?: unknown;
+  };
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
-    return await fetch(url, { ...init, signal: controller.signal });
+    return await fetch(url, { ...safeInit, signal: controller.signal });
   } finally {
     clearTimeout(timer);
   }

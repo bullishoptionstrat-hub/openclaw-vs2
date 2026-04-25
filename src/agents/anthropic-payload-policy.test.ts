@@ -11,6 +11,26 @@ type TestPayload = {
   system?: unknown;
 };
 
+function textBlock(text: string, cache_control?: { type: "ephemeral"; ttl?: "1h" }) {
+  return {
+    type: "text",
+    text,
+    ...(cache_control ? { cache_control } : {}),
+  };
+}
+
+function boundarySystemPayload(): TestPayload {
+  return {
+    system: [
+      {
+        type: "text",
+        text: `Stable prefix${SYSTEM_PROMPT_CACHE_BOUNDARY}Dynamic lab suffix`,
+      },
+    ],
+    messages: [{ role: "user", content: "Hello" }],
+  };
+}
+
 describe("anthropic payload policy", () => {
   it("applies native Anthropic service tier and cache markers without widening cache scope", () => {
     const policy = resolveAnthropicPayloadPolicy({
@@ -45,16 +65,8 @@ describe("anthropic payload policy", () => {
 
     expect(payload.service_tier).toBe("standard_only");
     expect(payload.system).toEqual([
-      {
-        type: "text",
-        text: "Follow policy.",
-        cache_control: { type: "ephemeral", ttl: "1h" },
-      },
-      {
-        type: "text",
-        text: "Use tools carefully.",
-        cache_control: { type: "ephemeral", ttl: "1h" },
-      },
+      textBlock("Follow policy.", { type: "ephemeral", ttl: "1h" }),
+      textBlock("Use tools carefully.", { type: "ephemeral", ttl: "1h" }),
     ]);
     expect(payload.messages[0]).toEqual({
       role: "assistant",
@@ -91,13 +103,7 @@ describe("anthropic payload policy", () => {
     applyAnthropicPayloadPolicyToParams(payload, policy);
 
     expect(payload).not.toHaveProperty("service_tier");
-    expect(payload.system).toEqual([
-      {
-        type: "text",
-        text: "Follow policy.",
-        cache_control: { type: "ephemeral" },
-      },
-    ]);
+    expect(payload.system).toEqual([textBlock("Follow policy.", { type: "ephemeral" })]);
     expect(payload.messages[0]).toEqual({
       role: "user",
       content: [{ type: "text", text: "Hello", cache_control: { type: "ephemeral" } }],
@@ -112,12 +118,28 @@ describe("anthropic payload policy", () => {
       cacheRetention: "long",
       enableCacheControl: true,
     });
+    const payload = boundarySystemPayload();
+
+    applyAnthropicPayloadPolicyToParams(payload, policy);
+
+    expect(payload.system).toEqual([
+      textBlock("Stable prefix", { type: "ephemeral", ttl: "1h" }),
+      textBlock("Dynamic lab suffix"),
+    ]);
+  });
+
+  it("applies 1h TTL for Vertex AI endpoints with long cache retention", () => {
+    const policy = resolveAnthropicPayloadPolicy({
+      provider: "anthropic-vertex",
+      api: "anthropic-messages",
+      baseUrl: "https://us-east5-aiplatform.googleapis.com",
+      cacheRetention: "long",
+      enableCacheControl: true,
+    });
     const payload: TestPayload = {
       system: [
-        {
-          type: "text",
-          text: `Stable prefix${SYSTEM_PROMPT_CACHE_BOUNDARY}Dynamic lab suffix`,
-        },
+        { type: "text", text: "Follow policy." },
+        { type: "text", text: "Use tools carefully." },
       ],
       messages: [{ role: "user", content: "Hello" }],
     };
@@ -125,16 +147,31 @@ describe("anthropic payload policy", () => {
     applyAnthropicPayloadPolicyToParams(payload, policy);
 
     expect(payload.system).toEqual([
-      {
-        type: "text",
-        text: "Stable prefix",
-        cache_control: { type: "ephemeral", ttl: "1h" },
-      },
-      {
-        type: "text",
-        text: "Dynamic lab suffix",
-      },
+      textBlock("Follow policy.", { type: "ephemeral", ttl: "1h" }),
+      textBlock("Use tools carefully.", { type: "ephemeral", ttl: "1h" }),
     ]);
+    expect(payload.messages[0]).toEqual({
+      role: "user",
+      content: [{ type: "text", text: "Hello", cache_control: { type: "ephemeral", ttl: "1h" } }],
+    });
+  });
+
+  it("applies 5m ephemeral cache for Vertex AI endpoints with short cache retention", () => {
+    const policy = resolveAnthropicPayloadPolicy({
+      provider: "anthropic-vertex",
+      api: "anthropic-messages",
+      baseUrl: "https://us-east5-aiplatform.googleapis.com",
+      cacheRetention: "short",
+      enableCacheControl: true,
+    });
+    const payload: TestPayload = {
+      system: [{ type: "text", text: "Follow policy." }],
+      messages: [{ role: "user", content: "Hello" }],
+    };
+
+    applyAnthropicPayloadPolicyToParams(payload, policy);
+
+    expect(payload.system).toEqual([textBlock("Follow policy.", { type: "ephemeral" })]);
   });
 
   it("strips the boundary even when cache retention is disabled", () => {
@@ -145,23 +182,10 @@ describe("anthropic payload policy", () => {
       cacheRetention: "none",
       enableCacheControl: true,
     });
-    const payload: TestPayload = {
-      system: [
-        {
-          type: "text",
-          text: `Stable prefix${SYSTEM_PROMPT_CACHE_BOUNDARY}Dynamic lab suffix`,
-        },
-      ],
-      messages: [{ role: "user", content: "Hello" }],
-    };
+    const payload = boundarySystemPayload();
 
     applyAnthropicPayloadPolicyToParams(payload, policy);
 
-    expect(payload.system).toEqual([
-      {
-        type: "text",
-        text: "Stable prefix\nDynamic lab suffix",
-      },
-    ]);
+    expect(payload.system).toEqual([textBlock("Stable prefix\nDynamic lab suffix")]);
   });
 });

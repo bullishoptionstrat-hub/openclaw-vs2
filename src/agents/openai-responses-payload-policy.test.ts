@@ -81,6 +81,7 @@ describe("openai responses payload policy", () => {
       reasoning: {
         effort: "none",
       },
+      store: false,
     });
   });
 
@@ -104,5 +105,22 @@ describe("openai responses payload policy", () => {
     );
 
     expect(payload).not.toHaveProperty("reasoning");
+  });
+
+  it("emits store false for native OpenAI Codex responses disable mode", () => {
+    expect(
+      resolveOpenAIResponsesPayloadPolicy(
+        {
+          api: "openai-codex-responses",
+          provider: "openai-codex",
+          baseUrl: "https://chatgpt.com/backend-api/codex",
+        },
+        { storeMode: "disable" },
+      ),
+    ).toMatchObject({
+      explicitStore: false,
+      allowsServiceTier: true,
+      shouldStripStore: false,
+    });
   });
 });

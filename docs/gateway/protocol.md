@@ -73,7 +73,35 @@ Gateway → Client:
   "type": "res",
   "id": "…",
   "ok": true,
-  "payload": { "type": "hello-ok", "protocol": 3, "policy": { "tickIntervalMs": 15000 } }
+  "payload": {
+    "type": "hello-ok",
+    "protocol": 3,
+    "server": { "version": "…", "connId": "…" },
+    "features": { "methods": ["…"], "events": ["…"] },
+    "snapshot": { "…": "…" },
+    "policy": {
+      "maxPayload": 26214400,
+      "maxBufferedBytes": 52428800,
+      "tickIntervalMs": 15000
+    }
+  }
+}
+```
+
+`server`, `features`, `snapshot`, and `policy` are all required by the schema
+(`src/gateway/protocol/schema/frames.ts`). `canvasHostUrl` is optional. `auth`
+reports the negotiated role/scopes when available, and includes `deviceToken`
+when the gateway issues one.
+
+When no device token is issued, `hello-ok.auth` can still report the negotiated
+permissions:
+
+```json
+{
+  "auth": {
+    "role": "operator",
+    "scopes": ["operator.read", "operator.write"]
+  }
 }
 ```
 
@@ -112,7 +140,9 @@ bounded role entries in `deviceTokens`:
 For the built-in node/operator bootstrap flow, the primary node token stays
 `scopes: []` and any handed-off operator token stays bounded to the bootstrap
 operator allowlist (`operator.approvals`, `operator.read`,
-`operator.talk.secrets`, `operator.write`).
+`operator.talk.secrets`, `operator.write`). Bootstrap scope checks stay
+role-prefixed: operator entries only satisfy operator requests, and non-operator
+roles still need scopes under their own role prefix.
 
 ### Node example
 
@@ -216,8 +246,16 @@ This page is not a generated full dump, but the public WS surface is broader
 than the handshake/auth examples above. These are the main method families the
 Gateway exposes today.
 
+`hello-ok.features.methods` is a conservative discovery list built from
+`src/gateway/server-methods-list.ts` plus loaded plugin/channel method exports.
+Treat it as feature discovery, not as a generated dump of every callable helper
+implemented in `src/gateway/server-methods/*.ts`.
+
 ### System and identity
 
+- `health` returns the cached or freshly probed gateway health snapshot.
+- `status` returns the `/status`-style gateway summary; sensitive fields are
+  included only for admin-scoped operator clients.
 - `gateway.identity.get` returns the gateway device identity used by relay and
   pairing flows.
 - `system-presence` returns the current presence snapshot for connected
@@ -232,6 +270,8 @@ Gateway exposes today.
 - `models.list` returns the runtime-allowed model catalog.
 - `usage.status` returns provider usage windows/remaining quota summaries.
 - `usage.cost` returns aggregated cost usage summaries for a date range.
+- `doctor.memory.status` returns vector-memory / embedding readiness for the
+  active default agent workspace.
 - `sessions.usage` returns per-session usage summaries.
 - `sessions.usage.timeseries` returns timeseries usage for one session.
 - `sessions.usage.logs` returns usage log entries for one session.
@@ -248,6 +288,13 @@ Gateway exposes today.
 - `push.test` sends a test APNs push to a registered iOS node.
 - `voicewake.get` returns the stored wake-word triggers.
 - `voicewake.set` updates wake-word triggers and broadcasts the change.
+
+### Messaging and logs
+
+- `send` is the direct outbound-delivery RPC for channel/account/thread-targeted
+  sends outside the chat runner.
+- `logs.tail` returns the configured gateway file-log tail with cursor/limit and
+  max-byte controls.
 
 ### Talk and TTS
 
@@ -273,8 +320,22 @@ Gateway exposes today.
 - `config.set` writes a validated config payload.
 - `config.patch` merges a partial config update.
 - `config.apply` validates + replaces the full config payload.
-- `config.schema` and `config.schema.lookup` expose the live config schema and
-  lookup helpers used by Control UI and CLI tooling.
+- `config.schema` returns the live config schema payload used by Control UI and
+  CLI tooling: schema, `uiHints`, version, and generation metadata, including
+  plugin + channel schema metadata when the runtime can load it. The schema
+  includes field `title` / `description` metadata derived from the same labels
+  and help text used by the UI, including nested object, wildcard, array-item,
+  and `anyOf` / `oneOf` / `allOf` composition branches when matching field
+  documentation exists.
+- `config.schema.lookup` returns a path-scoped lookup payload for one config
+  path: normalized path, a shallow schema node, matched hint + `hintPath`, and
+  immediate child summaries for UI/CLI drill-down.
+  - Lookup schema nodes keep the user-facing docs and common validation fields:
+    `title`, `description`, `type`, `enum`, `const`, `format`, `pattern`,
+    numeric/string/array/object bounds, and boolean flags like
+    `additionalProperties`, `deprecated`, `readOnly`, `writeOnly`.
+  - Child summaries expose `key`, normalized `path`, `type`, `required`,
+    `hasChildren`, plus the matched `hint` / `hintPath`.
 - `update.run` runs the gateway update flow and schedules a restart only when
   the update itself succeeded.
 - `wizard.start`, `wizard.next`, `wizard.status`, and `wizard.cancel` expose the
@@ -314,6 +375,13 @@ Gateway exposes today.
 - `sessions.get` returns the full stored session row.
 - chat execution still uses `chat.history`, `chat.send`, `chat.abort`, and
   `chat.inject`.
+- `chat.history` is display-normalized for UI clients: inline directive tags are
+  stripped from visible text, plain-text tool-call XML payloads (including
+  `<tool_call>...</tool_call>`, `<function_call>...</function_call>`,
+  `<tool_calls>...</tool_calls>`, `<function_calls>...</function_calls>`, and
+  truncated tool-call blocks) and leaked ASCII/full-width model control tokens
+  are stripped, pure silent-token assistant rows such as exact `NO_REPLY` /
+  `no_reply` are omitted, and oversized rows can be replaced with placeholders.
 
 #### Device pairing and device tokens
 
@@ -341,19 +409,48 @@ Gateway exposes today.
 
 #### Approval families
 
-- `exec.approval.request` and `exec.approval.resolve` cover one-shot exec
-  approval requests.
+- `exec.approval.request`, `exec.approval.get`, `exec.approval.list`, and
+  `exec.approval.resolve` cover one-shot exec approval requests plus pending
+  approval lookup/replay.
+- `exec.approval.waitDecision` waits on one pending exec approval and returns
+  the final decision (or `null` on timeout).
 - `exec.approvals.get` and `exec.approvals.set` manage gateway exec approval
   policy snapshots.
 - `exec.approvals.node.get` and `exec.approvals.node.set` manage node-local exec
   approval policy via node relay commands.
-- `plugin.approval.request`, `plugin.approval.waitDecision`, and
-  `plugin.approval.resolve` cover plugin-defined approval flows.
+- `plugin.approval.request`, `plugin.approval.list`,
+  `plugin.approval.waitDecision`, and `plugin.approval.resolve` cover
+  plugin-defined approval flows.
 
 #### Other major families
 
-- automation: `cron.*`
-- skills/tools: `skills.*`, `tools.catalog`, `tools.effective`
+- automation:
+  - `wake` schedules an immediate or next-heartbeat wake text injection
+  - `cron.list`, `cron.status`, `cron.add`, `cron.update`, `cron.remove`,
+    `cron.run`, `cron.runs`
+- skills/tools: `commands.list`, `skills.*`, `tools.catalog`, `tools.effective`
+
+### Common event families
+
+- `chat`: UI chat updates such as `chat.inject` and other transcript-only chat
+  events.
+- `session.message` and `session.tool`: transcript/event-stream updates for a
+  subscribed session.
+- `sessions.changed`: session index or metadata changed.
+- `presence`: system presence snapshot updates.
+- `tick`: periodic keepalive / liveness event.
+- `health`: gateway health snapshot update.
+- `heartbeat`: heartbeat event stream update.
+- `cron`: cron run/job change event.
+- `shutdown`: gateway shutdown notification.
+- `node.pair.requested` / `node.pair.resolved`: node pairing lifecycle.
+- `node.invoke.request`: node invoke request broadcast.
+- `device.pair.requested` / `device.pair.resolved`: paired-device lifecycle.
+- `voicewake.changed`: wake-word trigger config changed.
+- `exec.approval.requested` / `exec.approval.resolved`: exec approval
+  lifecycle.
+- `plugin.approval.requested` / `plugin.approval.resolved`: plugin approval
+  lifecycle.
 
 ### Node helper methods
 
@@ -362,6 +459,18 @@ Gateway exposes today.
 
 ### Operator helper methods
 
+- Operators may call `commands.list` (`operator.read`) to fetch the runtime
+  command inventory for an agent.
+  - `agentId` is optional; omit it to read the default agent workspace.
+  - `scope` controls which surface the primary `name` targets:
+    - `text` returns the primary text command token without the leading `/`
+    - `native` and the default `both` path return provider-aware native names
+      when available
+  - `textAliases` carries exact slash aliases such as `/model` and `/m`.
+  - `nativeName` carries the provider-aware native command name when one exists.
+  - `provider` is optional and only affects native naming plus native plugin
+    command availability.
+  - `includeArgs=false` omits serialized argument metadata from the response.
 - Operators may call `tools.catalog` (`operator.read`) to fetch the runtime tool catalog for an
   agent. The response includes grouped tools and provenance metadata:
   - `source`: `core` or `plugin`
@@ -411,12 +520,35 @@ Gateway exposes today.
 
 ## Versioning
 
-- `PROTOCOL_VERSION` lives in `src/gateway/protocol/schema.ts`.
+- `PROTOCOL_VERSION` lives in `src/gateway/protocol/schema/protocol-schemas.ts`.
 - Clients send `minProtocol` + `maxProtocol`; the server rejects mismatches.
 - Schemas + models are generated from TypeBox definitions:
   - `pnpm protocol:gen`
   - `pnpm protocol:gen:swift`
   - `pnpm protocol:check`
+
+### Client constants
+
+The reference client in `src/gateway/client.ts` uses these defaults. Values are
+stable across protocol v3 and are the expected baseline for third-party clients.
+
+| Constant                                  | Default                                               | Source                                                     |
+| ----------------------------------------- | ----------------------------------------------------- | ---------------------------------------------------------- |
+| `PROTOCOL_VERSION`                        | `3`                                                   | `src/gateway/protocol/schema/protocol-schemas.ts`          |
+| Request timeout (per RPC)                 | `30_000` ms                                           | `src/gateway/client.ts` (`requestTimeoutMs`)               |
+| Preauth / connect-challenge timeout       | `10_000` ms                                           | `src/gateway/handshake-timeouts.ts` (clamp `250`–`10_000`) |
+| Initial reconnect backoff                 | `1_000` ms                                            | `src/gateway/client.ts` (`backoffMs`)                      |
+| Max reconnect backoff                     | `30_000` ms                                           | `src/gateway/client.ts` (`scheduleReconnect`)              |
+| Fast-retry clamp after device-token close | `250` ms                                              | `src/gateway/client.ts`                                    |
+| Force-stop grace before `terminate()`     | `250` ms                                              | `FORCE_STOP_TERMINATE_GRACE_MS`                            |
+| `stopAndWait()` default timeout           | `1_000` ms                                            | `STOP_AND_WAIT_TIMEOUT_MS`                                 |
+| Default tick interval (pre `hello-ok`)    | `30_000` ms                                           | `src/gateway/client.ts`                                    |
+| Tick-timeout close                        | code `4000` when silence exceeds `tickIntervalMs * 2` | `src/gateway/client.ts`                                    |
+| `MAX_PAYLOAD_BYTES`                       | `25 * 1024 * 1024` (25 MB)                            | `src/gateway/server-constants.ts`                          |
+
+The server advertises the effective `policy.tickIntervalMs`, `policy.maxPayload`,
+and `policy.maxBufferedBytes` in `hello-ok`; clients should honor those values
+rather than the pre-handshake defaults.
 
 ## Auth
 
@@ -437,8 +569,18 @@ Gateway exposes today.
   approved scope set for that token. This preserves read/probe/status access
   that was already granted and avoids silently collapsing reconnects to a
   narrower implicit admin-only scope.
-- Normal connect auth precedence is explicit shared token/password first, then
-  explicit `deviceToken`, then stored per-device token, then bootstrap token.
+- Client-side connect auth assembly (`selectConnectAuth` in
+  `src/gateway/client.ts`):
+  - `auth.password` is orthogonal and is always forwarded when set.
+  - `auth.token` is populated in priority order: explicit shared token first,
+    then an explicit `deviceToken`, then a stored per-device token (keyed by
+    `deviceId` + `role`).
+  - `auth.bootstrapToken` is sent only when none of the above resolved an
+    `auth.token`. A shared token or any resolved device token suppresses it.
+  - Auto-promotion of a stored device token on the one-shot
+    `AUTH_TOKEN_MISMATCH` retry is gated to **trusted endpoints only** —
+    loopback, or `wss://` with a pinned `tlsFingerprint`. Public `wss://`
+    without pinning does not qualify.
 - Additional `hello-ok.auth.deviceTokens` entries are bootstrap handoff tokens.
   Persist them only when the connect used bootstrap auth on a trusted transport
   such as `wss://` or loopback/local pairing.

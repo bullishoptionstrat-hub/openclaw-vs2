@@ -36,7 +36,10 @@ type SupportedThinkingFormat =
 
 export type ModelCompatConfig = SupportedOpenAICompatFields & {
   thinkingFormat?: SupportedThinkingFormat;
+  visibleReasoningDetailTypes?: string[];
   supportsTools?: boolean;
+  supportsPromptCacheKey?: boolean;
+  requiresStringContent?: boolean;
   toolSchemaProfile?: string;
   unsupportedToolSchemaKeywords?: string[];
   nativeWebSearchTool?: boolean;
@@ -92,8 +95,17 @@ export type BedrockDiscoveryConfig = {
   defaultMaxTokens?: number;
 };
 
+export type DiscoveryToggleConfig = {
+  enabled?: boolean;
+};
+
 export type ModelsConfig = {
   mode?: "merge" | "replace";
   providers?: Record<string, ModelProviderConfig>;
+  // Deprecated legacy compat aliases. Kept in the runtime type surface so
+  // doctor/runtime fallbacks can read older configs until migration completes.
   bedrockDiscovery?: BedrockDiscoveryConfig;
+  copilotDiscovery?: DiscoveryToggleConfig;
+  huggingfaceDiscovery?: DiscoveryToggleConfig;
+  ollamaDiscovery?: DiscoveryToggleConfig;
 };

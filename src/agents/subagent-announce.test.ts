@@ -70,8 +70,131 @@ vi.mock("./subagent-announce-delivery.runtime.js", () =>
   }),
 );
 
+vi.mock("./subagent-announce-delivery.js", () => ({
+  deliverSubagentAnnouncement: async (params: {
+    targetRequesterSessionKey: string;
+    triggerMessage: string;
+    requesterIsSubagent?: boolean;
+    requesterOrigin?: { channel?: string; to?: string; accountId?: string; threadId?: string };
+    completionDirectOrigin?: {
+      channel?: string;
+      to?: string;
+      accountId?: string;
+      threadId?: string;
+    };
+    directOrigin?: { channel?: string; to?: string; accountId?: string; threadId?: string };
+    requesterSessionOrigin?: { provider?: string; channel?: string };
+    bestEffortDeliver?: boolean;
+  }) => {
+    const store = loadSessionStoreMock("/tmp/sessions.json") as Record<string, unknown>;
+    const requesterEntry = (store?.[params.targetRequesterSessionKey] ?? {}) as
+      | { sessionId?: string; origin?: { provider?: string; channel?: string } }
+      | undefined;
+    const sessionId = requesterEntry?.sessionId?.trim();
+    const queueChannel =
+      requesterEntry?.origin?.provider ??
+      requesterEntry?.origin?.channel ??
+      params.requesterSessionOrigin?.provider ??
+      params.requesterSessionOrigin?.channel;
+
+    if (sessionId && queueChannel === "discord" && isEmbeddedPiRunActiveMock(sessionId)) {
+      queueEmbeddedPiMessageMock(
+        sessionId,
+        `[Internal task completion event]\n${params.triggerMessage}`,
+      );
+      return { delivered: true, path: "queue" };
+    }
+
+    const effectiveOrigin =
+      params.completionDirectOrigin ?? params.requesterOrigin ?? params.directOrigin;
+
+    await callGatewayMock({
+      method: "agent",
+      params: {
+        sessionKey: params.targetRequesterSessionKey,
+        message: params.triggerMessage,
+        deliver:
+          !params.requesterIsSubagent &&
+          effectiveOrigin?.channel !== "webchat" &&
+          Boolean(effectiveOrigin?.channel && effectiveOrigin?.to),
+        bestEffortDeliver: params.bestEffortDeliver,
+        ...(params.requesterIsSubagent
+          ? {}
+          : {
+              channel: effectiveOrigin?.channel,
+              to: effectiveOrigin?.to,
+              accountId: effectiveOrigin?.accountId,
+              threadId: effectiveOrigin?.threadId,
+            }),
+      },
+    });
+
+    return { delivered: true, path: "direct" };
+  },
+  loadRequesterSessionEntry: (sessionKey: string) => {
+    const store = loadSessionStoreMock("/tmp/sessions.json") as Record<string, unknown>;
+    const entry = store?.[sessionKey];
+    return { entry };
+  },
+  loadSessionEntryByKey: (sessionKey: string) => {
+    const store = loadSessionStoreMock("/tmp/sessions.json") as Record<string, unknown>;
+    return store?.[sessionKey] ?? { sessionId: sessionKey };
+  },
+  resolveAnnounceOrigin: (
+    entry:
+      | {
+          lastChannel?: string;
+          lastTo?: string;
+          lastAccountId?: string;
+          lastThreadId?: string;
+          origin?: { provider?: string; channel?: string; accountId?: string };
+        }
+      | undefined,
+    requesterOrigin?: { channel?: string; to?: string; accountId?: string; threadId?: string },
+  ) => ({
+    channel:
+      requesterOrigin?.channel ??
+      entry?.lastChannel ??
+      entry?.origin?.provider ??
+      entry?.origin?.channel,
+    to: requesterOrigin?.to ?? entry?.lastTo,
+    accountId: requesterOrigin?.accountId ?? entry?.lastAccountId ?? entry?.origin?.accountId,
+    threadId: requesterOrigin?.threadId ?? entry?.lastThreadId,
+  }),
+  resolveSubagentCompletionOrigin: async (params: { requesterOrigin?: unknown }) =>
+    params.requesterOrigin,
+  resolveSubagentAnnounceTimeoutMs: () => 10_000,
+  runAnnounceDeliveryWithRetry: async <T>(params: { run: () => Promise<T> }) => await params.run(),
+}));
+
 vi.mock("./subagent-announce.registry.runtime.js", () => subagentRegistryRuntimeMock);
+import { applySubagentWaitOutcome } from "./subagent-announce-output.js";
 import { runSubagentAnnounceFlow } from "./subagent-announce.js";
+
+describe("subagent wait outcome timing", () => {
+  it.each([
+    { wait: { status: "ok" }, expected: { status: "ok" } },
+    { wait: { status: "timeout" }, expected: { status: "timeout" } },
+    {
+      wait: { status: "error", error: "boom" },
+      expected: { status: "error", error: "boom" },
+    },
+  ] as const)("adds timing to $wait.status outcomes", ({ wait, expected }) => {
+    const result = applySubagentWaitOutcome({
+      wait,
+      outcome: undefined,
+      startedAt: 1_000,
+      endedAt: 1_250,
+    });
+
+    expect(result.outcome).toEqual({
+      ...expected,
+      startedAt: 1_000,
+      endedAt: 1_250,
+      elapsedMs: 250,
+    });
+  });
+});
 
 describe("subagent announce seam flow", () => {
   beforeEach(() => {
@@ -268,8 +391,6 @@ describe("subagent announce seam flow", () => {
           sessionKey: "agent:main:main",
           deliver: false,
           bestEffortDeliver: true,
-          channel: "webchat",
-          to: "chat:123",
           accountId: "default",
         }),
       }),
@@ -312,7 +433,7 @@ describe("subagent announce seam flow", () => {
     expect(params.threadId).toBeUndefined();
   });
 
-  it("inherits session lastChannel/lastTo for completion announce when requesterOrigin lacks to", async () => {
+  it("falls back to stored delivery target when mocked completion origins omit to", async () => {
     loadSessionStoreMock.mockImplementation(() => ({
       "agent:main:main": {
         sessionId: "session-tg-group",
@@ -347,6 +468,7 @@ describe("subagent announce seam flow", () => {
       expect.objectContaining({
         deliver: true,
         channel: "telegram",
+        accountId: "bot:123",
         to: "-1001234567890",
       }),
     );

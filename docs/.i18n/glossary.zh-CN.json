@@ -60,12 +60,24 @@
     "target": "Feishu"
   },
   {
+    "source": "WeChat",
+    "target": "微信"
+  },
+  {
+    "source": "Weixin",
+    "target": "微信"
+  },
+  {
     "source": "Mattermost",
     "target": "Mattermost"
   },
   {
     "source": "BytePlus (International)",
     "target": "BytePlus（国际版）"
+  },
+  {
+    "source": "Anthropic (API + Claude CLI)",
+    "target": "Anthropic（API + Claude CLI）"
   },
   {
     "source": "Moonshot AI",
@@ -78,6 +90,10 @@
   {
     "source": "Diffs",
     "target": "Diffs"
+  },
+  {
+    "source": "Dreaming",
+    "target": "Dreaming"
   },
   {
     "source": "Capability Cookbook",
@@ -172,8 +188,20 @@
     "target": "网络模型"
   },
   {
+    "source": "Bridge protocol (legacy nodes, historical)",
+    "target": "Bridge protocol（旧版节点，历史参考）"
+  },
+  {
     "source": "Doctor",
     "target": "Doctor"
+  },
+  {
+    "source": "Memory Wiki",
+    "target": "Memory Wiki"
+  },
+  {
+    "source": "wiki",
+    "target": "wiki"
   },
   {
     "source": "Polls",
@@ -230,6 +258,14 @@
   {
     "source": "CLI",
     "target": "CLI"
+  },
+  {
+    "source": "/cli/gateway",
+    "target": "/cli/gateway"
+  },
+  {
+    "source": "/gateway#multiple-gateways-same-host",
+    "target": "/gateway#multiple-gateways-same-host"
   },
   {
     "source": "install sanity",

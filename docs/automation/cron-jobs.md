@@ -43,6 +43,8 @@ together`, and similar hints) and no descendant subagent run is still
   responsible for the final answer, OpenClaw re-prompts once for the actual
   result before delivery.
 
+<a id="maintenance"></a>
+
 Task reconciliation for cron is runtime-owned: an active cron task stays live while the
 cron runtime still tracks that job as running, even if an old child session row still exists.
 Once the runtime stops owning the job and the 5-minute grace window expires, maintenance can
@@ -59,6 +61,18 @@ mark the task `lost`.
 Timestamps without a timezone are treated as UTC. Add `--tz America/New_York` for local wall-clock scheduling.
 
 Recurring top-of-hour expressions are automatically staggered by up to 5 minutes to reduce load spikes. Use `--exact` to force precise timing or `--stagger 30s` for an explicit window.
+
+### Day-of-month and day-of-week use OR logic
+
+Cron expressions are parsed by [croner](https://github.com/Hexagon/croner). When both the day-of-month and day-of-week fields are non-wildcard, croner matches when **either** field matches — not both. This is standard Vixie cron behavior.
+
+```
+# Intended: "9 AM on the 15th, only if it's a Monday"
+# Actual:   "9 AM on every 15th, AND 9 AM on every Monday"
+0 9 15 * 1
+```
+
+This fires ~5–6 times per month instead of 0–1 times per month. OpenClaw uses Croner's default OR behavior here. To require both conditions, use Croner's `+` day-of-week modifier (`0 9 15 * +1`) or schedule on one field and guard the other in your job's prompt or command.
 
 ## Execution styles
 
@@ -389,6 +403,9 @@ openclaw doctor
 - Delivery mode is `none` means no external message is expected.
 - Delivery target missing/invalid (`channel`/`to`) means outbound was skipped.
 - Channel auth errors (`unauthorized`, `Forbidden`) mean delivery was blocked by credentials.
+- If the isolated run returns only the silent token (`NO_REPLY` / `no_reply`),
+  OpenClaw suppresses direct outbound delivery and also suppresses the fallback
+  queued summary path, so nothing is posted back to chat.
 - For cron-owned isolated jobs, do not expect the agent to use the message tool
   as a fallback. The runner owns final delivery; `--no-deliver` keeps it
   internal instead of allowing a direct send.

@@ -4,7 +4,8 @@ Notes from setting up `gh` inside a Claude Code remote execution container
 (Ubuntu 24.04, x86_64) that sits behind the agent HTTPS proxy.
 
 The short version: `gh` can be built and installed successfully, but it cannot
-reach this repository's GitHub API. Use the GitHub MCP tools for GitHub work.
+perform authenticated repository operations here. Use the GitHub MCP tools for
+GitHub work.
 
 ## Why not apt or a release download
 
@@ -17,7 +18,7 @@ reach this repository's GitHub API. Use the GitHub MCP tools for GitHub work.
 ## Build from source instead
 
 `git clone` of public repos is allowed through the proxy, and Go module
-downloads go direct because `proxy.golang.org` is listed in `no_proxy`.
+downloads go directly because `proxy.golang.org` is listed in `no_proxy`.
 That makes a source build the most reliable path:
 
 ```sh

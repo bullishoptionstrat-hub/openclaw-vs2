@@ -1,0 +1,14 @@
+
+// ╔══════════════════════════════════════════════════════════════════════════╗
+// ║  ALERTS (indicator build)                                                ║
+// ║  Messages are JSON so they can be posted straight to a webhook.          ║
+// ║  {{plot("...")}} placeholders resolve against the hidden plots above.    ║
+// ╚══════════════════════════════════════════════════════════════════════════╝
+alertcondition(newPassLong, "PASS · Long setup", '{"schema":"openclaw-ict/1","event":"pass_long","dir":"long","symbol":"{{ticker}}","tf":"{{interval}}","price":"{{close}}","score":"{{plot("Score")}}","entry":"{{plot("EntryPx")}}","stop":"{{plot("StopPx")}}","tp1":"{{plot("Tp1Px")}}","tp2":"{{plot("Tp2Px")}}","rr":"{{plot("RR")}}","time":"{{timenow}}"}')
+alertcondition(newPassShort, "PASS · Short setup", '{"schema":"openclaw-ict/1","event":"pass_short","dir":"short","symbol":"{{ticker}}","tf":"{{interval}}","price":"{{close}}","score":"{{plot("Score")}}","entry":"{{plot("EntryPx")}}","stop":"{{plot("StopPx")}}","tp1":"{{plot("Tp1Px")}}","tp2":"{{plot("Tp2Px")}}","rr":"{{plot("RR")}}","time":"{{timenow}}"}')
+alertcondition(retestSig and not blocked, "Retest trigger (unblocked)", '{"schema":"openclaw-ict/1","event":"retest_trigger","symbol":"{{ticker}}","tf":"{{interval}}","price":"{{close}}","dir":"{{plot("Dir")}}","score":"{{plot("Score")}}","entry":"{{plot("EntryPx")}}","stop":"{{plot("StopPx")}}","tp1":"{{plot("Tp1Px")}}","tp2":"{{plot("Tp2Px")}}","time":"{{timenow}}"}')
+alertcondition(scoreCrossUp, "Score threshold crossed", '{"schema":"openclaw-ict/1","event":"score_threshold","symbol":"{{ticker}}","tf":"{{interval}}","price":"{{close}}","score":"{{plot("Score")}}","dir":"{{plot("Dir")}}","time":"{{timenow}}"}')
+alertcondition(kzOpened, "Kill zone activated", '{"schema":"openclaw-ict/1","event":"killzone_open","symbol":"{{ticker}}","tf":"{{interval}}","price":"{{close}}","time":"{{timenow}}"}')
+alertcondition(smtNewBull, "SMT divergence · bullish", '{"schema":"openclaw-ict/1","event":"smt_bullish","dir":"long","symbol":"{{ticker}}","tf":"{{interval}}","price":"{{close}}","time":"{{timenow}}"}')
+alertcondition(smtNewBear, "SMT divergence · bearish", '{"schema":"openclaw-ict/1","event":"smt_bearish","dir":"short","symbol":"{{ticker}}","tf":"{{interval}}","price":"{{close}}","time":"{{timenow}}"}')
+alertcondition(sNewSweep, "Liquidity sweep", '{"schema":"openclaw-ict/1","event":"liquidity_sweep","symbol":"{{ticker}}","tf":"{{interval}}","price":"{{close}}","dir":"{{plot("Dir")}}","time":"{{timenow}}"}')

@@ -1,0 +1,970 @@
+
+// ╔══════════════════════════════════════════════════════════════════════════╗
+// ║  SHARED CONFLUENCE ENGINE — BEGIN                                        ║
+// ║  Identical in the indicator and the strategy build.                      ║
+// ╚══════════════════════════════════════════════════════════════════════════╝
+
+// ───────────────────────────────────────────────────────────── 0 · TYPES ────
+// Tracked liquidity level (a confirmed swing pivot that has not been taken).
+type Liq
+    float price
+    int   bidx
+    bool  isHigh
+    bool  isExternal
+    bool  swept
+    line  ln
+
+// Tracked delivery zone: FVG, order block, or breaker.
+type Zone
+    float top
+    float bot
+    int   bidx
+    bool  bull
+    bool  isFvg
+    bool  isOb
+    bool  isBreaker
+    bool  dead
+    box   bx
+
+// ──────────────────────────────────────────────────────── 1 · INPUT GROUPS ──
+G_HTF   = "T1 · HTF bias engine"
+G_KZ    = "T1 · Kill zones (America/New_York)"
+G_LIQ   = "T1 · Liquidity: internal / external"
+G_SMT   = "T2 · SMT divergence"
+G_DISP  = "T2 · Sweep → displacement → retest"
+G_ZONE  = "T2 · FVG / OB / breaker"
+G_PD    = "T2 · Premium / discount / OTE"
+G_VP    = "T3 · VWAP + volume profile proxy"
+G_GEX   = "T3 · GEX levels (manual input)"
+G_PO3   = "T4 · PO3 / AMD session model"
+G_EVT   = "T4 · Economic events (manual input)"
+G_RISK  = "T5 · Targets / invalidation / R"
+G_SCORE = "T5 · Confluence scoring"
+G_VIS   = "T6 · Visuals"
+
+TZ_NY = "America/New_York"
+
+// ─────────────────────────────────────────────────── 2 · TIER-1 · HTF BIAS ──
+tfM          = input.timeframe("M",   "Monthly timeframe", group = G_HTF)
+tfW          = input.timeframe("W",   "Weekly timeframe",  group = G_HTF)
+tfD          = input.timeframe("D",   "Daily timeframe",   group = G_HTF)
+tfH4         = input.timeframe("240", "4H timeframe",      group = G_HTF)
+htfLen       = input.int(3, "HTF swing pivot length", minval = 1, maxval = 25, group = G_HTF, tooltip = "Pivot strength used by the HTF BOS/CHoCH structure machine.")
+htfConfirmed = input.bool(true, "Read last CLOSED HTF bar only (non-repainting)", group = G_HTF)
+overrideAge  = input.int(3, "Weekly/Monthly override window (HTF bars since BOS)", minval = 1, maxval = 24, group = G_HTF, tooltip = "Weekly and Monthly may override the Daily arbiter only while their BOS is this fresh.")
+blockOnH4    = input.bool(true, "Daily vs 4H direct conflict ⇒ Neutral / blocked", group = G_HTF)
+
+// ─────────────────────────────────────────────────── 3 · TIER-1 · KILLZONE ──
+kzUse   = input.bool(true, "Require an active kill zone for entries", group = G_KZ)
+kz1On   = input.bool(true,        "London Open",        inline = "kz1", group = G_KZ)
+kz1     = input.session("0200-0400", "",                inline = "kz1", group = G_KZ)
+kz2On   = input.bool(true,        "CBDR / NY pre-market", inline = "kz2", group = G_KZ)
+kz2     = input.session("0700-0830", "",                inline = "kz2", group = G_KZ)
+kz3On   = input.bool(true,        "New York AM",        inline = "kz3", group = G_KZ)
+kz3     = input.session("0800-1100", "",                inline = "kz3", group = G_KZ)
+kz4On   = input.bool(true,        "New York PM",        inline = "kz4", group = G_KZ)
+kz4     = input.session("1300-1600", "",                inline = "kz4", group = G_KZ)
+
+// ────────────────────────────────────────────────── 4 · TIER-1 · LIQUIDITY ──
+intLen    = input.int(5,  "Internal swing pivot length",  minval = 1, maxval = 50, group = G_LIQ)
+extLen    = input.int(15, "External swing pivot length",  minval = 2, maxval = 100, group = G_LIQ)
+liqMax    = input.int(24, "Max tracked liquidity levels", minval = 4, maxval = 80,  group = G_LIQ)
+liqKeepSwept = input.int(8, "Keep swept levels visible for N bars", minval = 0, maxval = 200, group = G_LIQ)
+
+// ──────────────────────────────────────────────────────── 5 · TIER-2 · SMT ──
+smtOn      = input.bool(true, "Enable SMT divergence scoring", group = G_SMT, tooltip = "Turn OFF for GC/SI unless you pair them against DXY with inverse correlation.")
+smtSym     = input.symbol("CME_MINI:NQ1!", "Correlated symbol", group = G_SMT, tooltip = "ES1! ⇄ NQ1!, SPY ⇄ QQQ. GC/SI: optional TVC:DXY with 'inverse correlation' ON.")
+smtInverse = input.bool(false, "Inverse correlation (e.g. DXY vs metals)", group = G_SMT)
+smtValid   = input.int(20, "SMT stays valid for N bars", minval = 2, maxval = 200, group = G_SMT)
+smtStrict  = input.bool(false, "Strict: unclear SMT blocks the setup", group = G_SMT)
+
+// ─────────────────────────────────────────────── 6 · TIER-2 · DISPLACEMENT ──
+atrLen        = input.int(14, "ATR length", minval = 2, group = G_DISP)
+dispAtrMult   = input.float(1.5, "Displacement: min bar range in ATR", minval = 0.1, step = 0.1, group = G_DISP)
+dispBodyRatio = input.float(0.5, "Displacement: min body / range",     minval = 0.1, maxval = 1.0, step = 0.05, group = G_DISP)
+dispUseVol    = input.bool(true,  "Displacement: require volume expansion", group = G_DISP)
+dispVolMult   = input.float(1.5, "Volume expansion multiple", minval = 1.0, step = 0.1, group = G_DISP)
+volLen        = input.int(20, "Volume average length", minval = 2, group = G_DISP)
+dispNeedFvg   = input.bool(true, "Displacement must leave an FVG", group = G_DISP)
+maxSweepAge   = input.int(20, "Max bars: sweep → displacement", minval = 1, maxval = 200, group = G_DISP)
+maxDispAge    = input.int(30, "Max bars: displacement → retest", minval = 1, maxval = 300, group = G_DISP)
+needChoch     = input.bool(true, "Require CHoCH after the sweep", group = G_DISP)
+entryMode     = input.string("Limit at retest zone", "Entry trigger", options = ["Limit at retest zone", "Market on confirmed retest close"], group = G_DISP, tooltip = "Both modes are retest-only: the first touch of the swept liquidity is never traded.")
+
+// ──────────────────────────────────────────────────── 7 · TIER-2 · ZONES ────
+obLookback  = input.int(10, "Order block lookback from displacement", minval = 1, maxval = 50, group = G_ZONE)
+useObBody   = input.bool(false, "Order block = body only (else full range)", group = G_ZONE)
+zoneMax     = input.int(30, "Max stored zones", minval = 4, maxval = 120, group = G_ZONE)
+zoneEntryPct = input.float(0.25, "Entry inside zone (0 = proximal edge, 1 = distal)", minval = 0.0, maxval = 1.0, step = 0.05, group = G_ZONE)
+
+// ───────────────────────────────────────────── 8 · TIER-2 · PREMIUM/OTE ─────
+oteHi   = input.float(0.79, "OTE deep boundary (retracement)", minval = 0.5, maxval = 0.99, step = 0.01, group = G_PD)
+oteLo   = input.float(0.62, "OTE shallow boundary (retracement)", minval = 0.5, maxval = 0.99, step = 0.01, group = G_PD)
+pdStrict = input.bool(true, "Require price inside OTE (else discount/premium half is enough)", group = G_PD)
+
+// ───────────────────────────────────────────── 9 · TIER-3 · VWAP / PROFILE ──
+vwapOn     = input.bool(true, "Session VWAP", group = G_VP)
+avwapOn    = input.bool(false, "Anchored VWAP", inline = "av", group = G_VP)
+avwapAnchor = input.time(timestamp(TZ_NY, 2026, 1, 2, 9, 30, 0), "", inline = "av", group = G_VP)
+vpOn       = input.bool(true, "Rolling volume-profile PROXY (POC / VAH / VAL / HVN)", group = G_VP, tooltip = "PROXY: Pine cannot read true per-price traded volume. This bins bar volume at hlc3 over a rolling window — directionally useful, not exchange-accurate.")
+vpBars     = input.int(120, "Profile lookback (bars)", minval = 20, maxval = 500, group = G_VP)
+vpBins     = input.int(24,  "Profile bins", minval = 8, maxval = 60, group = G_VP)
+vpVaPct    = input.float(70, "Value area %", minval = 30, maxval = 95, step = 1, group = G_VP)
+vpHvnMult  = input.float(1.3, "HVN threshold (× mean bin volume)", minval = 1.0, step = 0.05, group = G_VP)
+vpEvery    = input.int(5, "Recompute profile every N bars", minval = 1, maxval = 50, group = G_VP)
+clusterAtr = input.float(0.35, "Cluster proximity (× ATR)", minval = 0.05, step = 0.05, group = G_VP)
+
+// ──────────────────────────────────────────────────────── 10 · TIER-3 · GEX ─
+gexOn     = input.bool(true, "Enable GEX proximity layer", group = G_GEX, tooltip = "PROXY: dealer gamma is not available to Pine. Levels are entered manually; the engine only reasons about proximity and sign.")
+gexProx   = input.float(0.5, "GEX proximity (× ATR)", minval = 0.05, step = 0.05, group = G_GEX)
+gexPinBlock = input.bool(false, "Positive-gamma pin blocks entries inside proximity", group = G_GEX)
+gex1  = input.float(0.0, "Level 1", inline = "g1", group = G_GEX)
+gex1t = input.string("Positive", "", options = ["Positive", "Negative"], inline = "g1", group = G_GEX)
+gex2  = input.float(0.0, "Level 2", inline = "g2", group = G_GEX)
+gex2t = input.string("Positive", "", options = ["Positive", "Negative"], inline = "g2", group = G_GEX)
+gex3  = input.float(0.0, "Level 3", inline = "g3", group = G_GEX)
+gex3t = input.string("Negative", "", options = ["Positive", "Negative"], inline = "g3", group = G_GEX)
+gex4  = input.float(0.0, "Level 4", inline = "g4", group = G_GEX)
+gex4t = input.string("Negative", "", options = ["Positive", "Negative"], inline = "g4", group = G_GEX)
+gex5  = input.float(0.0, "Level 5", inline = "g5", group = G_GEX)
+gex5t = input.string("Positive", "", options = ["Positive", "Negative"], inline = "g5", group = G_GEX)
+gex6  = input.float(0.0, "Level 6", inline = "g6", group = G_GEX)
+gex6t = input.string("Negative", "", options = ["Positive", "Negative"], inline = "g6", group = G_GEX)
+
+// ──────────────────────────────────────────────────────── 11 · TIER-4 · PO3 ─
+po3On    = input.bool(true, "Enable PO3 / AMD model", group = G_PO3)
+pmSess   = input.session("0400-0830", "Accumulation window (pre-market range)", group = G_PO3)
+judasSess = input.session("0830-0930", "Manipulation window (Judas swing)", group = G_PO3)
+po3Require = input.bool(false, "Require PO3 distribution agreement for entries", group = G_PO3)
+
+// ────────────────────────────────────────────────────── 12 · TIER-4 · EVENTS ─
+evtBefore = input.int(15, "No-trade minutes BEFORE event", minval = 0, maxval = 240, group = G_EVT)
+evtAfter  = input.int(15, "No-trade minutes AFTER event",  minval = 0, maxval = 240, group = G_EVT)
+evtReArm  = input.bool(true, "After lockout, require a fresh BOS/CHoCH before re-enabling", group = G_EVT)
+e1On = input.bool(false, "", inline = "e1", group = G_EVT)
+e1n  = input.string("CPI", "", inline = "e1", group = G_EVT)
+e1t  = input.time(timestamp(TZ_NY, 2026, 1, 13, 8, 30, 0), "", inline = "e1", group = G_EVT)
+e2On = input.bool(false, "", inline = "e2", group = G_EVT)
+e2n  = input.string("NFP", "", inline = "e2", group = G_EVT)
+e2t  = input.time(timestamp(TZ_NY, 2026, 1, 9, 8, 30, 0), "", inline = "e2", group = G_EVT)
+e3On = input.bool(false, "", inline = "e3", group = G_EVT)
+e3n  = input.string("FOMC", "", inline = "e3", group = G_EVT)
+e3t  = input.time(timestamp(TZ_NY, 2026, 1, 28, 14, 0, 0), "", inline = "e3", group = G_EVT)
+e4On = input.bool(false, "", inline = "e4", group = G_EVT)
+e4n  = input.string("GDP", "", inline = "e4", group = G_EVT)
+e4t  = input.time(timestamp(TZ_NY, 2026, 1, 29, 8, 30, 0), "", inline = "e4", group = G_EVT)
+e5On = input.bool(false, "", inline = "e5", group = G_EVT)
+e5n  = input.string("PPI", "", inline = "e5", group = G_EVT)
+e5t  = input.time(timestamp(TZ_NY, 2026, 1, 14, 8, 30, 0), "", inline = "e5", group = G_EVT)
+e6On = input.bool(false, "", inline = "e6", group = G_EVT)
+e6n  = input.string("Other", "", inline = "e6", group = G_EVT)
+e6t  = input.time(timestamp(TZ_NY, 2026, 1, 15, 10, 0, 0), "", inline = "e6", group = G_EVT)
+
+// ──────────────────────────────────────────────────────── 13 · RISK / TARGETS ─
+atrStopBuf = input.float(0.25, "Stop buffer beyond protected swing (× ATR)", minval = 0.0, step = 0.05, group = G_RISK)
+minRR      = input.float(2.0, "Minimum R:R on the runner (hard filter)", minval = 0.5, step = 0.1, group = G_RISK)
+fallbackExt = input.bool(true, "If no external target exists, fall back to dealing-range extreme", group = G_RISK)
+
+// ──────────────────────────────────────────────────────────── 14 · SCORING ───
+scoreMin    = input.int(8, "Minimum score to PASS (of 10)", minval = 1, maxval = 10, group = G_SCORE)
+maxMissing  = input.int(3, "Missing this many checklist points ⇒ BLOCKED", minval = 1, maxval = 10, group = G_SCORE)
+strictMode  = input.bool(false, "Strict mode: SMT + VWAP/profile cluster required", group = G_SCORE)
+needTier2   = input.bool(true, "Require ≥3 of 4 Tier-2 structure confluences", group = G_SCORE, tooltip = "Tier-2 set: SMT, sweep→displacement→retest, FVG/OB overlap, premium-discount/OTE.")
+
+// ═══════════════════════════════════════════ 15 · GENERIC HELPERS ═══════════
+// Pine functions may never assign to globals, so every state machine below is
+// written at global scope; helpers stay pure (or mutate objects passed in).
+
+f_biasStr(int b) => b == 1 ? "Bullish" : b == -1 ? "Bearish" : "Neutral"
+f_dirStr(int d)  => d == 1 ? "LONG" : d == -1 ? "SHORT" : "—"
+f_tick(bool b)   => b ? "✔" : "✘"
+f_num(float v)   => na(v) ? "—" : str.tostring(v, format.mintick)
+
+// Session membership in the New York timezone (nil when outside the window).
+f_inSess(simple string s, bool on) => on and not na(time(timeframe.period, s, TZ_NY))
+
+// ═══════════════════════════════════════ 16 · STRUCTURE STATE MACHINE ═══════
+// Swing structure / BOS / CHoCH. `gate` lets the caller advance the machine on
+// confirmed bars only. A broken level is consumed (set to na) so that
+// continuation BOS events fire again on the next confirmed pivot.
+// Returns: state(-1/0/1), bars since flip, BOS up/dn, CHoCH up/dn, live swings.
+f_structure(simple int len, bool gate) =>
+    ph = ta.pivothigh(high, len, len)
+    pl = ta.pivotlow(low, len, len)
+    var float swH   = na
+    var float swL   = na
+    var float lastH = na          // last confirmed swing high (kept for ranges)
+    var float lastL = na
+    var int   st    = 0
+    var int   age   = 0
+    bool bosUp = false
+    bool bosDn = false
+    bool chUp  = false
+    bool chDn  = false
+    if gate
+        if not na(ph)
+            swH   := ph
+            lastH := ph
+        if not na(pl)
+            swL   := pl
+            lastL := pl
+        up = not na(swH) and close > swH
+        dn = not na(swL) and close < swL
+        both = up and dn
+        // On an outside bar that breaks both sides, the close decides delivery.
+        useUp = up and (not both or close >= open)
+        useDn = dn and (not both or close < open)
+        bosUp := useUp
+        bosDn := useDn
+        chUp  := useUp and st == -1
+        chDn  := useDn and st == 1
+        age   := age + 1
+        if useUp
+            st  := 1
+            age := 0
+            swH := na
+        if useDn
+            st  := -1
+            age := 0
+            swL := na
+    [st, age, bosUp, bosDn, chUp, chDn, lastH, lastL]
+
+// HTF wrapper: returns the structure state of the LAST CLOSED HTF bar.
+// The one-bar carry is what makes the HTF read non-repainting: the value only
+// changes when a higher-timeframe bar actually closes.
+f_htfPack(simple int len, simple bool confirmed) =>
+    [st, age, _bu, _bd, _cu, _cd, _h, _l] = f_structure(len, true)
+    var int pSt  = 0
+    var int pAge = 0
+    outSt  = confirmed ? pSt : st
+    outAge = confirmed ? pAge : age
+    pSt  := st
+    pAge := age
+    [outSt, outAge]
+
+// ═══════════════════════════════════════════════ 17 · HTF BIAS RESOLUTION ═══
+tid = syminfo.tickerid
+[mSt,  mAge]  = request.security(tid, tfM,  f_htfPack(htfLen, htfConfirmed), lookahead = barmerge.lookahead_off)
+[wSt,  wAge]  = request.security(tid, tfW,  f_htfPack(htfLen, htfConfirmed), lookahead = barmerge.lookahead_off)
+[dSt,  dAge]  = request.security(tid, tfD,  f_htfPack(htfLen, htfConfirmed), lookahead = barmerge.lookahead_off)
+[h4St, h4Age] = request.security(tid, tfH4, f_htfPack(htfLen, htfConfirmed), lookahead = barmerge.lookahead_off)
+
+// Conflict resolution: Daily is the arbiter. Weekly then Monthly may override,
+// but only while their own BOS is still fresh. A direct Daily/4H conflict is
+// resolved to Neutral (= blocked), never to a coin flip.
+int htfBias = nz(dSt)
+bool wOverride = nz(wSt) != 0 and nz(wAge) <= overrideAge and nz(wSt) != htfBias
+if wOverride
+    htfBias := wSt
+bool mOverride = nz(mSt) != 0 and nz(mAge) <= overrideAge and nz(mSt) != htfBias
+if mOverride
+    htfBias := mSt
+bool h4Conflict = htfBias != 0 and nz(h4St) != 0 and nz(h4St) != htfBias
+if h4Conflict and blockOnH4
+    htfBias := 0
+
+htfNarrative = f_biasStr(htfBias) + (h4Conflict and blockOnH4 ? " (D/4H conflict)" : mOverride ? " (M override)" : wOverride ? " (W override)" : "")
+
+// ═════════════════════════════════════════════════════ 18 · KILL ZONES ══════
+inKz1 = f_inSess(kz1, kz1On)
+inKz2 = f_inSess(kz2, kz2On)
+inKz3 = f_inSess(kz3, kz3On)
+inKz4 = f_inSess(kz4, kz4On)
+inKillzone = inKz1 or inKz2 or inKz3 or inKz4
+kzName = inKz3 ? "NY AM" : inKz4 ? "NY PM" : inKz2 ? "CBDR/Pre" : inKz1 ? "London" : "—"
+kzOpened = inKillzone and not inKillzone[1]
+
+// ═══════════════════════════════════ 19 · BAR PRIMITIVES / DISPLACEMENT ═════
+atr     = ta.atr(atrLen)
+barClosed = barstate.isconfirmed                 // structure gate: closed bars only
+barRng  = high - low
+barBody = math.abs(close - open)
+volAvg  = ta.sma(nz(volume), volLen)
+volOk   = not dispUseVol or na(volume) or volume >= volAvg * dispVolMult
+bodyOk  = barBody / math.max(barRng, syminfo.mintick) >= dispBodyRatio
+rangeOk = barRng >= atr * dispAtrMult
+
+// Classic 3-candle fair value gap measured on the just-closed bar.
+bullFvgNow = low > high[2]
+bearFvgNow = high < low[2]
+
+isDispBar = rangeOk and bodyOk and volOk
+dispUp = isDispBar and close > open and (not dispNeedFvg or bullFvgNow)
+dispDn = isDispBar and close < open and (not dispNeedFvg or bearFvgNow)
+
+// Chart-timeframe structure (drives CHoCH confirmation and event re-arming).
+[ltfSt, ltfAge, ltfBosUp, ltfBosDn, ltfChUp, ltfChDn, ltfSwH, ltfSwL] = f_structure(intLen, barClosed)
+
+// ═══════════════════════════════════════════════ 20 · LIQUIDITY TRACKING ════
+var array<Liq> liqs = array.new<Liq>()
+
+// Push a fresh level, trimming the oldest when the cap is hit.
+f_pushLiq(array<Liq> arr, float p, int b, bool isHigh, bool isExt, int cap) =>
+    array.push(arr, Liq.new(price = p, bidx = b, isHigh = isHigh, isExternal = isExt, swept = false, ln = na))
+    if array.size(arr) > cap
+        old = array.shift(arr)
+        if not na(old.ln)
+            line.delete(old.ln)
+    array.size(arr)
+
+// Promote the internal pivot that matches a newly confirmed external pivot.
+f_promoteExternal(array<Liq> arr, float p, bool isHigh, float tol) =>
+    bool hit = false
+    if array.size(arr) > 0
+        for i = 0 to array.size(arr) - 1
+            l = array.get(arr, i)
+            if l.isHigh == isHigh and math.abs(l.price - p) <= tol and not l.isExternal
+                l.isExternal := true
+                hit := true
+    hit
+
+// Sweep scan: wick through the level, close back on the origin side.
+f_scanSweeps(array<Liq> arr) =>
+    bool  swH  = false
+    bool  swL  = false
+    bool  extH = false
+    bool  extL = false
+    float pxH  = na
+    float pxL  = na
+    if array.size(arr) > 0
+        for i = 0 to array.size(arr) - 1
+            l = array.get(arr, i)
+            if not l.swept
+                if l.isHigh and high > l.price and close <= l.price
+                    l.swept := true
+                    swH  := true
+                    extH := extH or l.isExternal
+                    pxH  := na(pxH) ? l.price : math.max(pxH, l.price)
+                if not l.isHigh and low < l.price and close >= l.price
+                    l.swept := true
+                    swL  := true
+                    extL := extL or l.isExternal
+                    pxL  := na(pxL) ? l.price : math.min(pxL, l.price)
+    [swH, swL, extH, extL, pxH, pxL]
+
+// Nearest untouched level on one side — used for TP1 (internal) and TP2 (external).
+f_nearestLiq(array<Liq> arr, float px, bool above, bool wantExternal) =>
+    float best = na
+    if array.size(arr) > 0
+        for i = 0 to array.size(arr) - 1
+            l = array.get(arr, i)
+            if not l.swept and l.isExternal == wantExternal and l.isHigh == above
+                ok = above ? l.price > px : l.price < px
+                if ok
+                    best := na(best) ? l.price : (above ? math.min(best, l.price) : math.max(best, l.price))
+    best
+
+phInt = ta.pivothigh(high, intLen, intLen)
+plInt = ta.pivotlow(low,  intLen, intLen)
+phExt = ta.pivothigh(high, extLen, extLen)
+plExt = ta.pivotlow(low,  extLen, extLen)
+
+// Moving dealing range anchored on the most recent external swings.
+var float drHigh = na
+var float drLow  = na
+
+if barClosed
+    if not na(phInt)
+        f_pushLiq(liqs, phInt, bar_index - intLen, true, false, liqMax)
+    if not na(plInt)
+        f_pushLiq(liqs, plInt, bar_index - intLen, false, false, liqMax)
+    if not na(phExt)
+        drHigh := phExt
+        if not f_promoteExternal(liqs, phExt, true, syminfo.mintick * 2)
+            f_pushLiq(liqs, phExt, bar_index - extLen, true, true, liqMax)
+    if not na(plExt)
+        drLow := plExt
+        if not f_promoteExternal(liqs, plExt, false, syminfo.mintick * 2)
+            f_pushLiq(liqs, plExt, bar_index - extLen, false, true, liqMax)
+
+bool swpHigh    = false
+bool swpLow     = false
+bool swpHighExt = false
+bool swpLowExt  = false
+float swpHighPx = na
+float swpLowPx  = na
+if barClosed
+    [sw1, sw2, sw3, sw4, sw5, sw6] = f_scanSweeps(liqs)
+    swpHigh    := sw1
+    swpLow     := sw2
+    swpHighExt := sw3
+    swpLowExt  := sw4
+    swpHighPx  := sw5
+    swpLowPx   := sw6
+
+// External liquidity is only "valid external" once internal liquidity has been
+// taken AND structure (BOS/CHoCH) confirms the shift. Until then a level beyond
+// the range is treated as unqualified.
+var bool intTakenBuy  = false      // internal buy-side (highs) taken
+var bool intTakenSell = false      // internal sell-side (lows) taken
+var bool extValidBuy  = false
+var bool extValidSell = false
+if barClosed
+    if swpHigh and not swpHighExt
+        intTakenBuy := true
+    if swpLow and not swpLowExt
+        intTakenSell := true
+    if intTakenBuy and (ltfBosDn or ltfChDn)
+        extValidSell := true       // highs taken then structure down ⇒ target lows
+        intTakenBuy  := false
+    if intTakenSell and (ltfBosUp or ltfChUp)
+        extValidBuy := true        // lows taken then structure up ⇒ target highs
+        intTakenSell := false
+    if ltfChUp
+        extValidSell := false
+    if ltfChDn
+        extValidBuy := false
+
+// Protected swings: the extreme that produced the sweep / displacement.
+var float protHigh = na
+var float protLow  = na
+if barClosed
+    if swpHigh
+        protHigh := high
+    if swpLow
+        protLow := low
+
+// ═══════════════════════════════════════════════════ 21 · SMT DIVERGENCE ════
+[pairHiRaw, pairLoRaw] = request.security(smtSym, timeframe.period, [high, low], lookahead = barmerge.lookahead_off, ignore_invalid_symbol = true)
+// Inverse-correlation proxy (e.g. metals vs DXY): mirror the paired series so
+// the rest of the divergence logic stays identical.
+pairHi = smtInverse ? -pairLoRaw : pairHiRaw
+pairLo = smtInverse ? -pairHiRaw : pairLoRaw
+smtAvailable = smtOn and not na(pairHi) and not na(pairLo)
+
+var float refPH  = na          // primary reference swing high
+var float refQH  = na          // paired instrument high at that same bar
+var float refPL  = na
+var float refQL  = na
+var int   refPHb = na
+var int   refPLb = na
+
+var int  smtState      = 0     // 1 bullish, -1 bearish, 0 none
+var int  smtBar        = na
+var bool smtCorrelated = false // both instruments swept ⇒ clear, but no divergence
+var float smtProtect   = na    // protected swing on the non-swept side
+
+if barClosed and smtAvailable
+    if not na(phInt)
+        refPH  := phInt
+        refQH  := pairHi[intLen]
+        refPHb := bar_index - intLen
+    if not na(plInt)
+        refPL  := plInt
+        refQL  := pairLo[intLen]
+        refPLb := bar_index - intLen
+    // Buy-side raid: primary takes its high, pair does not ⇒ bearish SMT.
+    if not na(refPH) and not na(refQH) and high > refPH and bar_index - refPHb <= smtValid
+        smtBar := bar_index
+        if pairHi > refQH
+            smtState      := 0
+            smtCorrelated := true
+        else
+            smtState      := -1
+            smtCorrelated := false
+            smtProtect    := high
+        refPH := na
+    // Sell-side raid: primary takes its low, pair holds ⇒ bullish SMT.
+    if not na(refPL) and not na(refQL) and low < refPL and bar_index - refPLb <= smtValid
+        smtBar := bar_index
+        if pairLo < refQL
+            smtState      := 0
+            smtCorrelated := true
+        else
+            smtState      := 1
+            smtCorrelated := false
+            smtProtect    := low
+        refPL := na
+
+smtFresh   = smtAvailable and not na(smtBar) and bar_index - smtBar <= smtValid
+smtDir     = smtFresh ? smtState : 0
+smtUnclear = smtAvailable and not (smtFresh and (smtState != 0 or smtCorrelated))
+smtLabel   = not smtAvailable ? "Disabled / n/a" : smtDir == 1 ? "Bullish" : smtDir == -1 ? "Bearish" : smtFresh and smtCorrelated ? "Correlated (no divergence)" : "Unclear / none"
+smtNewBull = smtFresh and smtState == 1 and smtBar == bar_index
+smtNewBear = smtFresh and smtState == -1 and smtBar == bar_index
+
+// ══════════════════════════════════════ 22 · FVG / ORDER BLOCK / BREAKER ════
+var array<Zone> zones = array.new<Zone>()
+
+f_pushZone(array<Zone> arr, float t, float b, int bi, bool bull, bool isFvg, bool isOb, int cap) =>
+    array.push(arr, Zone.new(top = t, bot = b, bidx = bi, bull = bull, isFvg = isFvg, isOb = isOb, isBreaker = false, dead = false, bx = na))
+    if array.size(arr) > cap
+        old = array.shift(arr)
+        if not na(old.bx)
+            box.delete(old.bx)
+    array.size(arr)
+
+// Last opposite-colour candle before a displacement leg = order block.
+f_findOb(bool bull, simple int look) =>
+    float t = na
+    float b = na
+    int found = -1
+    for i = 1 to look
+        if found == -1
+            opposite = bull ? close[i] < open[i] : close[i] > open[i]
+            if opposite
+                found := i
+    if found > -1
+        t := useObBody ? math.max(open[found], close[found]) : high[found]
+        b := useObBody ? math.min(open[found], close[found]) : low[found]
+    [t, b]
+
+// Violated zones flip polarity once (breaker), then die on the second violation.
+f_ageZones(array<Zone> arr) =>
+    if array.size(arr) > 0
+        for i = 0 to array.size(arr) - 1
+            z = array.get(arr, i)
+            if not z.dead
+                violated = z.bull ? close < z.bot : close > z.top
+                if violated
+                    if z.isBreaker
+                        z.dead := true
+                    else
+                        z.isBreaker := true
+                        z.bull      := not z.bull
+    array.size(arr)
+
+// Does an OLDER live zone of the same polarity overlap this price band?
+// Zones created on this displacement are excluded via ignoreFromBidx.
+f_zoneOverlap(array<Zone> arr, float t, float b, bool bull, int ignoreFromBidx) =>
+    bool hit = false
+    if array.size(arr) > 0 and not na(t) and not na(b)
+        for i = 0 to array.size(arr) - 1
+            z = array.get(arr, i)
+            if not z.dead and z.bull == bull and z.bidx < ignoreFromBidx
+                if z.top >= b and z.bot <= t
+                    hit := true
+    hit
+
+if barClosed
+    f_ageZones(zones)
+    if bullFvgNow
+        f_pushZone(zones, low, high[2], bar_index - 1, true, true, false, zoneMax)
+    if bearFvgNow
+        f_pushZone(zones, low[2], high, bar_index - 1, false, true, false, zoneMax)
+    if dispUp
+        [obT, obB] = f_findOb(true, obLookback)
+        if not na(obT)
+            f_pushZone(zones, obT, obB, bar_index, true, false, true, zoneMax)
+    if dispDn
+        [obT, obB] = f_findOb(false, obLookback)
+        if not na(obT)
+            f_pushZone(zones, obT, obB, bar_index, false, false, true, zoneMax)
+
+// ══════════════════════════════════ 23 · DEALING RANGE · PREMIUM / OTE ══════
+drValid = not na(drHigh) and not na(drLow) and drHigh > drLow
+drMid   = drValid ? (drHigh + drLow) / 2 : na
+drSize  = drValid ? drHigh - drLow : na
+inDiscount = drValid and close < drMid
+inPremium  = drValid and close > drMid
+// OTE long band = 62–79 % retracement of the up-leg (low → high).
+oteLongTop  = drValid ? drHigh - oteLo * drSize : na
+oteLongBot  = drValid ? drHigh - oteHi * drSize : na
+oteShortBot = drValid ? drLow + oteLo * drSize : na
+oteShortTop = drValid ? drLow + oteHi * drSize : na
+inOteLong   = drValid and close <= oteLongTop and close >= oteLongBot
+inOteShort  = drValid and close >= oteShortBot and close <= oteShortTop
+
+// ═══════════════════════════════════════════ 24 · VWAP + PROFILE PROXY ══════
+newDay = time("D") != nz(time("D")[1], 0)
+var float cumPV = 0.0
+var float cumV  = 0.0
+if newDay
+    cumPV := 0.0
+    cumV  := 0.0
+cumPV += hlc3 * nz(volume)
+cumV  += nz(volume)
+sessVwap = vwapOn and cumV > 0 ? cumPV / cumV : na
+
+var float aPV = 0.0
+var float aV  = 0.0
+aStarted = time >= avwapAnchor
+if aStarted and not aStarted[1]
+    aPV := 0.0
+    aV  := 0.0
+if aStarted
+    aPV += hlc3 * nz(volume)
+    aV  += nz(volume)
+anchVwap = avwapOn and aV > 0 ? aPV / aV : na
+
+// PROXY: bins bar volume at hlc3 across a rolling window. Not a true
+// per-price traded-volume profile (Pine has no access to that), but a stable,
+// deterministic approximation of POC / value area / high-volume nodes.
+f_profile(simple int nBars, simple int nBins, float vaPct, float hvnMult) =>
+    float poc = na
+    float vah = na
+    float val = na
+    float hvn = na
+    hh = ta.highest(high, nBars)
+    ll = ta.lowest(low, nBars)
+    if hh > ll and bar_index >= nBars
+        step = (hh - ll) / nBins
+        bins = array.new_float(nBins, 0.0)
+        for i = 0 to nBars - 1
+            idx = int(math.min(nBins - 1, math.max(0, math.floor((hlc3[i] - ll) / step))))
+            array.set(bins, idx, array.get(bins, idx) + nz(volume[i], 1.0))
+        pocIdx = array.indexof(bins, array.max(bins))
+        total  = array.sum(bins)
+        target = total * vaPct / 100.0
+        float acc = array.get(bins, pocIdx)
+        int lo = pocIdx
+        int hi = pocIdx
+        // Expand the value area outward from the POC until it holds vaPct.
+        for _i = 0 to nBins * 2
+            if acc < target
+                dnV = lo > 0 ? array.get(bins, lo - 1) : -1.0
+                upV = hi < nBins - 1 ? array.get(bins, hi + 1) : -1.0
+                if upV < 0 and dnV < 0
+                    acc := target
+                else
+                    if upV >= dnV
+                        hi  := hi + 1
+                        acc := acc + upV
+                    else
+                        lo  := lo - 1
+                        acc := acc + dnV
+        poc := ll + (pocIdx + 0.5) * step
+        vah := ll + (hi + 1) * step
+        val := ll + lo * step
+        mean = total / nBins
+        float bestD = 1.0e20
+        for i = 0 to nBins - 1
+            if array.get(bins, i) >= mean * hvnMult
+                px = ll + (i + 0.5) * step
+                d  = math.abs(px - close)
+                if d < bestD
+                    bestD := d
+                    hvn   := px
+    [poc, vah, val, hvn]
+
+[pocRaw, vahRaw, valRaw, hvnRaw] = f_profile(vpBars, vpBins, vpVaPct, vpHvnMult)
+var float vpPoc = na
+var float vpVah = na
+var float vpVal = na
+var float vpHvn = na
+if vpOn and (bar_index % vpEvery == 0 or na(vpPoc))
+    vpPoc := pocRaw
+    vpVah := vahRaw
+    vpVal := valRaw
+    vpHvn := hvnRaw
+
+// ═════════════════════════════════════════════════════ 25 · GEX LEVELS ══════
+// PROXY: real dealer gamma exposure is not reachable from Pine. Levels are
+// entered by hand; the engine only reasons about proximity and sign.
+var array<float> gexPx = array.new_float()
+var array<int>   gexSg = array.new_int()
+if barstate.isfirst
+    if gex1 > 0
+        array.push(gexPx, gex1)
+        array.push(gexSg, gex1t == "Positive" ? 1 : -1)
+    if gex2 > 0
+        array.push(gexPx, gex2)
+        array.push(gexSg, gex2t == "Positive" ? 1 : -1)
+    if gex3 > 0
+        array.push(gexPx, gex3)
+        array.push(gexSg, gex3t == "Positive" ? 1 : -1)
+    if gex4 > 0
+        array.push(gexPx, gex4)
+        array.push(gexSg, gex4t == "Positive" ? 1 : -1)
+    if gex5 > 0
+        array.push(gexPx, gex5)
+        array.push(gexSg, gex5t == "Positive" ? 1 : -1)
+    if gex6 > 0
+        array.push(gexPx, gex6)
+        array.push(gexSg, gex6t == "Positive" ? 1 : -1)
+
+f_nearestGex(array<float> px, array<int> sg, float ref) =>
+    float best = na
+    int   sign = 0
+    float bd   = 1.0e20
+    if array.size(px) > 0 and not na(ref)
+        for i = 0 to array.size(px) - 1
+            d = math.abs(array.get(px, i) - ref)
+            if d < bd
+                bd   := d
+                best := array.get(px, i)
+                sign := array.get(sg, i)
+    [best, sign, bd]
+
+// ═════════════════════════════════════════════════ 26 · PO3 / AMD MODEL ═════
+inPm    = f_inSess(pmSess, po3On)
+inJudas = f_inSess(judasSess, po3On)
+var float pmH = na
+var float pmL = na
+var int po3Phase = 0        // 0 idle · 1 accumulation · 2 manipulation · 3 distribution
+var int po3Dir   = 0        // expected distribution direction
+if barClosed
+    if newDay
+        po3Phase := 0
+        po3Dir   := 0
+    if inPm and not inPm[1]
+        pmH      := high
+        pmL      := low
+        po3Phase := 1
+    else if inPm
+        pmH      := math.max(nz(pmH, high), high)
+        pmL      := math.min(nz(pmL, low), low)
+        po3Phase := 1
+    // Judas swing = a raid of the accumulation range that closes back inside.
+    if inJudas and po3Phase <= 2 and not na(pmH) and not na(pmL)
+        if high > pmH and close < pmH
+            po3Phase := 2
+            po3Dir   := -1
+        else if low < pmL and close > pmL
+            po3Phase := 2
+            po3Dir   := 1
+    // Distribution is only inferred AFTER confirmation, never predicted.
+    if po3Phase == 2 and ((po3Dir == 1 and (ltfChUp or dispUp)) or (po3Dir == -1 and (ltfChDn or dispDn)))
+        po3Phase := 3
+po3Str = po3Phase == 3 ? "Distribution " + f_dirStr(po3Dir) : po3Phase == 2 ? "Manipulation (Judas)" : po3Phase == 1 ? "Accumulation" : "—"
+
+// ══════════════════════════════════════════ 27 · EVENT LOCKOUT (MANUAL) ═════
+f_evtWin(bool on, int t) => on and time >= t - evtBefore * 60000 and time <= t + evtAfter * 60000
+evt1 = f_evtWin(e1On, e1t)
+evt2 = f_evtWin(e2On, e2t)
+evt3 = f_evtWin(e3On, e3t)
+evt4 = f_evtWin(e4On, e4t)
+evt5 = f_evtWin(e5On, e5t)
+evt6 = f_evtWin(e6On, e6t)
+evtActive = evt1 or evt2 or evt3 or evt4 or evt5 or evt6
+evtName = evt1 ? e1n : evt2 ? e2n : evt3 ? e3n : evt4 ? e4n : evt5 ? e5n : evt6 ? e6n : "—"
+// Optional re-arm: after the lockout, wait for structure to reform.
+var bool needReform = false
+if barClosed
+    if not evtActive and evtActive[1]
+        needReform := evtReArm
+    if needReform and (ltfChUp or ltfChDn or ltfBosUp or ltfBosDn)
+        needReform := false
+eventBlocked = evtActive or needReform
+
+// ══════════════════════ 28 · SWEEP → DISPLACEMENT → RETEST STATE MACHINE ════
+var int   sState    = 0     // 0 idle · 1 swept · 2 displaced (zone armed)
+var int   sDir      = 0
+var int   sSweepB   = na
+var bool  sSweepExt = false
+var int   sDispB    = na
+var float sProt     = na
+var float sZoneT    = na
+var float sZoneB    = na
+var bool  sChoch    = false
+var bool  sOverlap  = false
+var int   sIdea     = 0
+var float sSweepPx  = na
+var float runLow    = na
+var float runHigh   = na
+
+bool sNewSweep = false
+bool sNewDisp  = false
+bool sExpired  = false
+
+if barClosed
+    // 1 · expiry / invalidation
+    if sState > 0
+        aged      = sState == 1 ? bar_index - sSweepB > maxSweepAge : bar_index - sDispB > maxDispAge
+        brokeProt = not na(sProt) and (sDir == 1 ? close < sProt : close > sProt)
+        if aged or brokeProt
+            sState   := 0
+            sDir     := 0
+            sChoch   := false
+            sOverlap := false
+            sExpired := true
+    // 2 · liquidity sweep opens (or refreshes) an idea
+    preferLong = swpLow and (not swpHigh or htfBias >= 0)
+    if sState <= 1 and (swpLow or swpHigh)
+        sDir      := preferLong ? 1 : -1
+        sSweepExt := preferLong ? swpLowExt : swpHighExt
+        sProt     := preferLong ? low : high
+        sSweepPx  := preferLong ? nz(swpLowPx, low) : nz(swpHighPx, high)
+        runLow    := low
+        runHigh   := high
+        sSweepB   := bar_index
+        sState    := 1
+        sChoch    := false
+        sOverlap  := false
+        sIdea     += 1
+        sNewSweep := true
+    // track the extreme that must hold while we wait for displacement
+    if sState == 1
+        runLow  := na(runLow) ? low : math.min(runLow, low)
+        runHigh := na(runHigh) ? high : math.max(runHigh, high)
+    // 3 · displacement leaves the retest zone behind
+    if sState == 1 and ((sDir == 1 and dispUp) or (sDir == -1 and dispDn))
+        [obT, obB] = f_findOb(sDir == 1, obLookback)
+        float ft = na
+        float fb = na
+        if sDir == 1 and bullFvgNow
+            ft := low
+            fb := high[2]
+        if sDir == -1 and bearFvgNow
+            ft := low[2]
+            fb := high
+        hasF = not na(ft)
+        hasO = not na(obT)
+        ov   = hasF and hasO and obT >= fb and obB <= ft
+        if hasF or hasO
+            // Overlap of FVG and OB/breaker is the strongest zone: use the
+            // intersection, otherwise fall back to whichever exists.
+            sZoneT   := ov ? math.min(ft, obT) : hasF ? ft : obT
+            sZoneB   := ov ? math.max(fb, obB) : hasF ? fb : obB
+            // Strongest confluence: FVG ∩ OB on this leg, or the fresh zone
+            // landing on an older unmitigated OB / breaker of the same side.
+            sOverlap := ov or f_zoneOverlap(zones, sZoneT, sZoneB, sDir == 1, bar_index - 1)
+            sProt    := sDir == 1 ? runLow : runHigh
+            sDispB   := bar_index
+            sState   := 2
+            sNewDisp := true
+    // 4 · delivery shift confirmation
+    if sState >= 1
+        if sDir == 1 and (ltfChUp or ltfBosUp)
+            sChoch := true
+        if sDir == -1 and (ltfChDn or ltfBosDn)
+            sChoch := true
+
+sweepLabel = sState < 1 ? "none" : (sSweepExt ? "External" : "Internal") + (na(sSweepPx) ? "" : " @ " + f_num(sSweepPx))
+
+zoneReady = sState == 2 and not na(sZoneT) and not na(sZoneB) and (not needChoch or sChoch)
+// Retest = price returns into the displacement origin AFTER the displacement
+// bar. The initial break is never traded (no first-touch entries).
+touchedZone = zoneReady and bar_index > sDispB and low <= sZoneT and high >= sZoneB
+retestSig   = barClosed and touchedZone and (sDir == 1 ? close > sZoneB and close >= open : close < sZoneT and close <= open)
+
+// ══════════════════════════════════════ 29 · ENTRY / STOP / TARGETS / R ═════
+zoneSpan = zoneReady ? sZoneT - sZoneB : na
+entryPx  = zoneReady ? (sDir == 1 ? sZoneT - zoneEntryPct * zoneSpan : sZoneB + zoneEntryPct * zoneSpan) : na
+stopPx   = zoneReady and not na(sProt) ? (sDir == 1 ? sProt - atrStopBuf * atr : sProt + atrStopBuf * atr) : na
+
+tp1Raw = f_nearestLiq(liqs, nz(entryPx, close), sDir == 1, false)
+tp2Raw = f_nearestLiq(liqs, nz(entryPx, close), sDir == 1, true)
+
+// An external pool only counts as VALID external liquidity once internal
+// liquidity was taken first AND structure confirmed the shift (Tier-1 rule 2).
+extTargetValid = sDir == 1 ? extValidBuy : sDir == -1 ? extValidSell : false
+float tp2Px = extTargetValid ? tp2Raw : na
+tp2Quality = not na(tp2Px) ? "valid external" : "—"
+drCand = sDir == 1 ? drHigh : sDir == -1 ? drLow : na
+if na(tp2Px) and fallbackExt and not na(drCand) and not na(entryPx) and (sDir == 1 ? drCand > entryPx : drCand < entryPx)
+    tp2Px := drCand
+    tp2Quality := "dealing-range extreme"
+if na(tp2Px) and not na(tp2Raw)
+    // last resort: an external pool that has not yet qualified
+    tp2Px := tp2Raw
+    tp2Quality := "unqualified external"
+float tp1Px = tp1Raw
+// Fallback TP1: halfway to the external objective, so partials still exist
+// when no unswept internal pool sits in front of price.
+if na(tp1Px) and not na(tp2Px) and not na(entryPx)
+    tp1Px := entryPx + (tp2Px - entryPx) * 0.5
+
+
+// ═══════════════════════════════ 30 · "TRIPLE THREAT" CLUSTER DETECTION ═════
+f_nearAnyLiq(array<Liq> arr, float ref, float tol) =>
+    bool hit = false
+    if array.size(arr) > 0 and not na(ref)
+        for i = 0 to array.size(arr) - 1
+            l = array.get(arr, i)
+            if not l.swept and math.abs(l.price - ref) <= tol
+                hit := true
+    hit
+
+f_near(float a, float b, float tol) => not na(a) and not na(b) and math.abs(a - b) <= tol
+
+clusterRef = nz(entryPx, close)
+clusterTol = atr * clusterAtr
+nearVwap = f_near(sessVwap, clusterRef, clusterTol) or f_near(anchVwap, clusterRef, clusterTol)
+nearNode = f_near(vpPoc, clusterRef, clusterTol) or f_near(vpVah, clusterRef, clusterTol) or f_near(vpVal, clusterRef, clusterTol) or f_near(vpHvn, clusterRef, clusterTol)
+nearLevel = f_nearAnyLiq(liqs, clusterRef, clusterTol) or f_near(drHigh, clusterRef, clusterTol) or f_near(drLow, clusterRef, clusterTol)
+clusterCount = (nearVwap ? 1 : 0) + (nearNode ? 1 : 0) + (nearLevel ? 1 : 0)
+clusterOk = clusterCount >= 3
+
+[gexLvl, gexSign, gexDist] = f_nearestGex(gexPx, gexSg, clusterRef)
+gexNear   = gexOn and not na(gexLvl) and gexDist <= atr * gexProx
+gexPin    = gexNear and gexSign > 0      // positive gamma ⇒ pinning / dampening
+gexExpand = gexNear and gexSign < 0      // negative gamma ⇒ acceleration potential
+string gexStr = not gexOn ? "Off" : na(gexLvl) ? "None set" : (gexSign > 0 ? "+γ " : "−γ ") + f_num(gexLvl) + (gexNear ? " (near)" : " (far)")
+gexStr := gexStr + (gexPin ? " · pin" : gexExpand ? " · expansion" : "")
+
+// ═══════════════════════════════════ 29b · GAMMA-ADJUSTED R MEASUREMENT ═════
+// Positive gamma dampens: a +γ level sitting between entry and the runner
+// target caps realistic expansion, so R is measured to the pin, not past it.
+// Negative gamma is left uncapped (acceleration potential).
+float gexCap = na
+if gexOn and not na(gexLvl) and gexSign > 0 and not na(entryPx) and not na(tp2Px)
+    if sDir == 1 ? (gexLvl > entryPx and gexLvl < tp2Px) : (gexLvl < entryPx and gexLvl > tp2Px)
+        gexCap := gexLvl
+tp2Eff   = na(gexCap) ? tp2Px : gexCap
+rDist    = not na(entryPx) and not na(stopPx) ? math.abs(entryPx - stopPx) : na
+rrRunner = not na(tp2Eff) and not na(rDist) and rDist > 0 ? (sDir == 1 ? tp2Eff - entryPx : entryPx - tp2Eff) / rDist : na
+rr1      = not na(tp1Px) and not na(rDist) and rDist > 0 ? (sDir == 1 ? tp1Px - entryPx : entryPx - tp1Px) / rDist : na
+invalidDefined = not na(stopPx) and not na(rDist) and rDist > syminfo.mintick * 2 and (sDir == 1 ? stopPx < entryPx : stopPx > entryPx)
+rrOk = not na(rrRunner) and rrRunner >= minRR
+
+// ══════════════════════════════════ 31 · 10-POINT CONFLUENCE CHECKLIST ══════
+// Applicability lets a genuinely unavailable input (SMT off for GC/SI, no GEX
+// levels entered) drop out of the denominator instead of silently failing.
+c1  = htfBias != 0 and htfBias == sDir                       // HTF narrative confirmed
+c2  = inKillzone                                             // kill zone active
+c3  = sState >= 1                                            // liquidity sweep labeled
+c4  = sState >= 2                                            // displacement present
+c5  = smtAvailable and smtDir == sDir and sDir != 0          // SMT confirmed
+c6  = sDir == 1 ? (pdStrict ? inOteLong : inDiscount) : sDir == -1 ? (pdStrict ? inOteShort : inPremium) : false
+c7  = clusterOk                                              // VWAP / profile cluster
+c8  = gexNear                                                // GEX level nearby
+c9  = invalidDefined                                         // invalidation defined first
+c10 = rrOk                                                   // minimum 2R confirmed
+
+app5 = smtAvailable
+app7 = vwapOn or vpOn
+app8 = gexOn and array.size(gexPx) > 0
+
+int rawPts = (c1 ? 1 : 0) + (c2 ? 1 : 0) + (c3 ? 1 : 0) + (c4 ? 1 : 0) + (c6 ? 1 : 0) + (c9 ? 1 : 0) + (c10 ? 1 : 0)
+int maxPts = 7
+if app5
+    maxPts += 1
+    rawPts += c5 ? 1 : 0
+if app7
+    maxPts += 1
+    rawPts += c7 ? 1 : 0
+if app8
+    maxPts += 1
+    rawPts += c8 ? 1 : 0
+// Disabled checks are redistributed proportionally onto the 10-point scale.
+scoreNorm = maxPts > 0 ? int(math.round(rawPts * 10.0 / maxPts)) : 0
+missing   = 10 - scoreNorm
+
+// Tier-2 structural set: SMT, sweep→displacement→retest, FVG/OB overlap, PD/OTE.
+tier2Count = (c5 ? 1 : 0) + (zoneReady ? 1 : 0) + (sOverlap ? 1 : 0) + (c6 ? 1 : 0)
+
+// ─── hard blockers (Tier 1 + critical execution logic) ───────────────────────
+hbBias   = sDir == 0 or htfBias == 0 or htfBias != sDir
+hbKz     = kzUse and not inKillzone
+hbSweep  = sState < 1
+hbStruct = not zoneReady
+hbStop   = not invalidDefined
+hbRR     = not rrOk
+hbSmt    = smtStrict and smtAvailable and smtUnclear
+hbEvent  = eventBlocked
+hbGex    = gexPinBlock and gexPin
+hbPo3    = po3Require and po3On and not (po3Phase == 3 and po3Dir == sDir)
+hbStrict = strictMode and (not c5 or not c7)
+hbTier2  = needTier2 and tier2Count < 3
+blocked  = hbBias or hbKz or hbSweep or hbStruct or hbStop or hbRR or hbSmt or hbEvent or hbGex or hbPo3 or hbStrict or hbTier2
+
+blockReason = hbBias ? "HTF bias" : hbSweep ? "no sweep" : hbStruct ? "no displacement/retest" : hbKz ? "kill zone" : hbEvent ? "event lockout" : hbStop ? "no invalidation" : hbRR ? "< min R" : hbSmt ? "SMT unclear" : hbGex ? "+γ pin" : hbPo3 ? "PO3" : hbStrict ? "strict mode" : hbTier2 ? "Tier-2 < 3" : missing >= maxMissing ? "missing " + str.tostring(missing) : "—"
+
+setupState = blocked or missing >= maxMissing ? "BLOCKED" : scoreNorm >= scoreMin ? "PASS" : "WATCHLIST"
+tradeOk    = setupState == "PASS"
+passLong   = tradeOk and sDir == 1
+passShort  = tradeOk and sDir == -1
+// Fire once per idea, on the bar the setup first becomes tradable.
+var int lastPassIdea = -1
+bool newPass = false
+if barClosed and tradeOk and sIdea != lastPassIdea
+    lastPassIdea := sIdea
+    newPass := true
+newPassLong  = newPass and sDir == 1
+newPassShort = newPass and sDir == -1
+scoreCrossUp = barClosed and scoreNorm >= scoreMin and nz(scoreNorm[1], 0) < scoreMin
+
+// ╔══════════════════════════════════════════════════════════════════════════╗
+// ║  SHARED CONFLUENCE ENGINE — END                                          ║
+// ╚══════════════════════════════════════════════════════════════════════════╝

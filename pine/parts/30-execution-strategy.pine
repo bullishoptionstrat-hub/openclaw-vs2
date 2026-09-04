@@ -1,0 +1,105 @@
+
+// ╔══════════════════════════════════════════════════════════════════════════╗
+// ║  EXECUTION LAYER (strategy build only)                                   ║
+// ║  Consumes the shared engine's plan: entryPx / stopPx / tp1Px / tp2Px.    ║
+// ╚══════════════════════════════════════════════════════════════════════════╝
+G_EXEC = "T7 · Execution & sizing"
+
+allowLong    = input.bool(true,  "Allow longs",  inline = "side", group = G_EXEC)
+allowShort   = input.bool(true,  "Allow shorts", inline = "side", group = G_EXEC)
+riskPct      = input.float(0.5,  "Risk % of equity per trade", minval = 0.01, maxval = 10, step = 0.05, group = G_EXEC)
+tp1Pct       = input.float(50,   "TP1 partial (% of position)", minval = 1, maxval = 99, step = 5, group = G_EXEC)
+allowFraction = input.bool(false, "Allow fractional size (crypto/CFD)", group = G_EXEC)
+maxQty       = input.float(50,   "Max contracts / units", minval = 1, group = G_EXEC)
+forceMinQty  = input.bool(false, "Trade 1 unit even if it exceeds the risk %", group = G_EXEC, tooltip = "OFF is safer: if one contract risks more than the configured %, the setup is skipped instead of oversized.")
+oneAttempt   = input.bool(true,  "One attempt per idea (needs a new sweep + displacement)", group = G_EXEC)
+cancelOffKz  = input.bool(true,  "Cancel resting orders when the kill zone closes", group = G_EXEC)
+eodFlat      = input.bool(true,  "Flatten at session end", inline = "eod", group = G_EXEC)
+eodSess      = input.session("1555-1600", "", inline = "eod", group = G_EXEC)
+
+ID_L = "OC-Long"
+ID_S = "OC-Short"
+
+// ── position sizing from the stop distance ─────────────────────────────────
+stopDistPts = not na(entryPx) and not na(stopPx) ? math.abs(entryPx - stopPx) : na
+ptValue     = syminfo.pointvalue
+riskCash    = strategy.equity * riskPct / 100.0
+rawQty      = not na(stopDistPts) and stopDistPts > 0 and ptValue > 0 ? riskCash / (stopDistPts * ptValue) : 0.0
+sizedQty    = allowFraction ? rawQty : math.floor(rawQty)
+if not allowFraction and sizedQty < 1 and forceMinQty
+    sizedQty := 1
+qty = math.min(sizedQty, maxQty)
+qtyOk = qty > 0
+
+// ── the plan is frozen when the order is submitted, not re-derived at fill ──
+var int   planIdea = -1
+var int   planDir  = 0
+var float planStop = na
+var float planTp1  = na
+var float planTp2  = na
+var float planEntry = na
+
+// ── one attempt per idea ────────────────────────────────────────────────────
+var int tradedIdea = -1
+freshIdea = not oneAttempt or sIdea != tradedIdea
+
+flat       = strategy.position_size == 0
+limitMode  = entryMode == "Limit at retest zone"
+sideOk     = (sDir == 1 and allowLong) or (sDir == -1 and allowShort)
+// Every gate the engine enforces, plus sizing feasibility.
+mayEnter   = barClosed and flat and freshIdea and sideOk and qtyOk and tradeOk and zoneReady
+// Market mode waits for the confirmed retest close; limit mode rests in the zone.
+triggerNow = limitMode ? true : retestSig
+
+if mayEnter and triggerNow
+    planIdea  := sIdea
+    planDir   := sDir
+    planEntry := entryPx
+    planStop  := stopPx
+    planTp1   := tp1Px
+    planTp2   := tp2Px
+    tradedIdea := sIdea
+    msg = '{"schema":"openclaw-ict/1","event":"entry","dir":"' + (sDir == 1 ? "long" : "short") + '","symbol":"' + syminfo.tickerid + '","tf":"' + timeframe.period + '","entry":' + str.tostring(entryPx) + ',"stop":' + str.tostring(stopPx) + ',"tp1":' + str.tostring(tp1Px) + ',"tp2":' + str.tostring(tp2Px) + ',"rr":' + str.tostring(rrRunner, "#.##") + ',"score":' + str.tostring(scoreNorm) + ',"qty":' + str.tostring(qty) + '}'
+    if sDir == 1
+        strategy.entry(ID_L, strategy.long, qty = qty, limit = limitMode ? entryPx : na, alert_message = msg)
+    else
+        strategy.entry(ID_S, strategy.short, qty = qty, limit = limitMode ? entryPx : na, alert_message = msg)
+
+// ── cancel resting orders when the idea dies ───────────────────────────────
+staleOrder = flat and planIdea >= 0 and (sIdea != planIdea or not zoneReady or sExpired or eventBlocked or (cancelOffKz and kzUse and not inKillzone))
+if barClosed and staleOrder
+    strategy.cancel(ID_L)
+    strategy.cancel(ID_S)
+    planIdea := -1
+
+// ── protective exits: TP1 partial at internal liquidity, runner at external ─
+inLong  = strategy.position_size > 0
+inShort = strategy.position_size < 0
+exitMsg1 = '{"schema":"openclaw-ict/1","event":"tp1"}'
+exitMsg2 = '{"schema":"openclaw-ict/1","event":"exit_runner"}'
+if inLong and planDir == 1 and not na(planStop)
+    strategy.exit("TP1-L", from_entry = ID_L, qty_percent = tp1Pct, limit = planTp1, stop = planStop, alert_message = exitMsg1)
+    strategy.exit("TP2-L", from_entry = ID_L, limit = planTp2, stop = planStop, alert_message = exitMsg2)
+if inShort and planDir == -1 and not na(planStop)
+    strategy.exit("TP1-S", from_entry = ID_S, qty_percent = tp1Pct, limit = planTp1, stop = planStop, alert_message = exitMsg1)
+    strategy.exit("TP2-S", from_entry = ID_S, limit = planTp2, stop = planStop, alert_message = exitMsg2)
+
+// planned entry of the working/filled order (frozen at submission time)
+plot(planIdea >= 0 or strategy.position_size != 0 ? planEntry : na, "Working plan entry", color = color.new(#ffffff, 45), style = plot.style_linebr)
+
+// ── end-of-session flatten ──────────────────────────────────────────────────
+inEod = f_inSess(eodSess, eodFlat)
+if inEod and not flat
+    strategy.close_all(comment = "EOD flat")
+    strategy.cancel(ID_L)
+    strategy.cancel(ID_S)
+
+// ── webhook alerts (strategy build uses alert(), not alertcondition()) ─────
+if barClosed and newPass
+    alert('{"schema":"openclaw-ict/1","event":"' + (sDir == 1 ? "pass_long" : "pass_short") + '","symbol":"' + syminfo.tickerid + '","tf":"' + timeframe.period + '","score":' + str.tostring(scoreNorm) + ',"entry":' + str.tostring(entryPx) + ',"stop":' + str.tostring(stopPx) + ',"tp1":' + str.tostring(tp1Px) + ',"tp2":' + str.tostring(tp2Px) + '}', alert.freq_once_per_bar_close)
+if barClosed and scoreCrossUp
+    alert('{"schema":"openclaw-ict/1","event":"score_threshold","symbol":"' + syminfo.tickerid + '","tf":"' + timeframe.period + '","score":' + str.tostring(scoreNorm) + '}', alert.freq_once_per_bar_close)
+if barClosed and kzOpened
+    alert('{"schema":"openclaw-ict/1","event":"killzone_open","symbol":"' + syminfo.tickerid + '","tf":"' + timeframe.period + '","zone":"' + kzName + '"}', alert.freq_once_per_bar_close)
+if barClosed and (smtNewBull or smtNewBear)
+    alert('{"schema":"openclaw-ict/1","event":"' + (smtNewBull ? "smt_bullish" : "smt_bearish") + '","symbol":"' + syminfo.tickerid + '","tf":"' + timeframe.period + '"}', alert.freq_once_per_bar_close)

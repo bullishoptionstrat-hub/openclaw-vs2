@@ -1,0 +1,23 @@
+//@version=5
+// ════════════════════════════════════════════════════════════════════════════
+//  OpenClaw · ICT / Institutional Confluence Engine — STRATEGY
+//  ------------------------------------------------------------------------
+//  Executes the exact same confluence engine as the indicator build. The
+//  detection block between the "SHARED CONFLUENCE ENGINE" markers is byte
+//  identical in both scripts, so strategy fills mirror indicator signals.
+//
+//  NON-REPAINTING CONTRACT
+//   • every request.security() uses lookahead = barmerge.lookahead_off
+//   • HTF structure is read from the LAST CLOSED HTF bar (see f_htfPack)
+//   • all structure / setup state transitions are gated on barstate.isconfirmed
+//   • process_orders_on_close = true and calc_on_every_tick = false, so orders
+//     are submitted on confirmed closes only (no intrabar repaint ambiguity)
+//
+//  Commission / slippage live in the declaration because strategy() requires
+//  const arguments (an `input.*` is not a const and will not compile there).
+//  Override them per instrument in Strategy Properties.
+//
+//  GENERATED FILE — do not edit directly.
+//  Source of truth: pine/parts/*.pine, assembled by pine/build.sh
+// ════════════════════════════════════════════════════════════════════════════
+strategy("OpenClaw ICT Confluence Engine [STRAT]", "OC-ICT-S", overlay = true, max_boxes_count = 500, max_lines_count = 500, max_labels_count = 500, max_bars_back = 1000, pyramiding = 0, initial_capital = 100000, currency = currency.USD, default_qty_type = strategy.fixed, default_qty_value = 1, commission_type = strategy.commission.cash_per_contract, commission_value = 2.5, slippage = 2, process_orders_on_close = true, calc_on_every_tick = false, calc_on_order_fills = false)

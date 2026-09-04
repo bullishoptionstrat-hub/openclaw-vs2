@@ -1,0 +1,175 @@
+
+// ╔══════════════════════════════════════════════════════════════════════════╗
+// ║  SHARED VISUAL LAYER — identical in both builds                          ║
+// ╚══════════════════════════════════════════════════════════════════════════╝
+showKz     = input.bool(true, "Shade kill zones",            group = G_VIS)
+showLiq    = input.bool(true, "Liquidity levels",            group = G_VIS)
+showZones  = input.bool(true, "FVG / OB / breaker zones",    group = G_VIS)
+showRange  = input.bool(true, "Dealing range + EQ + OTE",    group = G_VIS)
+showVwapP  = input.bool(true, "VWAP lines",                  group = G_VIS)
+showProf   = input.bool(true, "Profile POC / VAH / VAL",     group = G_VIS)
+showGexL   = input.bool(true, "GEX levels",                  group = G_VIS)
+showPlan   = input.bool(true, "Active plan (entry/stop/TP)", group = G_VIS)
+showLabels = input.bool(true, "Event labels",                group = G_VIS)
+showTable  = input.bool(true, "Checklist dashboard",         group = G_VIS)
+tablePos   = input.string("Top right", "Dashboard position", options = ["Top right", "Top left", "Bottom right", "Bottom left", "Middle right"], group = G_VIS)
+
+cBull   = color.new(#26a69a, 0)
+cBear   = color.new(#ef5350, 0)
+cInt    = color.new(#ffa726, 0)      // internal liquidity
+cExt    = color.new(#42a5f5, 0)      // external liquidity
+cZoneB  = color.new(#26a69a, 82)
+cZoneS  = color.new(#ef5350, 82)
+cBreak  = color.new(#ab47bc, 78)
+cRange  = color.new(#b0bec5, 0)
+cOte    = color.new(#7e57c2, 78)
+
+// ── kill zone shading ───────────────────────────────────────────────────────
+bgcolor(showKz and inKz1 ? color.new(#5c6bc0, 92) : na, title = "London kill zone")
+bgcolor(showKz and inKz2 ? color.new(#26c6da, 92) : na, title = "CBDR / pre-market kill zone")
+bgcolor(showKz and inKz3 ? color.new(#66bb6a, 92) : na, title = "NY AM kill zone")
+bgcolor(showKz and inKz4 ? color.new(#ffa726, 92) : na, title = "NY PM kill zone")
+
+// PASS-state tint
+bgcolor(showLabels and passLong ? color.new(#26a69a, 94) : showLabels and passShort ? color.new(#ef5350, 94) : na, title = "PASS state tint")
+
+// ── liquidity levels: internal dashed/orange, external solid/blue ───────────
+f_drawLiq(array<Liq> arr, bool on, int keepSwept) =>
+    if array.size(arr) > 0
+        for i = 0 to array.size(arr) - 1
+            l = array.get(arr, i)
+            if on
+                if na(l.ln)
+                    l.ln := line.new(l.bidx, l.price, bar_index, l.price, color = l.isExternal ? cExt : cInt, style = l.isExternal ? line.style_solid : line.style_dashed, width = l.isExternal ? 2 : 1)
+                if not l.swept
+                    line.set_x2(l.ln, bar_index)
+                    line.set_color(l.ln, l.isExternal ? cExt : cInt)
+                else
+                    line.set_color(l.ln, color.new(l.isExternal ? cExt : cInt, 55))
+                    if bar_index - l.bidx > keepSwept + 200
+                        line.set_color(l.ln, color.new(color.gray, 100))
+            else
+                if not na(l.ln)
+                    line.delete(l.ln)
+                    l.ln := na
+    array.size(arr)
+f_drawLiq(liqs, showLiq, liqKeepSwept)
+
+// ── delivery zones ──────────────────────────────────────────────────────────
+f_drawZones(array<Zone> arr, bool on) =>
+    if array.size(arr) > 0
+        for i = 0 to array.size(arr) - 1
+            z = array.get(arr, i)
+            if on and not z.dead
+                col = z.isBreaker ? cBreak : z.bull ? cZoneB : cZoneS
+                if na(z.bx)
+                    z.bx := box.new(z.bidx, z.top, bar_index, z.bot, border_color = color.new(col, 40), bgcolor = col, border_width = 1)
+                box.set_right(z.bx, bar_index)
+                box.set_bgcolor(z.bx, col)
+                box.set_border_color(z.bx, color.new(col, 40))
+            else
+                if not na(z.bx)
+                    box.delete(z.bx)
+                    z.bx := na
+    array.size(arr)
+f_drawZones(zones, showZones)
+
+// ── dealing range, equilibrium, OTE band ────────────────────────────────────
+plot(showRange and drValid ? drHigh : na, "Dealing range high", color = cRange, style = plot.style_linebr, linewidth = 1)
+plot(showRange and drValid ? drLow  : na, "Dealing range low",  color = cRange, style = plot.style_linebr, linewidth = 1)
+plot(showRange and drValid ? drMid  : na, "Equilibrium (50%)",  color = color.new(#b0bec5, 30), style = plot.style_linebr, linewidth = 1)
+oteTopSel = htfBias == -1 ? oteShortTop : oteLongTop
+oteBotSel = htfBias == -1 ? oteShortBot : oteLongBot
+pOteT = plot(showRange and drValid ? oteTopSel : na, "OTE top", color = color.new(#7e57c2, 55), style = plot.style_linebr)
+pOteB = plot(showRange and drValid ? oteBotSel : na, "OTE bottom", color = color.new(#7e57c2, 55), style = plot.style_linebr)
+fill(pOteT, pOteB, color = cOte, title = "OTE 62–79%")
+
+// ── VWAP + volume profile proxy ─────────────────────────────────────────────
+plot(showVwapP ? sessVwap : na, "Session VWAP", color = color.new(#ffee58, 0), linewidth = 2, style = plot.style_linebr)
+plot(showVwapP ? anchVwap : na, "Anchored VWAP", color = color.new(#ffca28, 20), linewidth = 1, style = plot.style_linebr)
+plot(showProf ? vpPoc : na, "POC (proxy)", color = color.new(#ec407a, 0), linewidth = 2, style = plot.style_linebr)
+plot(showProf ? vpVah : na, "VAH (proxy)", color = color.new(#ec407a, 55), style = plot.style_linebr)
+plot(showProf ? vpVal : na, "VAL (proxy)", color = color.new(#ec407a, 55), style = plot.style_linebr)
+plot(showProf ? vpHvn : na, "Nearest HVN (proxy)", color = color.new(#ce93d8, 40), style = plot.style_circles)
+
+// ── manual GEX levels ───────────────────────────────────────────────────────
+cGexP = color.new(#4db6ac, 20)
+cGexN = color.new(#ff7043, 20)
+plot(showGexL and gexOn and gex1 > 0 ? gex1 : na, "GEX 1", color = gex1t == "Positive" ? cGexP : cGexN, style = plot.style_linebr, linewidth = 2)
+plot(showGexL and gexOn and gex2 > 0 ? gex2 : na, "GEX 2", color = gex2t == "Positive" ? cGexP : cGexN, style = plot.style_linebr, linewidth = 2)
+plot(showGexL and gexOn and gex3 > 0 ? gex3 : na, "GEX 3", color = gex3t == "Positive" ? cGexP : cGexN, style = plot.style_linebr, linewidth = 2)
+plot(showGexL and gexOn and gex4 > 0 ? gex4 : na, "GEX 4", color = gex4t == "Positive" ? cGexP : cGexN, style = plot.style_linebr, linewidth = 2)
+plot(showGexL and gexOn and gex5 > 0 ? gex5 : na, "GEX 5", color = gex5t == "Positive" ? cGexP : cGexN, style = plot.style_linebr, linewidth = 2)
+plot(showGexL and gexOn and gex6 > 0 ? gex6 : na, "GEX 6", color = gex6t == "Positive" ? cGexP : cGexN, style = plot.style_linebr, linewidth = 2)
+
+// ── protected swings (post-sweep / post-SMT) ────────────────────────────────
+plot(showLiq ? protHigh : na, "Protected high", color = color.new(#ff8a65, 25), style = plot.style_linebr, linewidth = 1)
+plot(showLiq ? protLow  : na, "Protected low",  color = color.new(#4fc3f7, 25), style = plot.style_linebr, linewidth = 1)
+// PROXY: drawn on the primary chart; the swing that actually held belongs to
+// the correlated instrument.
+plot(showLabels and smtFresh ? smtProtect : na, "SMT protected swing (proxy)", color = color.new(#26c6da, 10), style = plot.style_circles)
+
+// ── active plan levels ──────────────────────────────────────────────────────
+plot(showPlan and zoneReady ? entryPx : na, "Entry", color = sDir == 1 ? cBull : cBear, style = plot.style_linebr, linewidth = 1)
+plot(showPlan and zoneReady ? stopPx  : na, "Stop",  color = color.new(#ef5350, 10), style = plot.style_linebr, linewidth = 1)
+plot(showPlan and zoneReady ? tp1Px   : na, "TP1",   color = color.new(#26a69a, 30), style = plot.style_linebr, linewidth = 1)
+plot(showPlan and zoneReady ? tp2Px   : na, "TP2",   color = color.new(#26a69a, 0),  style = plot.style_linebr, linewidth = 1)
+
+// ── event labels ────────────────────────────────────────────────────────────
+if showLabels and barClosed
+    if sNewSweep
+        label.new(bar_index, sDir == 1 ? low : high, (sDir == 1 ? "SSL" : "BSL") + " sweep" + (sSweepExt ? " · EXT" : " · INT"), style = sDir == 1 ? label.style_label_up : label.style_label_down, color = color.new(sDir == 1 ? cBull : cBear, 25), textcolor = color.white, size = size.tiny)
+    if sNewDisp
+        label.new(bar_index, sDir == 1 ? high : low, "DISP" + (sOverlap ? " · FVG∩OB" : ""), style = sDir == 1 ? label.style_label_down : label.style_label_up, color = color.new(#5c6bc0, 25), textcolor = color.white, size = size.tiny)
+    if smtNewBull
+        label.new(bar_index, low, "SMT ▲", style = label.style_label_up, color = color.new(#26c6da, 20), textcolor = color.white, size = size.tiny)
+    if smtNewBear
+        label.new(bar_index, high, "SMT ▼", style = label.style_label_down, color = color.new(#26c6da, 20), textcolor = color.white, size = size.tiny)
+    if newPass
+        label.new(bar_index, sDir == 1 ? low : high, "PASS " + f_dirStr(sDir) + " " + str.tostring(scoreNorm) + "/10", style = sDir == 1 ? label.style_label_up : label.style_label_down, color = color.new(sDir == 1 ? cBull : cBear, 0), textcolor = color.white, size = size.small)
+
+// retest trigger marker (matches the strategy's market-mode fill bar)
+plotshape(showLabels and retestSig and sDir == 1 and not blocked, "Retest long", shape.triangleup, location.belowbar, color.new(#26a69a, 0), size = size.tiny)
+plotshape(showLabels and retestSig and sDir == -1 and not blocked, "Retest short", shape.triangledown, location.abovebar, color.new(#ef5350, 0), size = size.tiny)
+
+// ── dashboard ───────────────────────────────────────────────────────────────
+// Position is resolved inline: table.new() needs a const/simple argument.
+var table dash = table.new(tablePos == "Top left" ? position.top_left : tablePos == "Bottom right" ? position.bottom_right : tablePos == "Bottom left" ? position.bottom_left : tablePos == "Middle right" ? position.middle_right : position.top_right, 3, 19, border_width = 1, frame_width = 1, frame_color = color.new(color.gray, 60))
+
+f_row(table t, int r, string k, string v, bool ok, bool applicable) =>
+    table.cell(t, 0, r, k, text_color = color.new(color.silver, 0), text_size = size.tiny, text_halign = text.align_left)
+    table.cell(t, 1, r, v, text_color = color.new(color.white, 0), text_size = size.tiny, text_halign = text.align_right)
+    table.cell(t, 2, r, applicable ? f_tick(ok) : "–", text_color = not applicable ? color.gray : ok ? color.new(#26a69a, 0) : color.new(#ef5350, 0), text_size = size.tiny)
+
+if showTable and barstate.islast
+    stateCol = setupState == "PASS" ? color.new(#1b5e20, 20) : setupState == "WATCHLIST" ? color.new(#f9a825, 25) : color.new(#b71c1c, 25)
+    table.cell(dash, 0, 0, "OC-ICT " + f_dirStr(sDir), text_color = color.white, text_size = size.small, bgcolor = stateCol)
+    table.cell(dash, 1, 0, setupState, text_color = color.white, text_size = size.small, bgcolor = stateCol)
+    table.cell(dash, 2, 0, str.tostring(scoreNorm) + "/10", text_color = color.white, text_size = size.small, bgcolor = stateCol)
+    f_row(dash, 1,  "1 HTF narrative", htfNarrative, c1, true)
+    f_row(dash, 2,  "2 Kill zone", kzName, c2, true)
+    f_row(dash, 3,  "3 Sweep", sweepLabel, c3, true)
+    f_row(dash, 4,  "4 Displacement", sState >= 2 ? (sChoch ? "yes + CHoCH" : "yes") : "none", c4, true)
+    f_row(dash, 5,  "5 SMT", smtLabel, c5, app5)
+    f_row(dash, 6,  "6 PD / OTE", drValid ? (inDiscount ? "Discount" : "Premium") + (inOteLong or inOteShort ? " · OTE" : "") : "no range", c6, true)
+    f_row(dash, 7,  "7 VWAP/VP cluster", str.tostring(clusterCount) + "/3", c7, app7)
+    f_row(dash, 8,  "8 GEX", gexStr, c8, app8)
+    f_row(dash, 9,  "9 Invalidation", f_num(stopPx), c9, true)
+    f_row(dash, 10, "10 R:R runner", (na(rrRunner) ? "—" : str.tostring(rrRunner, "#.##") + "R") + (na(rr1) ? "" : " · TP1 " + str.tostring(rr1, "#.##") + "R") + (na(gexCap) ? "" : " · +γ capped"), c10, true)
+    f_row(dash, 11, "Zone (FVG∩OB)", zoneReady ? f_num(sZoneB) + " – " + f_num(sZoneT) : "—", sOverlap, true)
+    f_row(dash, 12, "Entry / TP1 / TP2", f_num(entryPx) + " / " + f_num(tp1Px) + " / " + f_num(tp2Px), zoneReady, true)
+    f_row(dash, 17, "TP2 source", tp2Quality, extTargetValid, true)
+    f_row(dash, 18, "LTF structure", f_biasStr(ltfSt), ltfSt == sDir and sDir != 0, true)
+    f_row(dash, 13, "PO3 / AMD", po3Str, po3Phase == 3 and po3Dir == sDir, po3On)
+    f_row(dash, 14, "Event lockout", eventBlocked ? evtName + " · blocked" : "clear", not eventBlocked, true)
+    f_row(dash, 15, "Tier-2 confluences", str.tostring(tier2Count) + "/4", tier2Count >= 3, true)
+    f_row(dash, 16, "Block reason", blocked ? blockReason : "—", not blocked, true)
+
+// ── machine-readable plots (used by alert message placeholders) ─────────────
+plot(scoreNorm, "Score", display = display.none)
+plot(sDir, "Dir", display = display.none)
+plot(entryPx, "EntryPx", display = display.none)
+plot(stopPx, "StopPx", display = display.none)
+plot(tp1Px, "Tp1Px", display = display.none)
+plot(tp2Px, "Tp2Px", display = display.none)
+plot(na(rrRunner) ? 0.0 : rrRunner, "RR", display = display.none)

@@ -1,0 +1,20 @@
+//@version=5
+// ════════════════════════════════════════════════════════════════════════════
+//  OpenClaw · ICT / Institutional Confluence Engine — INDICATOR
+//  ------------------------------------------------------------------------
+//  Codified top-down HTF bias + liquidity + kill zone + SMT + sweep/
+//  displacement/retest + FVG/OB/breaker + premium-discount/OTE + VWAP/volume
+//  profile proxy + manual GEX + PO3/AMD + manual event lockout, scored on an
+//  explicit 10-point checklist.
+//
+//  NON-REPAINTING CONTRACT
+//   • every request.security() uses lookahead = barmerge.lookahead_off
+//   • HTF structure is read from the LAST CLOSED HTF bar (see f_htfPack)
+//   • all structure / setup state transitions are gated on barstate.isconfirmed
+//   • pivots use ta.pivothigh/ta.pivotlow (confirmed N bars after the fact)
+//   • no security() on future offsets, no calc_on_every_tick side effects
+//
+//  GENERATED FILE — do not edit directly.
+//  Source of truth: pine/parts/*.pine, assembled by pine/build.sh
+// ════════════════════════════════════════════════════════════════════════════
+indicator("OpenClaw ICT Confluence Engine [IND]", "OC-ICT", overlay = true, max_boxes_count = 500, max_lines_count = 500, max_labels_count = 500, max_bars_back = 1000)
